@@ -1,0 +1,680 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Row, Col, Table, Button, Badge, Spinner
+} from "react-bootstrap";
+import {
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  ReferenceLine, PieChart, Pie, Cell
+} from "recharts";
+import {
+  FaEnvelope, FaCalendarCheck, FaRupeeSign, FaCalendarAlt,
+  FaFileInvoiceDollar, FaRegCalendarAlt, FaDownload, FaArrowUp,
+  FaEllipsisV, FaRegClock, FaExclamationTriangle, FaEdit, FaLock
+} from "react-icons/fa";
+import { getTotalEnquiries, getRecentEnquiries } from "../../services/leadService";
+
+// Custom speech bubble marker for June value "25" in chart
+const CustomReferenceLabel = (props) => {
+  const { viewBox } = props;
+  if (!viewBox) return null;
+  const { x, y } = viewBox;
+  return (
+    <g>
+      {/* Little tooltip rectangle */}
+      <rect x={x - 18} y={y - 30} width={36} height={20} rx={6} fill="#00a884" />
+      {/* Down arrow pointer */}
+      <path d={`M${x - 4} ${y - 10} L${x} ${y - 6} L${x + 4} ${y - 10} Z`} fill="#00a884" />
+      {/* Value label */}
+      <text x={x} y={y - 16} fill="#ffffff" fontSize="11" fontWeight="700" textAnchor="middle">
+        25
+      </text>
+    </g>
+  );
+};
+
+// Custom dot renderer to match image where only middle months have circles
+const CustomDot = (props) => {
+  const { cx, cy, payload } = props;
+  if (payload.name === "Mar" || payload.name === "Sep") {
+    return null;
+  }
+  return (
+    <circle cx={cx} cy={cy} r={5} fill="#ffffff" stroke="#00a884" strokeWidth={2.5} />
+  );
+};
+
+const AdminDashboard = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [totalEnquiriesCount, setTotalEnquiriesCount] = useState(284);
+  const [recentEnquiries, setRecentEnquiries] = useState([]);
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  const loadDashboard = async () => {
+    try {
+      const [totalRes, recentRes] = await Promise.all([
+        getTotalEnquiries().catch(() => null),
+        getRecentEnquiries().catch(() => null)
+      ]);
+
+      if (totalRes && totalRes.data) {
+        setTotalEnquiriesCount(totalRes.data.total || 284);
+      }
+      if (recentRes && recentRes.data && recentRes.data.data) {
+        setRecentEnquiries(recentRes.data.data);
+      }
+    } catch (err) {
+      console.error("Dashboard data load error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Mock revenue trend data to match image graph shape (Mar - Sep)
+  const revenueData = [
+    { name: "Mar", "2025": 12, "2026": 55 },
+    { name: "Apr", "2025": 14, "2026": 42 },
+    { name: "May", "2025": 13, "2026": 48 },
+    { name: "Jun", "2025": 10, "2026": 25 }, // Highlighted dot
+    { name: "Jul", "2025": 11, "2026": 45 },
+    { name: "Aug", "2025": 12, "2026": 38 },
+    { name: "Sep", "2025": 15, "2026": 68 }
+  ];
+
+  // Mock enquiry distribution (120 total)
+  const enquiryDistribution = [
+    { name: "Confirmed", value: 80, count: "80", percent: "54.32 %", color: "#00a884" },
+    { name: "Pending", value: 36, count: "36", percent: "27.22 %", color: "#f59e0b" },
+    { name: "Rejected", value: 4, count: "04", percent: "18.5 %", color: "#ef4444" }
+  ];
+
+  // Mock bookings matching the image rows
+  const bookingsData = [
+    { id: "#BK-8821", name: "Alice Sterling", initials: "AS", avatarColor: "avatar-initials-blue", date: "May 12, 2024", amount: "$12,450.00", status: "CONFIRMED" },
+    { id: "#BK-8822", name: "Ben Johnson", initials: "BU", avatarColor: "avatar-initials-purple", date: "Jun 05, 2024", amount: "$8,200.00", status: "PROCESSING" },
+    { id: "#BK-8823", name: "Ryley Thompson", initials: "RT", avatarColor: "avatar-initials-green", date: "Jun 18, 2024", amount: "$24,000.00", status: "PENDING" },
+    { id: "#BK-8823", name: "Ryley Thompson", initials: "RT", avatarColor: "avatar-initials-green", date: "Jun 18, 2024", amount: "$24,000.00", status: "PENDING" }
+  ];
+
+  // Mock upcoming events matching the image sidebar
+  const upcomingEvents = [
+    { date: "18", month: "JUN", name: "Sharma Wedding", desc: "Grand Ballroom • 350 guests", status: "Confirmed", badgeClass: "badge-custom-confirmed" },
+    { date: "21", month: "JUN", name: "TechCorp Annual Meet", desc: "Convention Hall • 500 pax", status: "Setup", badgeClass: "badge-custom-setup" },
+    { date: "25", month: "JUN", name: "Patel Birthday Gala", desc: "Garden Venue • 120 guests", status: "Pending", badgeClass: "badge-custom-pending" },
+    { date: "27", month: "JUN", name: "Rohan Patel", desc: "Grand Vitalroom • 350 guests", status: "Confirmed", badgeClass: "badge-custom-confirmed" },
+    { date: "28", month: "JUN", name: "Gupta Reception", desc: "Rooftop Terrace • 200 pax", status: "Scheduled", badgeClass: "badge-custom-scheduled" },
+    { date: "30", month: "JUN", name: "Sharma Reception", desc: "Rooftop Terrace • 200 pax", status: "Scheduled", badgeClass: "badge-custom-scheduled" }
+  ];
+
+  // Mock User Management data matching the image rows
+  const usersData = [
+    {
+      name: "Anjali Sharma",
+      email: "anjali@gmail.com",
+      initials: "AS",
+      avatarColor: "avatar-initials-teal",
+      contact: "+91 98200 11111",
+      status: "Active",
+      events: "12"
+    },
+    {
+      name: "Rohan Patel",
+      email: "rohan@hotmail.com",
+      initials: "RP",
+      avatarColor: "avatar-initials-blue",
+      contact: "91 98765 22222",
+      status: "Active",
+      events: "7"
+    },
+    {
+      name: "Meena Gupta",
+      email: "meena@yahoo.com",
+      initials: "MG",
+      avatarColor: "avatar-initials-orange",
+      contact: "+91 99001 33333",
+      status: "In Active",
+      events: "12"
+    },
+    {
+      name: "Nikhil Kumar",
+      email: "nikhil@work.com",
+      initials: "RP",
+      avatarColor: "avatar-initials-red",
+      contact: "+91 98755 22222",
+      status: "Active",
+      events: "07"
+    }
+  ];
+
+  // Mock Pending Payments data matching the image rows
+  const pendingPaymentsData = [
+    { id: "#BK-8821", name: "Alice Sterling", initials: "AS", date: "May 12, 2024", amount: "Rs.12,450.00", status: "PENDING" },
+    { id: "#BK-8822", name: "Ben Johnson", initials: "BU", date: "Jun 05, 2024", amount: "Rs.8,200.00", status: "PENDING" },
+    { id: "#BK-8823", name: "Ryley Thompson", initials: "RT", date: "Jun 18, 2024", amount: "Rs.24,000.00", status: "PENDING" },
+    { id: "#BK-8823", name: "Ryley Thompson", initials: "RT", date: "Jun 18, 2024", amount: "Rs.24,000.00", status: "PENDING" }
+  ];
+
+  // Helper for status badge styling
+  const getStatusBadge = (status) => {
+    switch (status.toUpperCase()) {
+      case "CONFIRMED":
+        return <span className="badge-custom badge-custom-confirmed">Confirmed</span>;
+      case "PROCESSING":
+        return <span className="badge-custom badge-custom-processing">Processing</span>;
+      case "PENDING":
+        return <span className="badge-custom badge-custom-pending">Pending</span>;
+      default:
+        return <span className="badge-custom badge-custom-pending">{status}</span>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="d-flex align-items-center justify-content-center" style={{ minHeight: "60vh" }}>
+        <Spinner animation="border" variant="success" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {/* Top Title & Actions Bar */}
+      <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 mb-4">
+        <h2 className="page-title">Dashboard Overview</h2>
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          <button className="dashboard-btn-outline">
+            <FaRegCalendarAlt />
+            <span>June 2026</span>
+          </button>
+          <button className="dashboard-btn-primary">
+            <FaDownload />
+            <span>Export Report</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 5 KPI Cards Row */}
+<div className="d-flex flex-wrap gap-3 mb-4">
+  {/* Card 1: Enquiries */}
+  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+    <div className="kpi-card-custom d-flex flex-column justify-content-between">
+      <div>
+        {/* ✅ Icon + Count aligned to TOP */}
+        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+          <div className="kpi-icon-container kpi-icon-teal">
+            <FaEnvelope />
+          </div>
+          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+            {totalEnquiriesCount}
+          </h3>
+        </div>
+        <p className="kpi-label">Total Enquiries</p>
+      </div>
+      <div className="kpi-trend trend-up">
+        <FaArrowUp size={11} />
+        <span>+18% this month</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Card 2: Bookings */}
+  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+    <div className="kpi-card-custom d-flex flex-column justify-content-between">
+      <div>
+        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+          <div className="kpi-icon-container kpi-icon-blue">
+            <FaCalendarCheck />
+          </div>
+          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+            142
+          </h3>
+        </div>
+        <p className="kpi-label">Total Bookings</p>
+      </div>
+      <div className="kpi-trend trend-up">
+        <FaArrowUp size={11} />
+        <span>+12% this month</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Card 3: Monthly Revenue */}
+  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+    <div className="kpi-card-custom d-flex flex-column justify-content-between">
+      <div>
+        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+          <div className="kpi-icon-container kpi-icon-green">
+            <FaRupeeSign />
+          </div>
+          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+            ₹8.4L
+          </h3>
+        </div>
+        <p className="kpi-label">Monthly Revenue</p>
+      </div>
+      <div className="kpi-trend trend-up">
+        <FaArrowUp size={11} />
+        <span>+14% this month</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Card 4: Upcoming Events */}
+  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+    <div className="kpi-card-custom d-flex flex-column justify-content-between">
+      <div>
+        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+          <div className="kpi-icon-container kpi-icon-orange">
+            <FaCalendarAlt />
+          </div>
+          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+            25
+          </h3>
+        </div>
+        <p className="kpi-label">Upcoming Events</p>
+      </div>
+      <div className="kpi-trend" style={{ color: "#3b82f6", cursor: "pointer" }}>
+        <span>Next 30 days</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Card 5: Pending Payments */}
+  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+    <div className="kpi-card-custom d-flex flex-column justify-content-between">
+      <div>
+        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+          <div className="kpi-icon-container kpi-icon-red">
+            <FaFileInvoiceDollar />
+          </div>
+          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4}}>
+            ₹2.1L
+          </h3>
+        </div>
+        <p className="kpi-label">Pending Payments</p>
+      </div>
+      <div className="kpi-trend trend-down">
+        <FaExclamationTriangle size={11} />
+        <span>22 overdue</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+      {/* Middle Section: Chart & Enquiry distribution */}
+      <Row className="mb-4">
+        {/* Revenue Trend Chart */}
+        <Col lg={8} className="mb-4 mb-lg-0">
+          <div className="card-section">
+            <div className="card-section-header">
+              <h4 className="card-section-title">Monthly Revenue Trend</h4>
+              <span className="card-section-subtitle-green">₹48.3L Total 2026</span>
+            </div>
+            <div style={{ width: "100%", height: "260px" }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={revenueData} margin={{ top: 20, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="color2026" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#00a884" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#00a884" stopOpacity={0.0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis
+                    dataKey="name"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
+                    dy={10}
+                  />
+                  <YAxis
+                    domain={[0, 100]}
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: "#64748b", fontSize: 11, fontWeight: 500 }}
+                    tickCount={6}
+                  />
+                  <Tooltip
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="custom-recharts-tooltip">
+                            <p className="custom-recharts-tooltip-label">{payload[0].payload.name}</p>
+                            <p className="custom-recharts-tooltip-value">₹{payload[0].value}L</p>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  {/* Reference line for June value 25 with custom bubble label */}
+                  <ReferenceLine
+                    x="Jun"
+                    stroke="#00a884"
+                    strokeWidth={1.5}
+                    strokeDasharray="3 3"
+                    label={<CustomReferenceLabel />}
+                  />
+                  {/* 2025 Area (rendered as thin line, fill="none") */}
+                  <Area
+                    type="monotone"
+                    dataKey="2025"
+                    stroke="#f43f5e"
+                    strokeWidth={1.5}
+                    fill="none"
+                    dot={false}
+                  />
+                  {/* 2026 Area (filled with gradient and custom dots) */}
+                  <Area
+                    type="monotone"
+                    dataKey="2026"
+                    stroke="#00a884"
+                    strokeWidth={3}
+                    fill="url(#color2026)"
+                    dot={<CustomDot />}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            {/* Custom Legend at Bottom */}
+            <div className="d-flex justify-content-center align-items-center gap-4 mt-3" style={{ fontSize: "0.8rem", fontWeight: 600 }}>
+              <div className="d-flex align-items-center gap-2">
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#f43f5e" }}></span>
+                <span style={{ color: "#64748b" }}>2025</span>
+              </div>
+              <div className="d-flex align-items-center gap-2">
+                <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#00a884" }}></span>
+                <span style={{ color: "#00a884" }}>2026</span>
+              </div>
+            </div>
+          </div>
+        </Col>
+
+        {/* Enquiry Distribution Donut Chart */}
+        <Col lg={4}>
+          <div className="card-section d-flex flex-column justify-content-between">
+            <div className="card-section-header">
+              <h4 className="card-section-title">Enquiry distribution</h4>
+              <button className="view-all-link" onClick={() => navigate("/admin/enquiries")}>
+                View All
+              </button>
+            </div>
+            {/* Chart + Legend Wrapper */}
+            <Row className="align-items-center g-3">
+              {/* Donut Chart Container */}
+              <Col xs={12} sm={6} lg={12} xl={6} className="pe-0">
+                <div style={{ position: "relative", width: "100%", height: "180px" }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={enquiryDistribution}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={52}
+                        outerRadius={70}
+                        startAngle={90}
+                        endAngle={-270}
+                        paddingAngle={3}
+                        dataKey="value"
+                      >
+                        {enquiryDistribution.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {/* Center Text */}
+                  <div style={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center"
+                  }}>
+                    <div style={{ fontSize: "1.6rem", fontWeight: "800", color: "#1e293b", lineHeight: 1.1 }}>120</div>
+                    <div style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: "600", marginTop: "2px" }}>Enquiry</div>
+                  </div>
+                </div>
+              </Col>
+
+              {/* Legends List */}
+              <Col xs={12} sm={6} lg={12} xl={6}>
+                <div>
+                  {enquiryDistribution.map((item, idx) => (
+                    <div key={idx} className="donut-legend-item">
+                      <div className="donut-legend-label">
+                        <span className={`donut-legend-dot ${item.name === "Confirmed" ? "green" : item.name === "Pending" ? "orange" : "red"}`}></span>
+                        <span>{item.name}</span>
+                      </div>
+                      <div className="d-flex align-items-center gap-2">
+                        <span className="donut-legend-number">{item.count}</span>
+                        <span className="donut-legend-percent">{item.percent}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Col>
+            </Row>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Bottom Section: Recent Bookings & Upcoming Events */}
+      <Row>
+        {/* Recent Bookings Details */}
+        <Col xl={8} className="mb-4 mb-xl-0">
+          <div className="card-section">
+            <div className="card-section-header">
+              <h4 className="card-section-title">Recent Bookings Details</h4>
+              <button className="view-all-link" onClick={() => navigate("/admin/bookings")}>
+                View All
+              </button>
+            </div>
+            <div className="table-responsive">
+              <Table className="table-custom" hover>
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Client Name</th>
+                    <th>Event Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th className="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bookingsData.map((b, idx) => (
+                    <tr key={idx}>
+                      <td style={{ fontWeight: 600, color: "#64748b" }}>{b.id}</td>
+                      <td>
+                        <div className="client-avatar-cell">
+                          <div className={`avatar-initials ${b.avatarColor}`}>
+                            {b.initials}
+                          </div>
+                          <span>{b.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ color: "#64748b", fontWeight: 500 }}>{b.date}</td>
+                      <td style={{ fontWeight: 700 }}>{b.amount}</td>
+                      <td>{getStatusBadge(b.status)}</td>
+                      <td className="text-center">
+                        <Button variant="link" className="p-0 text-muted" aria-label="Actions">
+                          <FaEllipsisV />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </div>
+        </Col>
+
+        {/* Upcoming Events List */}
+        <Col xl={4}>
+          <div className="card-section d-flex flex-column justify-content-between">
+            <div className="card-section-header">
+              <h4 className="card-section-title">Upcoming Events</h4>
+              <button className="view-all-link" onClick={() => navigate("/admin/bookings")}>
+                View All
+              </button>
+            </div>
+            <div className="d-flex flex-column gap-3">
+              {upcomingEvents.map((evt, idx) => (
+                <div key={idx} className="event-item">
+                  <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: "150px" }}>
+                    <div className="event-date-box">
+                      <span className="event-date-box-number">{evt.date}</span>
+                      <span className="event-date-box-month">{evt.month}</span>
+                    </div>
+                    <div className="event-details-text">
+                      <h5 className="event-title">{evt.name}</h5>
+                      <p className="event-meta mb-0">{evt.desc}</p>
+                    </div>
+                  </div>
+                  <div className="event-badge-container">
+                    <span className={`badge-custom ${evt.badgeClass}`}>{evt.status}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Col>
+      </Row>
+
+      {/* User Management Table */}
+      <Row className="mt-4">
+        <Col xs={12}>
+          <div className="card-section">
+            <div className="card-section-header">
+              <h4 className="card-section-title">User Management</h4>
+              <button className="view-all-link" onClick={() => navigate("/admin/users")}>
+                View All
+              </button>
+            </div>
+            <div className="table-responsive">
+              <Table className="table-custom" hover>
+                <thead>
+                  <tr>
+                    <th>User Details</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Events</th>
+                    <th className="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usersData.map((u, idx) => (
+                    <tr key={idx}>
+                      <td>
+                        <div className="client-avatar-cell">
+                          <div className={`avatar-initials ${u.avatarColor}`}>
+                            {u.initials}
+                          </div>
+                          <div className="d-flex flex-column">
+                            <span style={{ fontWeight: 700, color: "#1e293b" }}>{u.name}</span>
+                            <span style={{ fontSize: "0.75rem", color: "#64748b", fontWeight: 400 }}>{u.email}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td style={{ color: "#64748b", fontWeight: 500 }}>{u.contact}</td>
+                      <td>
+                        <span className="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill" style={{
+                          backgroundColor: u.status === "Active" ? "#e6f7f4" : "#f1f5f9",
+                          color: u.status === "Active" ? "#00a884" : "#64748b",
+                          fontSize: "0.75rem",
+                          fontWeight: 600,
+                          letterSpacing: "0.2px"
+                        }}>
+                          <span style={{
+                            width: "6px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            backgroundColor: u.status === "Active" ? "#00a884" : "#64748b",
+                            display: "inline-block",
+                            marginRight: "6px"
+                          }}></span>
+                          {u.status}
+                        </span>
+                      </td>
+                      <td style={{ fontWeight: 700 }}>{u.events}</td>
+                      <td className="text-center">
+                        <div className="d-flex align-items-center justify-content-center gap-2">
+                          <button className="action-btn-edit" aria-label="Edit user">
+                            <FaEdit size={14} />
+                          </button>
+                          <button className="action-btn-lock" aria-label="Lock user">
+                            <FaLock size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Pending Payments Table */}
+      <Row className="mt-4">
+        <Col xs={12}>
+          <div className="card-section">
+            <div className="card-section-header">
+              <h4 className="card-section-title">Pending Payments</h4>
+              <button className="view-all-link" onClick={() => navigate("/admin/payments")}>
+                View All
+              </button>
+            </div>
+            <div className="table-responsive">
+              <Table className="table-custom" hover>
+                <thead>
+                  <tr>
+                    <th>Booking ID</th>
+                    <th>Client Name</th>
+                    <th>Due Date</th>
+                    <th>Pending Amount</th>
+                    <th>Status</th>
+                    <th className="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingPaymentsData.map((p, idx) => (
+                    <tr key={idx}>
+                      <td style={{ fontWeight: 600, color: "#64748b" }}>{p.id}</td>
+                      <td>
+                        <div className="client-avatar-cell">
+                          <span style={{ fontWeight: 800, color: "#1e293b", marginRight: "8px" }}>{p.initials}</span>
+                          <span>{p.name}</span>
+                        </div>
+                      </td>
+                      <td style={{ color: "#64748b", fontWeight: 500 }}>{p.date}</td>
+                      <td style={{ fontWeight: 700 }}>{p.amount}</td>
+                      <td>
+                        <span className="badge-custom badge-custom-pending">
+                          {p.status}
+                        </span>
+                      </td>
+                       <td className="text-center">
+                        <Button variant="link" className="p-0 text-muted" aria-label="Actions">
+                          <FaEllipsisV />
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
+          </div>
+        </Col>
+      </Row>
+    </div>
+  );
+};
+
+export default AdminDashboard;

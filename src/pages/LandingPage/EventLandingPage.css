@@ -1,0 +1,148 @@
+
+/*ProblemSection CSS*/
+.header-content  {
+  transform: translateX(100px);
+}
+
+@media (max-width: 991px) {
+  .problem-image {
+    transform: translateX(0);
+    height: 320px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .problem-image {
+    height: 260px !important;
+  }
+}
+
+/*PrefectOccasion CSS*/
+@media (max-width: 768px) {
+  .event-specialize-card {
+    max-width: 100% !important;
+    height: 320px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .event-specialize-card {
+    height: 300px !important;
+  }
+}
+
+/* JouneySection css */
+/* Desktop */
+.journey-content {
+  transform: translateX(100px);
+}
+
+
+/* Tablet */
+@media (max-width: 991px) {
+  .journey-content {
+    transform: none;
+    margin-top: 40px;
+    text-align: center;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .journey-content {
+    transform: none;
+    text-align: center;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 576px) {
+  .journey-content h1 {
+    font-size: 32px !important;
+  }
+
+  .journey-content p {
+    font-size: 14px !important;
+  }
+
+  .journey-content .row .col-md-6 {
+    width: 100%;
+  }
+}
+
+
+/*SolutionSection CSS*/
+/* Desktop */
+.solution-image {
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(10, 132, 132, 0.06);
+  height: 380px;
+  margin-top: -80px;
+}
+
+.solution-content {
+  position: relative;
+  margin: 20px 0;
+  transform: translateX(100px);
+}
+
+/* Tablet */
+@media (max-width: 991px) {
+  .solution-image {
+    margin-top: 0;
+    
+  }
+
+  .solution-content {
+    transform: none;
+    margin: 0;
+  }
+
+  #solution h2 {
+    font-size: 40px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .solution-image {
+    height: 260px;
+    margin-top: 0;
+  }
+
+  .solution-content {
+    transform: none;
+    text-align: center;
+  }
+
+  #solution h2 {
+    font-size: 28px !important;
+    line-height: 1.2 !important;
+  }
+
+  #solution p {
+    max-width: 100% !important;
+  }
+
+  #solution .col-md-6 {
+    width: 100%;
+  }
+}
+
+/*BuildTOScaleSection CSS*/
+.build-scale-card {
+  transform: translateX(100px);
+}
+
+@media (max-width: 991px) {
+  .build-scale-card {
+    transform: translateX(40px);
+  }
+}
+
+@media (max-width: 576px) {
+  .build-scale-card {
+    transform: translateX(0);
+  }
+}

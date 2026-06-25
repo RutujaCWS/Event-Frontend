@@ -1,0 +1,3 @@
+.gallery-card:hover .gallery-img {
+  transform: scale(1.08);
+}

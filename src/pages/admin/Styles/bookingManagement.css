@@ -1,0 +1,486 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* Page Layout */
+.booking-page {
+   background-color: #f8fafc;
+   min-height: 100vh;
+   font-family: 'Manrope', sans-serif;
+   padding: 20px;
+}
+
+/* ==========================================
+   SECTION HEADERS
+========================================== */
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-header h4 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #101828;
+}
+
+/* ==========================================
+   STATS CARDS
+========================================== */
+
+/* KPI CARD */
+
+/* CARD */
+.metric-card {
+  border: 1px solid #dbe4ea !important;
+  border-radius: 18px !important;
+  background: #fff !important;
+  height: 150px;
+  box-shadow: none !important;
+}
+
+.metric-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.metric-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.metric-icon-box {
+  width: 35px;
+  height: 35px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.metric-number {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.metric-title {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-bottom: auto;
+}
+
+.metric-growth {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #10b981;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: auto;
+}
+
+.metric-alert {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #ef4444;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: auto;
+}
+
+
+/* ==========================================
+   ACTIVE BOOKING CARDS
+========================================== */
+.booking-card {
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  background: #ffffff;
+  height: 178px;
+  box-shadow: none;
+}
+
+.booking-card .card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.booking-id {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f9d8c;
+  margin-bottom: 6px;
+}
+
+.booking-card h6 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #101828;
+  margin-bottom: 4px;
+}
+
+.booking-meta {
+  font-size: 13px;
+  color: #667085;
+}
+
+.booking-amount {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 38px;
+  color: #101828;
+  margin-top: 10px;
+}
+
+.booking-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Badge */
+
+.custom-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Dot inside badge */
+
+.custom-badge .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+/* Status colors */
+
+.success-light {
+  background: #e9f8ef;
+  color: #15b86a;
+}
+
+/* Warning */
+.warning-light {
+  background: #fff4d9;
+  color: #e7a014;
+}
+
+/* Upcoming */
+.primary-light {
+  background: #e5eeff;
+  color: #4b7bec;
+}
+
+/* Danger */
+.danger-light {
+  background: #fde6e6;
+  color: #d92d20;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1E293B;
+}
+
+/* Total badge */
+
+.booking-count-pill {
+    background: #D7F7F0;
+    color: #0F9B8E;
+    padding: 4px 18px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+
+/* Filter button */
+
+.booking-filter-btn {
+    background: #fff;
+    border: 1px solid #E2E8F0 !important;
+    border-radius: 8px !important;
+    padding: 4px 24px;
+    color: #64748B;
+    font-weight: 600;
+  
+}
+
+.booking-filter-btn:hover {
+    background: #F8FAFC;
+}
+
+
+/* Export button */
+
+.booking-export-btn {
+     background-color: #fff;
+    border: 2px solid #0F9B8E !important;
+    color: #0F9B8E !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 4px 24px !important;
+}
+
+.booking-export-btn:hover {
+    background: #F0FDFA;
+}
+
+
+/* Mobile responsiveness */
+
+@media (max-width:768px){
+
+    .booking-filter-btn,
+    .booking-export-btn{
+        flex:1;
+    }
+
+    .page-title{
+        font-size:1.6rem;
+    }
+}
+
+
+/* ==========================================
+   TABLE
+========================================== */
+.table-card {
+  border: 1px solid #e4e7ec;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background: #f9fafb;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  height: 52px;
+  vertical-align: middle;
+  border-bottom: 1px solid #e4e7ec;
+}
+
+.table tbody td {
+  height: 84px;
+  vertical-align: middle;
+  border-color: #f2f4f7;
+}
+  
+.customer-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #101828;
+}
+
+.customer-email {
+  font-size: 13px;
+  color: #667085;
+}
+/* ==========================================
+   TABLE CARD
+========================================== */
+
+.card {
+  border-radius: 16px;
+}
+
+.card > .table-responsive {
+  border-radius: 16px;
+}
+
+/* ==========================================
+   CUSTOMER AVATAR
+========================================== */
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar.green {
+  background: #d9f6ef;
+  color: #0f9d8c;
+}
+
+.avatar.red {
+  background: #fde5e5;
+  color: #ef4444;
+}
+
+.avatar.orange {
+  background: #fff0d9;
+  color: #f59e0b;
+}
+
+.avatar.blue {
+  background: #dceafe;
+  color: #2563eb;
+}
+
+
+/* ==========================================
+   PAGINATION
+========================================== */
+/* Pagination container */
+.custom-pagination-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    color: #64748b;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    /* Typography Scale: Body Small */
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.custom-pagination-btn.active {
+    background-color: #0D9488;
+    color: #ffffff;
+    border-color: #0D9488;
+}
+
+.custom-pagination-btn:hover:not(.active):not(:disabled) {
+    background-color: #f1f5f9;
+}
+
+.custom-pagination-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.success-pill {
+  background: #e7f8ef;
+  color: #12b76a;
+}
+
+.success-pill .dot {
+  background: #12b76a;
+}
+
+.purple-pill {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.purple-pill .dot {
+  background: #4f46e5;
+}
+
+.teal-pill {
+  background: #e7f7f7;
+  color: #0f9d8c;
+}
+
+.orange-pill {
+  background: #fff3db;
+  color: #f59e0b;
+}
+.danger-pill{
+   background: #fde5e5;
+  color: #ef4444;
+}
+
+.event-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.pink {
+  background: #ffe3f0;
+  color: #d63384;
+}
+
+.blue {
+  background: #dceafe;
+  color: #2563eb;
+}
+
+.green {
+  background: #d9f6ef;
+  color: #0f9d8c;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 992px) {
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .booking-page {
+    padding: 16px;
+  }
+
+  .stat-card h2 {
+    font-size: 22px;
+  }
+
+  .booking-card h4 {
+    font-size: 20px;
+  }
+}
