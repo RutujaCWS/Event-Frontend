@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://event-backend-three-theta.vercel.app/',
+  baseURL: 'https://event-backend-three-theta.vercel.app',
 });
 
 // Request interceptor (attach token)
