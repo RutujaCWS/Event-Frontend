@@ -67,7 +67,11 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: "/customer/dashboard", label: "Dashboard", icon: <FaThLarge /> },
     { path: "/customer/enquiries", label: "My Enquiries", icon: <FaEnvelope /> },
     { path: "/customer/quotations", label: "Quotations", icon: <FaFileAlt /> },
-    { path: "/customer/bookings", label: "Bookings", icon: <FaCalendarAlt /> },
+    {
+      path: "/customer/bookings",
+      label: "Bookings",
+      icon: <FaCalendarAlt />
+      },
     { path: "/customer/payments", label: "Payments", icon: <FaCreditCard /> },
     { path: "/customer/invoices", label: "Invoices", icon: <FaFileInvoiceDollar /> },
     { path: "/customer/profile", label: "Profile", icon: <FaUser /> },

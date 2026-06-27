@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Row, Col, Card, Table, Spinner, Form, Dropdown, Modal, Button } from "react-bootstrap";
 import { TbUserStar, TbUserCheck, TbUsers, TbUserCog, TbUserOff, TbUserPlus, TbTrendingUp, TbAlertTriangle, TbDotsVertical, TbDownload } from "react-icons/tb";
 import API from "../../services/api";
-import "./UserManagement.css";
+import "./Styles/UserManagement.css";
 
 const UserManagement = () => {
   const [activeTab, setActiveTab] = useState("customer"); // 'customer' or 'staff'
@@ -394,7 +394,7 @@ const UserManagement = () => {
 
               <div className="metric-title">TOTAL USER</div>
 
-              <div className="metric-growth text-success">
+              <div className="metric-growth">
                 <TbTrendingUp size={14} />
                 <span>+14% this month</span>
               </div>
@@ -653,30 +653,23 @@ const UserManagement = () => {
                                 {metrics.initials}
                               </div>
                               <div>
-                                <div className="fw-bold text-dark body-base" style={{ lineHeight: "1.2" }}>{user.name}</div>
-                                <div className="text-muted caption" style={{ marginTop: "2px" }}>{user.email}</div>
+                                <div className="user-name" style={{ lineHeight: "1.2" }}>{user.name}</div>
+                                <div className="user-email-text">{user.email}</div>
                               </div>
                             </div>
                           </td>
-                          <td className="body-base text-secondary">{user.mobile}</td>
-                          <td className="body-base text-secondary">{user.address?.city || "Mumbai"}</td>
-                          <td className="body-base fw-bold text-dark">{metrics.bookings}</td>
-                          <td className="body-base fw-bold text-dark">
+                          <td className="user-mobile-text">{user.mobile}</td>
+                          <td className="user-city-text">{user.address?.city || "Mumbai"}</td>
+                          <td className="user-bookings-text">{metrics.bookings}</td>
+                          <td className="user-spend-text">
                             ₹{metrics.spend.toLocaleString("en-IN")}
                           </td>
-                          <td className="body-small text-muted">
+                          <td className="user-joined-text">
                             {user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "Mar 2024"}
                           </td>
                           <td>
                             <span className={`badge-dot badge-dot-${user.isActive ? ((indexOfFirstItem + idx) % 4 === 0 ? "vip" : "active") : "inactive"}`}>
-                              <span
-                                style={{
-                                  width: "6px",
-                                  height: "6px",
-                                  borderRadius: "50%",
-                                  backgroundColor: user.isActive ? ((indexOfFirstItem + idx) % 4 === 0 ? "#00685f" : "#14B8A6") : "#c5221f"
-                                }}
-                              />
+                              <span className="status-dot" />
                               {user.isActive ? ((indexOfFirstItem + idx) % 4 === 0 ? "VIP" : "Active") : "Inactive"}
                             </span>
                           </td>

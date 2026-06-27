@@ -270,7 +270,7 @@ const handleUpdate = async () => {
               {item.icon}
             </div>
 
-           <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+           <h3 className="kpi-value">
               {item.value}
             </h3>
           </div>

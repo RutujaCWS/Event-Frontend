@@ -1,0 +1,1015 @@
+/* ============================================
+   INVOICE & GST MANAGEMENT - COMPLETE CSS
+   Design System v1 — Event Management System
+   ============================================ */
+
+/* ---------- FONT IMPORT ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+
+/* ---------- ROOT VARIABLES ---------- */
+:root {
+    --brand-primary: #0D9488;
+    --brand-secondary: #14B8A6;
+    --semantic-success: #10B981;
+    --semantic-danger: #EF4444;
+    --semantic-warning: #F59E0B;
+    --semantic-info: #3B82F6;
+    --text-primary: #111827;
+    --text-body: #374151;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --bg-page: #F9FAFB;
+    --stroke: #E2E8F0;
+    --font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ---------- GLOBAL ---------- */
+.invoice-mgmt-container {
+    font-family: var(--font-family);
+    background-color: var(--bg-page);
+    min-height: 100vh;
+    color: var(--text-body);
+}
+
+/* ============================================
+   TYPOGRAPHY SCALE (as per Design System)
+   ============================================ */
+/* H1 — Page title */
+.page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    font-family: var(--font-family);
+}
+
+/* H2 — Section title */
+.h2-section {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+    font-family: var(--font-family);
+}
+
+/* H3 — Card title */
+.h3-card-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+}
+
+/* H4 — Sub-heading */
+.h4-sub-heading {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.02em;
+    font-family: var(--font-family);
+}
+
+/* Body Large */
+.body-large {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    font-family: var(--font-family);
+}
+
+/* Body Base */
+.body-base {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.6;
+    font-family: var(--font-family);
+}
+
+/* Body Small */
+.body-small {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    font-family: var(--font-family);
+}
+
+/* Caption */
+.caption {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+}
+
+/* Label / Tag */
+.label-tag {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-family: var(--font-family);
+}
+
+/* ---------- page subtitle (custom) ---------- */
+.page-subtitle {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    font-family: var(--font-family);
+}
+
+/* ============================================
+   STATUS TABS - CUSTOM COLORS
+   ============================================ */
+.status-tab-active {
+    background-color: #ddf5f0 !important; /* Very light teal/mint background */
+    border: 1.5px solid #0d9488 !important; /* Brand primary border */
+    color: #0d9488 !important; /* Brand primary text */
+    transition: all 0.2s ease;
+    font-family: var(--font-family);
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px 16px !important;
+    border-radius: 50px !important;
+}
+
+.status-tab-active:hover {
+    background-color: #ccf2eb !important; /* Slightly darker light teal on hover */
+    border-color: #0d9488 !important;
+    color: #0d9488 !important;
+}
+
+.status-tab-inactive {
+    background-color: #ffffff !important; /* White background */
+    border: 1.5px solid #e2e8f0 !important; /* Light grey stroke border */
+    color: #475569 !important; /* Dark grey text */
+    transition: all 0.2s ease;
+    font-family: var(--font-family);
+    font-weight: 500;
+    font-size: 12px;
+    padding: 6px 16px !important;
+    border-radius: 50px !important;
+}
+
+.status-tab-inactive:hover {
+    background-color: #f8fafc !important; /* Very light background on hover */
+    border-color: #cbd5e1 !important; /* Slightly darker grey border on hover */
+    color: #1e293b !important; /* Off-black text on hover */
+}
+
+/* ============================================
+   SEARCH BAR
+   ============================================ */
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 220px;
+}
+
+.search-wrapper .search-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.search-wrapper .search-input {
+    width: 100%;
+    padding: 10px 14px 10px 42px;
+    border: 1.5px solid var(--stroke);
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 400;
+    font-family: var(--font-family);
+    background: #ffffff;
+    transition: all 0.2s ease;
+    outline: none;
+    color: var(--text-primary);
+}
+
+.search-wrapper .search-input::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.search-wrapper .search-input:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn-add-invoice {
+    background: var(--brand-primary);
+    border: none;
+    border-radius: 12px;
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-family);
+    color: #ffffff;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-add-invoice:hover {
+    background: #0C7E73;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.30);
+    color: #ffffff;
+}
+
+.btn-add-invoice:active {
+    transform: translateY(0);
+}
+
+.filter-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 12px;
+    border: 1.5px solid var(--stroke);
+    background: #ffffff;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filter-btn:hover {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+}
+
+.filter-btn svg {
+    font-size: 16px;
+}
+
+/* ============================================
+   METRIC CARDS - ENHANCED VERSION
+   ============================================ */
+
+.stat-cards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+@media (min-width: 1200px) {
+    .stat-cards-row .metric-col {
+        flex: 0 0 20%;
+        max-width: 20%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .stat-cards-row .metric-col:first-child {
+        padding-left: 0;
+    }
+    .stat-cards-row .metric-col:last-child {
+        padding-right: 0;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199px) {
+    .stat-cards-row .metric-col {
+        flex: 0 0 20%;
+        max-width: 20%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .stat-cards-row .metric-col:first-child {
+        padding-left: 0;
+    }
+    .stat-cards-row .metric-col:last-child {
+        padding-right: 0;
+    }
+}
+
+.stat-cards-row .metric-col {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.metric-card {
+    border: 1px solid var(--stroke) !important;
+    border-radius: 18px !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease;
+    height: 100%;
+    min-height: 180px;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+}
+
+.metric-body {
+    padding: 26px !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-start;
+}
+
+.metric-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.metric-icon-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.metric-icon-box svg {
+    width: 22px;
+    height: 22px;
+}
+
+.metric-number {
+    font-size: 28px !important;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1;
+    font-family: var(--font-family);
+}
+
+.metric-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: auto;
+    font-family: var(--font-family);
+}
+
+.metric-growth {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--semantic-success) !important;
+    font-family: var(--font-family);
+}
+
+.metric-alert {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--semantic-danger) !important;
+    font-family: var(--font-family);
+}
+
+/* ============================================
+   EVENT TYPE BADGES - LIGHT BG + COLORED TEXT
+   ============================================ */
+.event-badge {
+    font-weight: 500;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-family: var(--font-family);
+}
+
+.event-wedding {
+    background-color: #e6f7f4 !important;
+    color: #10B981 !important;
+}
+
+.event-corporate {
+    background-color: #eff6ff !important;
+    color: #3B82F6 !important;
+}
+
+.event-birthday {
+    background-color: #fff7ed !important;
+    color: #F59E0B !important;
+}
+
+.event-religious {
+    background-color: #fef2f2 !important;
+    color: #EF4444 !important;
+}
+
+.event-other {
+    background-color: #f1f5f9 !important;
+    color: #64748b !important;
+}
+
+/* ============================================
+   TABLE
+   ============================================ */
+.custom-table {
+    font-family: var(--font-family);
+    font-size: 13px;
+}
+
+.custom-table thead th {
+    background: #F8FAFC;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--stroke);
+    white-space: nowrap;
+    font-family: var(--font-family);
+}
+
+.custom-table tbody td {
+    padding: 16px 12px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--stroke);
+    color: var(--text-body);
+    font-weight: 400;
+    font-family: var(--font-family);
+}
+
+.custom-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+.custom-table tbody tr:hover {
+    background: #FAFCFC;
+}
+
+.custom-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.custom-table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--brand-primary);
+    border-radius: 4px;
+    border: 1.5px solid #CBD5E1;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.custom-table input[type="checkbox"]:checked {
+    border-color: var(--brand-primary);
+}
+
+/* ============================================
+   STATUS BADGES (without dot)
+   ============================================ */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-family);
+}
+
+.badge-paid {
+    background: #E7F4EE;
+    color: #10B981;
+}
+
+.badge-partial {
+    background: #E7F4EE;
+    color: #F59E0B;
+}
+
+.badge-overdue {
+    background: #FEE2E2;
+    color: #DC2626;
+}
+
+.badge-pending {
+    background: #FEE2E2;
+     color: #DC2626;
+}
+
+/* ============================================
+   PAGINATION
+   ============================================ */
+.custom-pagination-btn {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--stroke);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-family);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-pagination-btn:hover:not(:disabled) {
+    background: #F1F5F9;
+    border-color: #CBD5E1;
+}
+
+.custom-pagination-btn.active {
+    background: var(--brand-primary);
+    border-color: var(--brand-primary);
+    color: #ffffff;
+}
+
+.custom-pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ============================================
+   MODALS
+   ============================================ */
+.premium-modal .modal-content {
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    font-family: var(--font-family);
+    overflow: hidden;
+}
+
+.premium-modal .modal-header {
+    padding: 20px 24px 12px 24px;
+    border-bottom: 1px solid var(--stroke);
+    background: #ffffff;
+}
+
+.premium-modal .modal-header .btn-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #F1F5F9;
+    opacity: 1;
+    padding: 6px;
+    transition: all 0.15s ease;
+}
+
+.premium-modal .modal-header .btn-close:hover {
+    background: #E2E8F0;
+}
+
+.premium-modal .modal-body {
+    padding: 20px 24px;
+}
+
+.premium-modal .modal-footer {
+    padding: 16px 24px 20px 24px;
+    border-top: 1px solid var(--stroke);
+    gap: 10px;
+}
+
+.premium-modal .form-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-body);
+    margin-bottom: 4px;
+    font-family: var(--font-family);
+}
+
+.premium-modal .form-control,
+.premium-modal .form-select {
+    border-radius: 10px;
+    border: 1.5px solid var(--stroke);
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 400;
+    font-family: var(--font-family);
+    color: var(--text-primary);
+    transition: all 0.2s ease;
+}
+
+.premium-modal .form-control:focus,
+.premium-modal .form-select:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.10);
+}
+
+.premium-modal .form-control::placeholder {
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.btn-cancel {
+    border-radius: 10px !important;
+    padding: 10px 24px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    font-family: var(--font-family) !important;
+    border: 1.5px solid var(--stroke) !important;
+    color: var(--text-secondary) !important;
+    background: transparent !important;
+    transition: all 0.15s ease;
+}
+
+.btn-cancel:hover {
+    background: #F1F5F9 !important;
+    border-color: #CBD5E1 !important;
+    color: var(--text-primary) !important;
+}
+
+.btn-submit {
+    border-radius: 10px !important;
+    padding: 10px 24px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    font-family: var(--font-family) !important;
+    background: var(--brand-primary) !important;
+    border: none !important;
+    color: #ffffff !important;
+    transition: all 0.2s ease;
+}
+
+.btn-submit:hover {
+    background: #0C7E73 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 148, 136, 0.30);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ============================================
+   DROPDOWN (Kebab / Three-dot)
+   ============================================ */
+.custom-table .dropdown-toggle::after {
+    display: none;
+}
+
+.custom-table .dropdown-menu {
+    border-radius: 12px;
+    border: 1px solid var(--stroke);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 6px 0;
+    font-family: var(--font-family);
+    font-size: 13px;
+    min-width: 160px;
+}
+
+.custom-table .dropdown-item {
+    padding: 8px 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: all 0.1s ease;
+    font-family: var(--font-family);
+}
+
+.custom-table .dropdown-item:hover {
+    background: #F1F5F9;
+    color: var(--brand-primary);
+}
+
+.custom-table .dropdown-item.text-danger:hover {
+    background: #FEE2E2;
+    color: var(--semantic-danger);
+}
+
+.custom-table .dropdown-divider {
+    margin: 4px 0;
+    border-color: var(--stroke);
+}
+
+/* ============================================
+   ALERT / TOAST
+   ============================================ */
+.alert {
+    border: none !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+    font-family: var(--font-family);
+}
+
+.alert-success {
+    background: #E7F4EE !important;
+    color: #0D9488 !important;
+}
+
+.alert-danger {
+    background: #FEE2E2 !important;
+    color: #DC2626 !important;
+}
+
+.alert-dismissible .btn-close {
+    padding: 1.25rem 1rem;
+}
+
+/* ============================================
+   UTILITY OVERRIDES
+   ============================================ */
+.text-muted {
+    color: var(--text-secondary) !important;
+}
+
+.bg-light {
+    background-color: #F8FAFC !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* ============================================
+   AVATAR COLORS – MATCHING ADMIN DASHBOARD
+   ============================================ */
+.avatar-initials {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    font-family: var(--font-family);
+}
+
+.avatar-initials-teal {
+    background-color: #e6f7f4;
+    color: #00a884;
+}
+
+.avatar-initials-blue {
+    background-color: #eff6ff;
+    color: #3b82f6;
+}
+
+.avatar-initials-purple {
+    background-color: #faf5ff;
+    color: #a855f7;
+}
+
+.avatar-initials-green {
+    background-color: #f0fdf4;
+    color: #22c55e;
+}
+
+.avatar-initials-orange {
+    background-color: #fff7ed;
+    color: #f97316;
+}
+
+.avatar-initials-red {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+.avatar-initials-gray {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+.invoice-mgmt-container ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.invoice-mgmt-container ::-webkit-scrollbar-track {
+    background: #F1F5F9;
+    border-radius: 10px;
+}
+
+.invoice-mgmt-container ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 10px;
+}
+
+.invoice-mgmt-container ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ============================================
+   RESPONSIVE – TABLET
+   ============================================ */
+@media (max-width: 992px) {
+    .page-title {
+        font-size: 18px;
+    }
+    .search-wrapper {
+        min-width: 160px;
+    }
+}
+
+@media (max-width: 768px) {
+    .invoice-mgmt-container {
+        padding: 16px !important;
+    }
+
+    .invoice-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .invoice-toolbar .toolbar-left {
+        justify-content: center;
+    }
+    .invoice-toolbar .btn-add-invoice {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filter-btn {
+        font-size: 12px;
+        padding: 6px 16px;
+    }
+
+    .stat-cards-row .metric-col {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+    .metric-number {
+        font-size: 20px;
+    }
+    .metric-icon-box {
+        width: 36px;
+        height: 36px;
+    }
+    .metric-icon-box svg {
+        width: 18px;
+        height: 18px;
+    }
+    .metric-body {
+        padding: 16px 14px !important;
+    }
+    .metric-card {
+        min-height: 120px;
+    }
+
+    .btn-add-invoice {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+
+    .search-wrapper .search-input {
+        padding: 8px 12px 8px 36px;
+        font-size: 12px;
+    }
+    .search-wrapper {
+        min-width: 120px;
+    }
+
+    .custom-table thead th {
+        font-size: 9px;
+        padding: 10px 8px;
+    }
+    .custom-table tbody td {
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+    .custom-table .badge-status {
+        font-size: 10px;
+        padding: 2px 10px;
+    }
+
+    .custom-pagination-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+
+    .h2-section {
+        font-size: 16px;
+    }
+    .premium-modal .modal-body {
+        padding: 16px;
+    }
+    .premium-modal .modal-footer {
+        padding: 12px 16px 16px 16px;
+    }
+    .btn-cancel,
+    .btn-submit {
+        padding: 8px 18px !important;
+        font-size: 12px !important;
+    }
+
+    .status-tab-active,
+    .status-tab-inactive {
+        font-size: 11px !important;
+        padding: 5px 12px !important;
+    }
+}
+
+/* ============================================
+   RESPONSIVE – MOBILE
+   ============================================ */
+@media (max-width: 576px) {
+    .page-title {
+        font-size: 16px;
+    }
+    .page-subtitle {
+        font-size: 12px;
+    }
+
+    .invoice-count-pill {
+        font-size: 11px !important;
+        padding: 2px 10px !important;
+    }
+
+    .filter-btn {
+        font-size: 11px;
+        padding: 5px 12px;
+    }
+    .filter-btn svg {
+        font-size: 14px;
+    }
+
+    .stat-cards-row .metric-col {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+    .metric-number {
+        font-size: 17px;
+    }
+    .metric-icon-box {
+        width: 30px;
+        height: 30px;
+    }
+    .metric-icon-box svg {
+        width: 15px;
+        height: 15px;
+    }
+    .metric-body {
+        padding: 12px 10px !important;
+    }
+    .metric-title {
+        font-size: 8px;
+    }
+    .metric-growth {
+        font-size: 9px;
+    }
+    .metric-alert {
+        font-size: 9px;
+    }
+    .metric-card {
+        min-height: 100px;
+    }
+
+    .custom-table tbody td {
+        font-size: 11px;
+        padding: 8px 6px;
+    }
+    .custom-table thead th {
+        font-size: 8px;
+        padding: 8px 6px;
+    }
+    .custom-table input[type="checkbox"] {
+        width: 14px;
+        height: 14px;
+    }
+
+    .custom-pagination-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+
+    .status-tab-active,
+    .status-tab-inactive {
+        font-size: 10px !important;
+        padding: 4px 10px !important;
+    }
+
+    .event-badge {
+        font-size: 10px !important;
+        padding: 4px 10px !important;
+    }
+
+    .avatar-initials {
+        width: 28px;
+        height: 28px;
+        font-size: 11px !important;
+    }
+}

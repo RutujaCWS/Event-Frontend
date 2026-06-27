@@ -103,7 +103,7 @@ return (
     </h2>
 
     <span className="booking-count-pill">
-      214 total
+    {data.length} total
     </span>
 
   </div>

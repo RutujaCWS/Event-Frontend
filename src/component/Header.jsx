@@ -34,7 +34,7 @@ const Header = ({ onToggleSidebar }) => {
 
       {/* Title & Breadcrumbs */}
       <div className="header-title-container">
-        <span className="header-title-main">Admin</span>
+        <span className="header-title-main">{displayRole}</span>
         <div className="header-title-divider d-none d-sm-block"></div>
         <div className="header-breadcrumb d-none d-sm-flex">
           <span>Home</span>

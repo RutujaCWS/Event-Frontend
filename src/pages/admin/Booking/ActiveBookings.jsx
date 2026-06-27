@@ -20,7 +20,7 @@ const ActiveBookings = ({ bookings }) => {
       <div className="row g-2">
 
         {bookings.map((booking) => (
-          <div className="col-lg-3 col-md-6" key={booking.id}>
+          <div className="col-lg-3 col-md-6" key={booking._id}>
             <BookingCard booking={booking} />
           </div>
         ))}

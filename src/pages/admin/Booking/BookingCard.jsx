@@ -7,23 +7,31 @@ const BookingCard = ({ booking }) => {
       <Card.Body>
 
         <div className="booking-id">
-          {booking.id}
+        #{booking.bookingId}
         </div>
 
-        <h6>{booking.customer}</h6>
+        
+        <h6>
+  {booking.customerId?.fullName ||
+   booking.customerId?.name ||
+   "Guest User"}
+
+        </h6>
 
         <div className="booking-meta">
-          {booking.eventType} · {booking.date}
+        {booking.eventType} · {new Date(booking.eventDate).toLocaleDateString()}
         </div>
 
         <div className="booking-amount">
-          {booking.amount}
+        ₹{booking.totalAmount}
         </div>
 
         <div className="booking-footer">
 
-         <StatusPill {...booking.status1} />
-         <StatusPill {...booking.status2} />
+        <StatusPill
+  text={booking.status}
+  color="success-pill"
+/>
 
         </div>
 
