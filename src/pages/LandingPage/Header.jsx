@@ -102,36 +102,36 @@ const closeNavbar = () => {
         }}
       >
       <div className="container px-4 px-lg-5">
-        {/* Logo 
+        {/* Logo  */}
         <Link
-  to="/"
-  className="navbar-brand d-flex align-items-center"
->
-  {logo ? (
-    <img
-      src={logo}
-      alt="Company Logo"
-      style={{
-        height: "50px",
-        width: "auto",
-        objectFit: "contain",
-      }}
-    />
-  ) : (
-    <span
-      style={{
-        color: "#0D9488",
-        fontSize: "28px",
-        fontWeight: "700",
-        letterSpacing: "-0.5px",
-        fontFamily: "Manrope, sans-serif",
-      }}
-    >
-      Vevora
-    </span>
-  )}
-</Link>
-        */}
+            to="/"
+            className="navbar-brand d-flex align-items-center"
+          >
+            {logo ? (
+              <img
+                src={logo}
+                alt="Company Logo"
+                style={{
+                  height: "50px",
+                  width: "auto",
+                  objectFit: "contain",
+                }}
+              />
+            ) : (
+              <span
+                style={{
+                  color: "#0D9488",
+                  fontSize: "28px",
+                  fontWeight: "700",
+                  letterSpacing: "-0.5px",
+                  fontFamily: "Manrope, sans-serif",
+                }}
+              >
+                Vevora
+              </span>
+            )}
+          </Link>
+     {/* 
         <Link
           to="/"
           className="navbar-brand d-flex align-items-center"
@@ -145,7 +145,7 @@ const closeNavbar = () => {
         >
           Vevora
         </Link>
-
+*/}  
         {/* Mobile Toggle */}
         <button
           className="navbar-toggler border-0"

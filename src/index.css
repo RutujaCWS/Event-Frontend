@@ -333,10 +333,25 @@ body {
 }
 
 .sidebar-menu {
-  flex-grow: 1;
+ flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 10px 14px;
   overflow-y: auto;
-  transition: all 0.3s ease;
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-section-title {
+  font-size: 14px;
+  color: #8a94a6;
+  font-weight: 500;
+  margin-bottom: 10px;
+  padding-left: 12px;
 }
 
 .sidebar-item-link {
@@ -393,6 +408,17 @@ body {
   background-color: #fef2f2;
 }
 
+.sidebar-item-link.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  border-radius: 4px;
+  background: #009688;
+}
+
 /* ================= RESPONSIVE SIDEBAR ADJUSTMENTS ================= */
 
 /* Desktop view (>= 992px) */
@@ -415,11 +441,24 @@ body {
 /* Small screens & tablets (< 992px) */
 @media (max-width: 991.98px) {
   /* Default: Collapsed (Icon only visible) */
-  .dashboard-sidebar {
-    width: 70px;
+   .dashboard-sidebar {
+    position: fixed;
+    left: -250px;
+    width: 250px;
+    height: 100vh;
   }
-  
+
+  .dashboard-sidebar.open {
+    left: 0;
+  }
+
+  .main-content-wrapper {
+    margin-left: 0;
+    width: 100%;
+  }
+
   .dashboard-sidebar:not(.open) .sidebar-brand-text,
+  .dashboard-sidebar:not(.open) .sidebar-section-title,
   .dashboard-sidebar:not(.open) .sidebar-item-link span,
   .dashboard-sidebar:not(.open) .sidebar-logout-btn span {
     display: none !important;
@@ -477,11 +516,7 @@ body {
   }
 
   /* Main content shifts to fit the narrow collapsed sidebar */
-  .main-content-wrapper {
-    margin-left: 70px;
-    width: calc(100% - 70px);
-    transition: margin-left 0.3s ease, width 0.3s ease;
-  }
+
 
   /* Backdrop Overlay styling */
   .sidebar-overlay {
@@ -1244,4 +1279,395 @@ body {
   justify-content: space-between !important;
   height: 450px !important;
 }
+/* Footer background */
+.sidebar-footer{
+    padding:10px;
+    background:#DDF8F6;
+    border-top:1px solid #d9ecea;
+}
 
+/* ---------- Upcoming Events - Date Box with Faint Background & Dark Text ---------- */
+.event-date-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  font-weight: 600;
+  margin-right: 12px;
+}
+.event-date-box-number {
+  font-size: 18px;
+  line-height: 1.2;
+}
+.event-date-box-month {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Faint background + dark text – status wise */
+.event-date-box.date-box-confirmed {
+  background-color: #e6f7f4 !important; /* faint teal */
+  color: #00a884 !important;
+}
+.event-date-box.date-box-setup {
+  background-color: #e6f0ff !important; /* faint blue */
+  color: #3b82f6 !important;
+}
+.event-date-box.date-box-pending {
+  background-color: #fef3e2 !important; /* faint orange */
+  color: #f59e0b !important;
+}
+.event-date-box.date-box-scheduled {
+  background-color: #f0ebff !important; /* faint purple */
+  color: #8b5cf6 !important;
+}
+
+/* Override generic number/month colors when class is applied */
+.event-date-box.date-box-confirmed .event-date-box-number,
+.event-date-box.date-box-confirmed .event-date-box-month {
+  color: #00a884 !important;
+}
+.event-date-box.date-box-setup .event-date-box-number,
+.event-date-box.date-box-setup .event-date-box-month {
+  color: #3b82f6 !important;
+}
+.event-date-box.date-box-pending .event-date-box-number,
+.event-date-box.date-box-pending .event-date-box-month {
+  color: #f59e0b !important;
+}
+.event-date-box.date-box-scheduled .event-date-box-number,
+.event-date-box.date-box-scheduled .event-date-box-month {
+  color: #8b5cf6 !important;
+}
+
+/* ---------- Status Badge with Filled Dot ---------- */
+.badge-custom {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.status-dot.confirmed { background-color: #00a884; }
+.status-dot.setup { background-color: #3b82f6; }
+.status-dot.pending { background-color: #f59e0b; }
+.status-dot.scheduled { background-color: #8b5cf6; }
+
+/* Keep existing badge background styles, but ensure they don't break */
+.badge-custom-confirmed {
+  background-color: #e6f7f4 !important;
+  color: #00a884 !important;
+}
+.badge-custom-setup {
+  background-color: #e6f0ff !important;
+  color: #3b82f6 !important;
+}
+.badge-custom-pending {
+  background-color: #fef3e2 !important;
+  color: #f59e0b !important;
+}
+.badge-custom-scheduled {
+  background-color: #f0ebff !important;
+  color: #8b5cf6 !important;
+}
+
+/* ---------- User Management Status Pills (FIX for override) ---------- */
+.user-status-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.2px !important;
+  line-height: 1.4 !important;
+}
+.user-status-pill .status-dot-sm {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.user-status-pill.active {
+  background-color: #e6f7f4 !important;
+  color: #00a884 !important;
+}
+.user-status-pill.active .status-dot-sm {
+  background-color: #00a884 !important;
+}
+.user-status-pill.inactive {
+  background-color: #f1f5f9 !important;
+  color: #64748b !important;
+}
+.user-status-pill.inactive .status-dot-sm {
+  background-color: #64748b !important;
+}
+
+/* Delete button style (red theme) */
+.action-btn-delete {
+  background: #fef2f2;
+  border: 1.5px solid #fee2e2;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.action-btn-delete:hover {
+  background-color: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* Sidebar Footer – Dark Teal, Rounded, Wider */
+.sidebar-footer {
+  background-color: #0D9488 !important;
+  border-top: none !important;
+  padding: 14px 14px 16px 14px;
+  border-radius: 12px;
+  margin: 0 8px 12px 8px;
+  max-width: calc(100% - 16px);
+  align-self: center;
+}
+
+.sidebar-user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sidebar-user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.sidebar-user-info {
+  flex: 1;
+  line-height: 1.3;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-logout-icon {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 8px 18px;        /* width badha di */
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  min-width: 44px;
+}
+
+.sidebar-logout-icon:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}/* ================= RESPONSIVENESS TWEAKS ================= */
+
+/* 📱 Extra Small Devices (phones, < 576px) */
+@media (max-width: 575.98px) {
+  /* KPI Cards – Stack vertically */
+  .kpi-card-custom {
+    padding: 16px;
+  }
+  .kpi-value {
+    font-size: 1.5rem;
+  }
+  .kpi-label {
+    font-size: 0.65rem;
+  }
+  .kpi-trend {
+    font-size: 0.7rem;
+  }
+
+  /* Tables – horizontal scroll */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-custom th,
+  .table-custom td {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  /* Cards – reduce padding */
+  .card-section {
+    padding: 16px;
+  }
+  .card-section-title {
+    font-size: 0.95rem;
+  }
+
+  /* Event items – stack badge below */
+  .event-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .event-badge-container {
+    padding-left: 62px;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  /* Donut chart – reduce size */
+  .donut-legend-item {
+    font-size: 0.8rem;
+  }
+
+  /* Header search – hide on mobile */
+  .header-search-bar {
+    display: none;
+  }
+
+  /* Page title – smaller */
+  .page-title {
+    font-size: 1.1rem;
+  }
+}
+
+/* 📱 Small Devices (tablets, < 768px) */
+@media (max-width: 767.98px) {
+  /* KPI cards – 2 per row */
+  .kpi-card-custom {
+    min-width: 140px !important;
+    flex: 1 1 calc(50% - 12px) !important;
+  }
+
+  /* Sidebar brand text – adjust */
+  .sidebar-brand-name {
+    font-size: 1rem;
+  }
+  .sidebar-brand-sub {
+    font-size: 0.55rem;
+  }
+
+  /* Donut chart – stack legend below */
+  .donut-legend-item {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dashboard-sidebar {
+    width: 270px;
+  }
+  .main-content-wrapper {
+    margin-left: 270px;
+    width: calc(100% - 270px);
+  }
+}
+/* ================= SIDEBAR FOOTER – RESPONSIVE ================= */
+
+@media (max-width: 991.98px) {
+  /* Collapsed state (sidebar not open) – only avatar + logout icon, hide name/role */
+  .dashboard-sidebar:not(.open) .sidebar-user-profile .sidebar-user-info {
+    display: none !important;
+  }
+
+  /* Reduce footer padding & margins */
+  .dashboard-sidebar:not(.open) .sidebar-footer {
+    padding: 8px 6px !important;
+    margin: 0 4px 8px 4px !important;
+    border-radius: 8px !important;
+    max-width: calc(100% - 8px) !important;
+  }
+
+  /* Smaller avatar */
+  .dashboard-sidebar:not(.open) .sidebar-user-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* Smaller logout icon */
+  .dashboard-sidebar:not(.open) .sidebar-logout-icon {
+    padding: 4px 8px !important;
+    font-size: 0.9rem !important;
+    min-width: 30px !important;
+  }
+
+  /* Expanded state (sidebar open) – restore normal sizes */
+  .dashboard-sidebar.open .sidebar-user-profile .sidebar-user-info {
+    display: block !important;
+  }
+  .dashboard-sidebar.open .sidebar-footer {
+    padding: 14px 14px 16px 14px !important;
+    margin: 0 8px 12px 8px !important;
+    border-radius: 12px !important;
+    max-width: calc(100% - 16px) !important;
+  }
+  .dashboard-sidebar.open .sidebar-user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.85rem !important;
+  }
+  .dashboard-sidebar.open .sidebar-logout-icon {
+    padding: 8px 18px !important;
+    font-size: 1.1rem !important;
+    min-width: 44px !important;
+  }
+}

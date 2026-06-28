@@ -17,14 +17,16 @@ import {
     TbCircleCheck,
     TbAlertTriangle,
     TbWallet,
+    TbTrendingDown,
     TbTrendingUp,
     TbDotsVertical,
     TbSearch,
     TbPlus,
     TbFilter2,
     TbChevronLeft,
-    TbChevronRight,
+    TbChevronRight,TbNews
 } from "react-icons/tb";
+import { MdOutlineReceiptLong,MdOutlineAccountBalanceWallet } from "react-icons/md";
 import "./invoicemanagement.css";
 
 // ========== PERSISTENT AVATAR CLASS MAPPER ==========
@@ -168,7 +170,6 @@ function InvoiceGSTManagement() {
             guests: 500,
             tier: "premium",
         },
-        // ===== 7 NEW RECORDS =====
         {
             _id: "8",
             invoiceNumber: "INV-0422",
@@ -244,7 +245,7 @@ function InvoiceGSTManagement() {
         {
             _id: "14",
             invoiceNumber: "INV-0428",
-            customer: { name: "Pooja Sharma", email: "pooja@gmail.com", initials: "PS" }, // same initials as Priya, but different name – will reuse color
+            customer: { name: "Pooja Sharma", email: "pooja@gmail.com", initials: "PS" },
             eventType: "Birthday",
             amount: 120000,
             gst: 21600,
@@ -398,7 +399,7 @@ function InvoiceGSTManagement() {
                         <Card.Body className="metric-body">
                             <div className="metric-top">
                                 <div className="metric-icon-box" style={{ backgroundColor: "#DDF5F0", color: "#0F766E" }}>
-                                    <TbFileInvoice size={22} />
+                                    <MdOutlineReceiptLong size={22} />
                                 </div>
                                 <h2 className="metric-number">{stats.totalInvoices}</h2>
                             </div>
@@ -417,7 +418,7 @@ function InvoiceGSTManagement() {
                         <Card.Body className="metric-body">
                             <div className="metric-top">
                                 <div className="metric-icon-box" style={{ backgroundColor: "#FEF3D7", color: "#D97706" }}>
-                                    <TbReceipt size={22} />
+                                    <TbNews size={22} />
                                 </div>
                                 <h2 className="metric-number">{stats.receiptsIssued}</h2>
                             </div>
@@ -461,7 +462,7 @@ function InvoiceGSTManagement() {
                             </div>
                             <div className="metric-title">OVERDUE</div>
                             <div className="metric-alert" style={{ color: "#EF4444" }}>
-                                <TbAlertTriangle size={14} />
+                                <TbTrendingDown size={14} />
                                 <span>{stats.overdueAmount} due</span>
                             </div>
                         </Card.Body>
@@ -474,7 +475,7 @@ function InvoiceGSTManagement() {
                         <Card.Body className="metric-body">
                             <div className="metric-top">
                                 <div className="metric-icon-box" style={{ backgroundColor: "#F3E8FF", color: "#7C3AED" }}>
-                                    <TbWallet size={22} />
+                                    <MdOutlineAccountBalanceWallet  size={22} />
                                 </div>
                                 <h2 className="metric-number">{stats.gstCollected}</h2>
                             </div>

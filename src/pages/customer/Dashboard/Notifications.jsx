@@ -1,27 +1,44 @@
+import React from "react";
 import { Card } from "react-bootstrap";
+import { FiBell } from "react-icons/fi";
+import "../Styles/customerDashboard.css";
 
-const Notifications = () => {
+const Notifications = ({ data }) => {
   return (
-    <Card className="dashboard-card">
+    <Card className="dashboard-section-card">
       <Card.Body>
-        <div className="card-header-custom">
-          <h5>Notifications</h5>
-          <span>Mark all read</span>
+        <div className="dash-section-header">
+          <div className="dash-section-title">
+            <FiBell size={22} />
+            <span>Notifications</span>
+          </div>
+
+          <button className="view-all-btn">Mark all read</button>
         </div>
 
-        <div className="notification-item">
-          <h6>Quotation Ready</h6>
-          <p>
-            Your quotation is now available to review.
-          </p>
-        </div>
+        {data.map((item, index) => {
+          const Icon = item.icon;
 
-        <div className="notification-item">
-          <h6>Payment Due Reminder</h6>
-          <p>
-            Payment due for booking #BK-8821.
-          </p>
-        </div>
+          return (
+            <div key={index} className="notification-row">
+              <div className="notification-left">
+                <div
+                  className={`notification-icon-box ${item.color}`}
+                >
+                  <Icon size={15} />
+                </div>
+
+                <div className="notification-content">
+                  <h6>{item.title}</h6>
+                  <p>{item.message}</p>
+                  <small>{item.time}</small>
+                </div>
+              </div>
+
+              <span className="notification-dot"></span>
+            </div>
+          );
+        })}
       </Card.Body>
     </Card>
   );

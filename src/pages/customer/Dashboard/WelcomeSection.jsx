@@ -2,12 +2,13 @@ import { Button } from "react-bootstrap";
 import { FiPlus } from "react-icons/fi";
 import "../Styles/customerDashboard.css";
 
-const WelcomeSection = () => {
+const WelcomeSection = ({user}) => {
+  const displayName = user?.fullName || user?.name || "Rahul Kapoor";
   return (
     <div className="welcome-section d-flex justify-content-between align-items-start flex-wrap gap-3">
       <div>
         <h1 className="welcome-title">
-          Welcome back, <span className="welcome-name">Ananya</span> 👋
+          Welcome back, <span className="welcome-name">{displayName}</span> 👋
         </h1>
 
         <p className="welcome-subtitle">

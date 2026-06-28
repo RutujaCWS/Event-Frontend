@@ -1,5 +1,6 @@
 import React from "react";
-import { FaSearch, FaRegBell, FaBars } from "react-icons/fa";
+import { FaSearch, FaBars } from "react-icons/fa";
+import NotificationBell from "./NotificationBell";   
 
 const Header = ({ onToggleSidebar }) => {
   const user = JSON.parse(localStorage.getItem("user")) || {
@@ -7,7 +8,6 @@ const Header = ({ onToggleSidebar }) => {
     role: "admin"
   };
 
-  // Helper to extract initials (e.g. Rahul Kapoor -> RK)
   const getInitials = (name) => {
     if (!name) return "RK";
     const parts = name.split(" ");
@@ -23,7 +23,7 @@ const Header = ({ onToggleSidebar }) => {
 
   return (
     <header className="dashboard-header">
-      {/* Hamburger Toggle Button - hidden on desktop, visible on mobile/tablet */}
+      {/* Hamburger Toggle */}
       <button
         onClick={onToggleSidebar}
         className="header-toggle-btn d-lg-none"
@@ -32,7 +32,6 @@ const Header = ({ onToggleSidebar }) => {
         <FaBars />
       </button>
 
-      {/* Title & Breadcrumbs */}
       <div className="header-title-container">
         <span className="header-title-main">{displayRole}</span>
         <div className="header-title-divider d-none d-sm-block"></div>
@@ -43,7 +42,6 @@ const Header = ({ onToggleSidebar }) => {
         </div>
       </div>
 
-      {/* Search Bar */}
       <div className="header-search-bar">
         <FaSearch className="header-search-icon" />
         <input
@@ -53,26 +51,17 @@ const Header = ({ onToggleSidebar }) => {
         />
       </div>
 
-      {/* User Info & Actions */}
       <div className="header-right">
-        {/* Notifications */}
-        <button className="header-notification-btn" aria-label="Notifications">
-          <FaRegBell />
-          <span className="header-notification-dot"></span>
-        </button>
+        <NotificationBell />
 
-        {/* Divider */}
         <div className="header-divider-vertical"></div>
 
-        {/* Profile Card */}
         <div className="header-user-profile">
           <div className="header-user-info d-none d-md-block">
             <h4 className="header-user-name">{displayName}</h4>
             <p className="header-user-role">{displayRole}</p>
           </div>
-          <div className="header-user-avatar">
-            {initials}
-          </div>
+          <div className="header-user-avatar">{initials}</div>
         </div>
       </div>
     </header>

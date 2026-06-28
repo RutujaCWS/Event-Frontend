@@ -31,6 +31,8 @@ const [filteredQuotations, setFilteredQuotations] = useState([]);
 const [showFilter, setShowFilter] = useState(false);  
 const [showViewModal, setShowViewModal] = useState(false);
 const [viewQuotation, setViewQuotation] = useState(null);
+const [currentPage, setCurrentPage] = useState(1);
+const itemsPerPage = 5;
 
   const fetchQuotations = async () => {
   try {
@@ -56,15 +58,16 @@ useEffect(() => {
   fetchQuotations();
 }, []);
 const handleFilter = () => {
-  if (selectedStatus === "ALL") {
-    setFilteredQuotations(quotations);
-  } else {
-    setFilteredQuotations(
-      quotations.filter(
-        (q) => q.status === selectedStatus
-      )
+  let filtered = quotations;
+
+  if (selectedStatus !== "ALL") {
+    filtered = quotations.filter(
+      (q) => q.status === selectedStatus
     );
   }
+
+  setFilteredQuotations(filtered);
+  setCurrentPage(1);
 };
 
 const handleDelete = async (id) => {
@@ -155,6 +158,24 @@ const handleUpdate = async () => {
     );
   }
 };
+
+
+// Latest quotation first
+const sortedQuotations = [...filteredQuotations].sort(
+  (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+);
+
+// Pagination
+const indexOfLastItem = currentPage * itemsPerPage;
+const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+const currentQuotations = sortedQuotations.slice(
+  indexOfFirstItem,
+  indexOfLastItem
+);
+
+const totalPages = Math.ceil(sortedQuotations.length / itemsPerPage);
+
 
   return (
     <div style={{ fontFamily: "Manrope, sans-serif" }}>
@@ -533,7 +554,7 @@ const handleUpdate = async () => {
         </thead>
 
         <tbody>
-          {filteredQuotations.map((quotation) => (
+          {currentQuotations.map((quotation) => (
             <tr key={quotation._id}>
               <td>
                 <Form.Check />
@@ -726,32 +747,50 @@ const handleUpdate = async () => {
           fontSize: "14px",
         }}
       >
-        Showing 1–{filteredQuotations.length} of {quotations.length} quotations
+        Showing {indexOfFirstItem + 1}–
+        {Math.min(indexOfLastItem, filteredQuotations.length)} of{" "}
+        {filteredQuotations.length} quotations
       </span>
 
-      <div className="d-flex gap-2">
-        <Button size="sm" variant="light">
-          ‹
-        </Button>
+      <div className="d-flex gap-2 align-items-center">
+  {/* Previous */}
+  <Button
+    size="sm"
+    variant="light"
+    disabled={currentPage === 1}
+    onClick={() => setCurrentPage(currentPage - 1)}
+  >
+    ‹
+  </Button>
 
-        <Button
-          size="sm"
-          style={{
-            background: "#0D9488",
-            border: "none",
-          }}
-        >
-          1
-        </Button>
+  {/* Page Numbers */}
+  {Array.from({ length: totalPages }, (_, index) => (
+    <Button
+      key={index + 1}
+      size="sm"
+      onClick={() => setCurrentPage(index + 1)}
+      style={{
+        background:
+          currentPage === index + 1 ? "#0D9488" : "#fff",
+        color:
+          currentPage === index + 1 ? "#fff" : "#111827",
+        border: "1px solid #E5E7EB",
+      }}
+    >
+      {index + 1}
+    </Button>
+  ))}
 
-        <Button size="sm" variant="light">
-          2
-        </Button>
-
-        <Button size="sm" variant="light">
-          ›
-        </Button>
-      </div>
+  {/* Next */}
+  <Button
+    size="sm"
+    variant="light"
+    disabled={currentPage === totalPages}
+    onClick={() => setCurrentPage(currentPage + 1)}
+  >
+    ›
+  </Button>
+</div>
     </div>
   </div>
 </Col>

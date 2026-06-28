@@ -33,11 +33,11 @@ const PendingPayments = ({ payments }) => {
           <tbody>
             {payments.map((item, index) => (
               <tr key={index}>
-                <td style={{fontWeight: "400"}}>{item.bookingId}</td>
+                <td style={{fontWeight: "500"}}>{item.bookingId}</td>
 
-                <td style={{fontWeight: "400"}}>{item.event}</td>
+                <td style={{fontWeight: "500"}}>{item.event}</td>
 
-                <td style={{fontWeight: "400"}}>{item.dueDate}</td>
+                <td style={{fontWeight: "500"}}>{item.dueDate}</td>
 
                 <td>{item.amount}</td>
 

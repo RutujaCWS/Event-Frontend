@@ -4,19 +4,23 @@ import StatsCards from "./StatsCards";
 import UpcomingEvents from "./UpcomingEvents";
 import EnquiryStatus from "./EnquiryStatus";
 import PendingPayments from "./PendingPayments";
-import Notifications from "./Notifications";
+import Notifications from "./../../shared/Notifications/Notifications";
 import QuickActions from "./QuickActions";
 import {
   dashboardStats,
   upcomingEvents,
   enquiryStatus,
-  pendingPayments
+  pendingPayments,
+  notifications,
+  actions
 }from "../../../services/dashboardData"
 
 const CustomerDashboard = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
   return (
     <Container fluid className="customer-dashboard">
-      <WelcomeSection />
+      
+      <WelcomeSection user={user}/>
 
       <StatsCards stats={dashboardStats}/>
 
@@ -40,11 +44,11 @@ const CustomerDashboard = () => {
 
       <Row className="g-4 mt-1">
         <Col lg={8}>
-          <Notifications />
+          <Notifications data={notifications}/>
         </Col>
 
         <Col lg={4}>
-          <QuickActions />
+          <QuickActions data={actions}/>
         </Col>
       </Row>
     </Container>

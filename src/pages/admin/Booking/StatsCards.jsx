@@ -8,7 +8,7 @@ const StatsCards = ({ stats }) => {
         const Icon = item.icon;
 
         return (
-         <Col xl lg={4} md={6} sm={6} xs={6}>
+         <Col xl={true} lg={4} md={6} sm={6} xs={6}>
              <Card className="metric-card">
                <Card.Body className="metric-body">
           <div className="metric-top">

@@ -5,8 +5,21 @@ import {
   TbBell,
   TbCheck,
   TbClock,
-  TbMessage
+  TbMessage,
+  TbPlus,
+  TbReceipt,
 } from "react-icons/tb";
+
+import {
+  FiBell,
+  FiCheck,
+  FiMessageSquare,
+  FiCalendar,
+  FiPlus, 
+  FiFileText
+} from "react-icons/fi";
+import { MdOutlinePayments } from "react-icons/md";
+import { BsCreditCard2Front } from "react-icons/bs";
 
 export const dashboardStats = [
   {
@@ -155,3 +168,60 @@ export const pendingPayments = [
     },
   },
 ];
+
+
+export const notifications = [
+  {
+    title: "Quotation Ready",
+    message:
+      "Your quotation for Sharma Wedding Catering (#ENQ-2041) is now available to review.",
+    time: "2 hours ago",
+    icon: FiCheck,
+    color: "success",
+  },
+  {
+    title: "Payment Due Reminder",
+    message:
+      "Payment of ₹1,24,500 for booking #BK-8821 is due on Jun 15, 2026.",
+    time: "5 hours ago",
+    icon: MdOutlinePayments,
+    color: "danger",
+  },
+  {
+    title: "New Follow-up Note",
+    message:
+      "Our team added a follow-up note to your enquiry #ENQ-2038.",
+    time: "Yesterday",
+    icon: FiMessageSquare,
+    color: "primary",
+  },
+  {
+    title: "Event Confirmed",
+    message:
+      "Your Sharma Wedding event on Jun 18 has been confirmed by the venue team.",
+    time: "2 days ago",
+    icon: FiCalendar,
+    color: "info",
+  },
+];
+
+export const actions = [
+  {
+    title: "New Enquiry",
+    icon: FiPlus,
+  },
+  {
+    title: "Quotations",
+    icon: BsCreditCard2Front,
+  },
+  {
+    title: "Make Payment",
+    icon: MdOutlinePayments,
+  },
+  {
+    title: "Invoice",
+    icon: FiFileText,
+  },
+];
+
+

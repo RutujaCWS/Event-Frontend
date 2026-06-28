@@ -20,12 +20,17 @@ import LeadManagement from "./pages/admin/LeadManagement";
 import StaffEnquiries from "./pages/staff/StaffEnquiries";
 import Showquotation from "./pages/admin/Quotation/ShowQuotation";
 import CustomerQuotation from "./pages/customer/quotation/CustomerQuotation"
+
 import BookingManagement from "./pages/admin/Booking/BookingManagement"
 import ServicesPage from "./pages/admin/Services"
-import CustomerBooking from "./pages/admin/Booking/CustomerBooking"
 
+import CustomerProfile from "./pages/customer/CustomerProfile";
+import CustomerBooking from "./pages/admin/Booking/CustomerBooking"
+import ReportManagement from "./pages/admin/Report/ReportManagement";
+import PaymentManagement from "./pages/admin/Payment/PaymentManagement";
 import AdminSettings from "./pages/admin/AdminSettings";
 import InvoiceGSTManagement from "./pages/admin/InvoiceGSTManagement";
+import Notifications from "./pages/shared/Notifications/Notifications";
 const DashboardIndex = () => {
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
@@ -57,6 +62,7 @@ function App() {
           path="/services/:slug"
           element={<ServiceDetails />}
         />
+        
 
         {/* Protected Routes (with sidebar + logout) */}
         <Route element={<MainLayout />}>
@@ -68,9 +74,14 @@ function App() {
            {/* <Route path="customer/quotations/:token" element={<CustomerQuotation/>} /> */}
            <Route path="customer/quotations" element={<CustomerQuotation />} />
            <Route
-              path="customer/bookings"
-              element={<CustomerBooking />}
-            />
+            path="customer/profile"
+            element={<CustomerProfile />}
+          />
+
+          <Route
+            path="customer/bookings"
+            element={<CustomerBooking />}
+          />
           <Route path="admin/Services" element={<ServicesPage/>}
           />
 
@@ -85,13 +96,22 @@ function App() {
           {/* Admin */}
           <Route path="admin/dashboard" element={<AdminDashboard />} />
           <Route path="admin/users" element={<UserManagement />} />
+          <Route path="admin/Services" element={<ServicesPage/>}/>
           <Route path="admin/CmsPage" element={<CmsPage />} />
           <Route path="admin/enquiries" element={<LeadManagement />} />
           <Route path="admin/bookings" element={<BookingManagement />} />
           <Route path="admin/settings" element={<AdminSettings />} />
           <Route path="admin/quotations" element={<Showquotation />} />
           <Route path="admin/invoices" element={<InvoiceGSTManagement/>} />
+          <Route path="admin/services" element={<ServicesPage/>} />
+
+
+<Route path="/notifications" element={<Notifications/>} />
+<Route path="/customer/notifications" element={<Notifications/>} />
+
           <Route path="admin/services" element={<ServicesPage />} />
+          <Route path="admin/reports" element={<ReportManagement />} />
+          <Route path="admin/payments" element={<PaymentManagement />} />
         </Route>
       </Routes>
     </BrowserRouter>

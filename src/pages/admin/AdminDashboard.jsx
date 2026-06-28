@@ -1,39 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Row, Col, Table, Button, Badge, Spinner
+  Row, Col, Table, Button, Spinner
 } from "react-bootstrap";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  ReferenceLine, PieChart, Pie, Cell
+  PieChart, Pie, Cell
 } from "recharts";
 import {
   FaEnvelope, FaCalendarCheck, FaRupeeSign, FaCalendarAlt,
-  FaFileInvoiceDollar, FaRegCalendarAlt, FaDownload, FaArrowUp,
-  FaEllipsisV, FaRegClock, FaExclamationTriangle, FaEdit, FaLock
+  FaFileInvoiceDollar, FaRegCalendarAlt, FaDownload,
+  FaEllipsisV, FaExclamationTriangle, FaEdit
 } from "react-icons/fa";
+
+import { TbTrendingUp, TbInfoCircle,TbMessageQuestion,TbConfetti} from "react-icons/tb";
+import { LuCalendarCheck2 , LuClockAlert } from "react-icons/lu";
+import { RiDeleteBinLine } from "react-icons/ri"; // <-- NEW import
 import { getTotalEnquiries, getRecentEnquiries } from "../../services/leadService";
 
-// Custom speech bubble marker for June value "25" in chart
-const CustomReferenceLabel = (props) => {
-  const { viewBox } = props;
-  if (!viewBox) return null;
-  const { x, y } = viewBox;
-  return (
-    <g>
-      {/* Little tooltip rectangle */}
-      <rect x={x - 18} y={y - 30} width={36} height={20} rx={6} fill="#00a884" />
-      {/* Down arrow pointer */}
-      <path d={`M${x - 4} ${y - 10} L${x} ${y - 6} L${x + 4} ${y - 10} Z`} fill="#00a884" />
-      {/* Value label */}
-      <text x={x} y={y - 16} fill="#ffffff" fontSize="11" fontWeight="700" textAnchor="middle">
-        25
-      </text>
-    </g>
-  );
-};
-
-// Custom dot renderer to match image where only middle months have circles
+// Custom dot renderer – only middle months have circles
 const CustomDot = (props) => {
   const { cx, cy, payload } = props;
   if (payload.name === "Mar" || payload.name === "Sep") {
@@ -74,12 +59,12 @@ const AdminDashboard = () => {
     }
   };
 
-  // Mock revenue trend data to match image graph shape (Mar - Sep)
+  // Mock revenue trend data (Mar - Sep)
   const revenueData = [
     { name: "Mar", "2025": 12, "2026": 55 },
     { name: "Apr", "2025": 14, "2026": 42 },
     { name: "May", "2025": 13, "2026": 48 },
-    { name: "Jun", "2025": 10, "2026": 25 }, // Highlighted dot
+    { name: "Jun", "2025": 10, "2026": 25 },
     { name: "Jul", "2025": 11, "2026": 45 },
     { name: "Aug", "2025": 12, "2026": 38 },
     { name: "Sep", "2025": 15, "2026": 68 }
@@ -92,7 +77,7 @@ const AdminDashboard = () => {
     { name: "Rejected", value: 4, count: "04", percent: "18.5 %", color: "#ef4444" }
   ];
 
-  // Mock bookings matching the image rows
+  // Mock bookings
   const bookingsData = [
     { id: "#BK-8821", name: "Alice Sterling", initials: "AS", avatarColor: "avatar-initials-blue", date: "May 12, 2024", amount: "$12,450.00", status: "CONFIRMED" },
     { id: "#BK-8822", name: "Ben Johnson", initials: "BU", avatarColor: "avatar-initials-purple", date: "Jun 05, 2024", amount: "$8,200.00", status: "PROCESSING" },
@@ -100,17 +85,16 @@ const AdminDashboard = () => {
     { id: "#BK-8823", name: "Ryley Thompson", initials: "RT", avatarColor: "avatar-initials-green", date: "Jun 18, 2024", amount: "$24,000.00", status: "PENDING" }
   ];
 
-  // Mock upcoming events matching the image sidebar
+  // Mock upcoming events
   const upcomingEvents = [
-    { date: "18", month: "JUN", name: "Sharma Wedding", desc: "Grand Ballroom • 350 guests", status: "Confirmed", badgeClass: "badge-custom-confirmed" },
+    
     { date: "21", month: "JUN", name: "TechCorp Annual Meet", desc: "Convention Hall • 500 pax", status: "Setup", badgeClass: "badge-custom-setup" },
     { date: "25", month: "JUN", name: "Patel Birthday Gala", desc: "Garden Venue • 120 guests", status: "Pending", badgeClass: "badge-custom-pending" },
-    { date: "27", month: "JUN", name: "Rohan Patel", desc: "Grand Vitalroom • 350 guests", status: "Confirmed", badgeClass: "badge-custom-confirmed" },
     { date: "28", month: "JUN", name: "Gupta Reception", desc: "Rooftop Terrace • 200 pax", status: "Scheduled", badgeClass: "badge-custom-scheduled" },
     { date: "30", month: "JUN", name: "Sharma Reception", desc: "Rooftop Terrace • 200 pax", status: "Scheduled", badgeClass: "badge-custom-scheduled" }
   ];
 
-  // Mock User Management data matching the image rows
+  // Mock User Management
   const usersData = [
     {
       name: "Anjali Sharma",
@@ -150,7 +134,7 @@ const AdminDashboard = () => {
     }
   ];
 
-  // Mock Pending Payments data matching the image rows
+  // Mock Pending Payments
   const pendingPaymentsData = [
     { id: "#BK-8821", name: "Alice Sterling", initials: "AS", date: "May 12, 2024", amount: "Rs.12,450.00", status: "PENDING" },
     { id: "#BK-8822", name: "Ben Johnson", initials: "BU", date: "Jun 05, 2024", amount: "Rs.8,200.00", status: "PENDING" },
@@ -169,6 +153,17 @@ const AdminDashboard = () => {
         return <span className="badge-custom badge-custom-pending">Pending</span>;
       default:
         return <span className="badge-custom badge-custom-pending">{status}</span>;
+    }
+  };
+
+  // Helper to get date-box colour class based on event status
+  const getDateBoxColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'confirmed': return 'date-box-confirmed';
+      case 'setup': return 'date-box-setup';
+      case 'pending': return 'date-box-pending';
+      case 'scheduled': return 'date-box-scheduled';
+      default: return '';
     }
   };
 
@@ -198,112 +193,112 @@ const AdminDashboard = () => {
       </div>
 
       {/* 5 KPI Cards Row */}
-<div className="d-flex flex-wrap gap-3 mb-4">
-  {/* Card 1: Enquiries */}
-  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-    <div className="kpi-card-custom d-flex flex-column justify-content-between">
-      <div>
-        {/* ✅ Icon + Count aligned to TOP */}
-        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-          <div className="kpi-icon-container kpi-icon-teal">
-            <FaEnvelope />
+      <div className="d-flex flex-wrap gap-3 mb-4">
+        {/* Card 1: Enquiries */}
+        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+          <div className="kpi-card-custom d-flex flex-column justify-content-between">
+            <div>
+              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+                <div className="kpi-icon-container kpi-icon-teal">
+                  <TbMessageQuestion />
+                </div>
+                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+                  {totalEnquiriesCount}
+                </h3>
+              </div>
+              <p className="kpi-label">Total Enquiries</p>
+            </div>
+            <div className="kpi-trend trend-up">
+              <TbTrendingUp size={16} />
+              <span>+18% this month</span>
+            </div>
           </div>
-          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-            {totalEnquiriesCount}
-          </h3>
         </div>
-        <p className="kpi-label">Total Enquiries</p>
-      </div>
-      <div className="kpi-trend trend-up">
-        <FaArrowUp size={11} />
-        <span>+18% this month</span>
-      </div>
-    </div>
-  </div>
 
-  {/* Card 2: Bookings */}
-  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-    <div className="kpi-card-custom d-flex flex-column justify-content-between">
-      <div>
-        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-          <div className="kpi-icon-container kpi-icon-blue">
-            <FaCalendarCheck />
+        {/* Card 2: Bookings */}
+        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+          <div className="kpi-card-custom d-flex flex-column justify-content-between">
+            <div>
+              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+                <div className="kpi-icon-container kpi-icon-blue">
+                  <LuCalendarCheck2 />
+                </div>
+                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+                  142
+                </h3>
+              </div>
+              <p className="kpi-label">Total Bookings</p>
+            </div>
+            <div className="kpi-trend trend-up">
+              <TbTrendingUp size={16} />
+              <span>+12% this month</span>
+            </div>
           </div>
-          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-            142
-          </h3>
         </div>
-        <p className="kpi-label">Total Bookings</p>
-      </div>
-      <div className="kpi-trend trend-up">
-        <FaArrowUp size={11} />
-        <span>+12% this month</span>
-      </div>
-    </div>
-  </div>
 
-  {/* Card 3: Monthly Revenue */}
-  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-    <div className="kpi-card-custom d-flex flex-column justify-content-between">
-      <div>
-        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-          <div className="kpi-icon-container kpi-icon-green">
-            <FaRupeeSign />
+        {/* Card 3: Monthly Revenue */}
+        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+          <div className="kpi-card-custom d-flex flex-column justify-content-between">
+            <div>
+              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+                <div className="kpi-icon-container kpi-icon-green">
+                  <FaRupeeSign />
+                </div>
+                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+                  ₹8.4L
+                </h3>
+              </div>
+              <p className="kpi-label">Monthly Revenue</p>
+            </div>
+            <div className="kpi-trend trend-up">
+              <TbTrendingUp size={16} />
+              <span>+14% this month</span>
+            </div>
           </div>
-          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-            ₹8.4L
-          </h3>
         </div>
-        <p className="kpi-label">Monthly Revenue</p>
-      </div>
-      <div className="kpi-trend trend-up">
-        <FaArrowUp size={11} />
-        <span>+14% this month</span>
-      </div>
-    </div>
-  </div>
 
-  {/* Card 4: Upcoming Events */}
-  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-    <div className="kpi-card-custom d-flex flex-column justify-content-between">
-      <div>
-        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-          <div className="kpi-icon-container kpi-icon-orange">
-            <FaCalendarAlt />
+        {/* Card 4: Upcoming Events */}
+        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+          <div className="kpi-card-custom d-flex flex-column justify-content-between">
+            <div>
+              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+                <div className="kpi-icon-container kpi-icon-orange">
+                  <TbConfetti />
+                </div>
+                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+                  25
+                </h3>
+              </div>
+              <p className="kpi-label">Upcoming Events</p>
+            </div>
+            <div className="kpi-trend" style={{ color: "#3b82f6", cursor: "pointer" }}>
+              <TbInfoCircle size={14} style={{ marginRight: "4px" }} />
+              <span>Next 30 days</span>
+            </div>
           </div>
-          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-            25
-          </h3>
         </div>
-        <p className="kpi-label">Upcoming Events</p>
-      </div>
-      <div className="kpi-trend" style={{ color: "#3b82f6", cursor: "pointer" }}>
-        <span>Next 30 days</span>
-      </div>
-    </div>
-  </div>
 
-  {/* Card 5: Pending Payments */}
-  <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-    <div className="kpi-card-custom d-flex flex-column justify-content-between">
-      <div>
-        <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-          <div className="kpi-icon-container kpi-icon-red">
-            <FaFileInvoiceDollar />
+        {/* Card 5: Pending Payments */}
+        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
+          <div className="kpi-card-custom d-flex flex-column justify-content-between">
+            <div>
+              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
+                <div className="kpi-icon-container kpi-icon-red">
+                  <LuClockAlert />
+                </div>
+                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
+                  ₹2.1L
+                </h3>
+              </div>
+              <p className="kpi-label">Pending Payments</p>
+            </div>
+            <div className="kpi-trend trend-down">
+              <FaExclamationTriangle size={11} />
+              <span>22 overdue</span>
+            </div>
           </div>
-          <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4}}>
-            ₹2.1L
-          </h3>
         </div>
-        <p className="kpi-label">Pending Payments</p>
       </div>
-      <div className="kpi-trend trend-down">
-        <FaExclamationTriangle size={11} />
-        <span>22 overdue</span>
-      </div>
-    </div>
-  </div>
-</div>
 
       {/* Middle Section: Chart & Enquiry distribution */}
       <Row className="mb-4">
@@ -351,15 +346,7 @@ const AdminDashboard = () => {
                       return null;
                     }}
                   />
-                  {/* Reference line for June value 25 with custom bubble label */}
-                  <ReferenceLine
-                    x="Jun"
-                    stroke="#00a884"
-                    strokeWidth={1.5}
-                    strokeDasharray="3 3"
-                    label={<CustomReferenceLabel />}
-                  />
-                  {/* 2025 Area (rendered as thin line, fill="none") */}
+                  {/* 2025 Area (thin line, no fill) */}
                   <Area
                     type="monotone"
                     dataKey="2025"
@@ -368,7 +355,7 @@ const AdminDashboard = () => {
                     fill="none"
                     dot={false}
                   />
-                  {/* 2026 Area (filled with gradient and custom dots) */}
+                  {/* 2026 Area (smooth, gradient fill, custom dots) */}
                   <Area
                     type="monotone"
                     dataKey="2026"
@@ -380,7 +367,7 @@ const AdminDashboard = () => {
                 </AreaChart>
               </ResponsiveContainer>
             </div>
-            {/* Custom Legend at Bottom */}
+            {/* Custom Legend */}
             <div className="d-flex justify-content-center align-items-center gap-4 mt-3" style={{ fontSize: "0.8rem", fontWeight: 600 }}>
               <div className="d-flex align-items-center gap-2">
                 <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#f43f5e" }}></span>
@@ -403,9 +390,7 @@ const AdminDashboard = () => {
                 View All
               </button>
             </div>
-            {/* Chart + Legend Wrapper */}
             <Row className="align-items-center g-3">
-              {/* Donut Chart Container */}
               <Col xs={12} sm={6} lg={12} xl={6} className="pe-0">
                 <div style={{ position: "relative", width: "100%", height: "180px" }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -427,7 +412,6 @@ const AdminDashboard = () => {
                       </Pie>
                     </PieChart>
                   </ResponsiveContainer>
-                  {/* Center Text */}
                   <div style={{
                     position: "absolute",
                     top: "50%",
@@ -440,8 +424,6 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </Col>
-
-              {/* Legends List */}
               <Col xs={12} sm={6} lg={12} xl={6}>
                 <div>
                   {enquiryDistribution.map((item, idx) => (
@@ -465,7 +447,6 @@ const AdminDashboard = () => {
 
       {/* Bottom Section: Recent Bookings & Upcoming Events */}
       <Row>
-        {/* Recent Bookings Details */}
         <Col xl={8} className="mb-4 mb-xl-0">
           <div className="card-section">
             <div className="card-section-header">
@@ -514,7 +495,6 @@ const AdminDashboard = () => {
           </div>
         </Col>
 
-        {/* Upcoming Events List */}
         <Col xl={4}>
           <div className="card-section d-flex flex-column justify-content-between">
             <div className="card-section-header">
@@ -527,7 +507,8 @@ const AdminDashboard = () => {
               {upcomingEvents.map((evt, idx) => (
                 <div key={idx} className="event-item">
                   <div className="d-flex align-items-center flex-grow-1" style={{ minWidth: "150px" }}>
-                    <div className="event-date-box">
+                    {/* Date box with dynamic colour class */}
+                    <div className={`event-date-box ${getDateBoxColor(evt.status)}`}>
                       <span className="event-date-box-number">{evt.date}</span>
                       <span className="event-date-box-month">{evt.month}</span>
                     </div>
@@ -537,7 +518,10 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   <div className="event-badge-container">
-                    <span className={`badge-custom ${evt.badgeClass}`}>{evt.status}</span>
+                    <span className={`badge-custom ${evt.badgeClass}`}>
+                      <span className={`status-dot ${evt.status.toLowerCase()}`}></span>
+                      {evt.status}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -583,21 +567,8 @@ const AdminDashboard = () => {
                       </td>
                       <td style={{ color: "#64748b", fontWeight: 500 }}>{u.contact}</td>
                       <td>
-                        <span className="d-inline-flex align-items-center gap-1.5 px-2.5 py-1 rounded-pill" style={{
-                          backgroundColor: u.status === "Active" ? "#e6f7f4" : "#f1f5f9",
-                          color: u.status === "Active" ? "#00a884" : "#64748b",
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          letterSpacing: "0.2px"
-                        }}>
-                          <span style={{
-                            width: "6px",
-                            height: "6px",
-                            borderRadius: "50%",
-                            backgroundColor: u.status === "Active" ? "#00a884" : "#64748b",
-                            display: "inline-block",
-                            marginRight: "6px"
-                          }}></span>
+                        <span className={`user-status-pill ${u.status === "Active" ? "active" : "inactive"}`}>
+                          <span className="status-dot-sm"></span>
                           {u.status}
                         </span>
                       </td>
@@ -607,8 +578,9 @@ const AdminDashboard = () => {
                           <button className="action-btn-edit" aria-label="Edit user">
                             <FaEdit size={14} />
                           </button>
-                          <button className="action-btn-lock" aria-label="Lock user">
-                            <FaLock size={14} />
+                          {/* 🔄 Replace lock with delete */}
+                          <button className="action-btn-delete" aria-label="Delete user">
+                            <RiDeleteBinLine size={14} />
                           </button>
                         </div>
                       </td>
@@ -660,7 +632,7 @@ const AdminDashboard = () => {
                           {p.status}
                         </span>
                       </td>
-                       <td className="text-center">
+                      <td className="text-center">
                         <Button variant="link" className="p-0 text-muted" aria-label="Actions">
                           <FaEllipsisV />
                         </Button>

@@ -34,7 +34,6 @@
 /* ============================================
    TYPOGRAPHY SCALE (as per Design System)
    ============================================ */
-/* H1 — Page title */
 .page-title {
     font-size: 20px;
     font-weight: 700;
@@ -43,7 +42,6 @@
     font-family: var(--font-family);
 }
 
-/* H2 — Section title */
 .h2-section {
     font-size: 16px;
     font-weight: 700;
@@ -52,7 +50,6 @@
     font-family: var(--font-family);
 }
 
-/* H3 — Card title */
 .h3-card-title {
     font-size: 14px;
     font-weight: 600;
@@ -60,7 +57,6 @@
     font-family: var(--font-family);
 }
 
-/* H4 — Sub-heading */
 .h4-sub-heading {
     font-size: 12px;
     font-weight: 600;
@@ -69,7 +65,6 @@
     font-family: var(--font-family);
 }
 
-/* Body Large */
 .body-large {
     font-size: 16px;
     font-weight: 400;
@@ -77,7 +72,6 @@
     font-family: var(--font-family);
 }
 
-/* Body Base */
 .body-base {
     font-size: 14px;
     font-weight: 400;
@@ -85,7 +79,6 @@
     font-family: var(--font-family);
 }
 
-/* Body Small */
 .body-small {
     font-size: 12px;
     font-weight: 400;
@@ -93,7 +86,6 @@
     font-family: var(--font-family);
 }
 
-/* Caption */
 .caption {
     font-size: 12px;
     font-weight: 400;
@@ -102,7 +94,6 @@
     font-family: var(--font-family);
 }
 
-/* Label / Tag */
 .label-tag {
     font-size: 11px;
     font-weight: 600;
@@ -111,7 +102,6 @@
     font-family: var(--font-family);
 }
 
-/* ---------- page subtitle (custom) ---------- */
 .page-subtitle {
     font-size: 13px;
     font-weight: 400;
@@ -124,9 +114,9 @@
    STATUS TABS - CUSTOM COLORS
    ============================================ */
 .status-tab-active {
-    background-color: #ddf5f0 !important; /* Very light teal/mint background */
-    border: 1.5px solid #0d9488 !important; /* Brand primary border */
-    color: #0d9488 !important; /* Brand primary text */
+    background-color: #ddf5f0 !important;
+    border: 1.5px solid #0d9488 !important;
+    color: #0d9488 !important;
     transition: all 0.2s ease;
     font-family: var(--font-family);
     font-weight: 600;
@@ -136,15 +126,15 @@
 }
 
 .status-tab-active:hover {
-    background-color: #ccf2eb !important; /* Slightly darker light teal on hover */
+    background-color: #ccf2eb !important;
     border-color: #0d9488 !important;
     color: #0d9488 !important;
 }
 
 .status-tab-inactive {
-    background-color: #ffffff !important; /* White background */
-    border: 1.5px solid #e2e8f0 !important; /* Light grey stroke border */
-    color: #475569 !important; /* Dark grey text */
+    background-color: #ffffff !important;
+    border: 1.5px solid #e2e8f0 !important;
+    color: #475569 !important;
     transition: all 0.2s ease;
     font-family: var(--font-family);
     font-weight: 500;
@@ -154,9 +144,9 @@
 }
 
 .status-tab-inactive:hover {
-    background-color: #f8fafc !important; /* Very light background on hover */
-    border-color: #cbd5e1 !important; /* Slightly darker grey border on hover */
-    color: #1e293b !important; /* Off-black text on hover */
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #1e293b !important;
 }
 
 /* ============================================
@@ -505,7 +495,7 @@
 
 .badge-pending {
     background: #FEE2E2;
-     color: #DC2626;
+    color: #DC2626;
 }
 
 /* ============================================
@@ -921,7 +911,7 @@
 }
 
 /* ============================================
-   RESPONSIVE – MOBILE
+   RESPONSIVE – MOBILE (small phones)
    ============================================ */
 @media (max-width: 576px) {
     .page-title {
@@ -944,6 +934,7 @@
         font-size: 14px;
     }
 
+    /* metric cards – 2 per row, further compact */
     .stat-cards-row .metric-col {
         flex: 0 0 50%;
         max-width: 50%;
@@ -975,6 +966,22 @@
     }
     .metric-card {
         min-height: 100px;
+    }
+
+    /* toolbar – stack vertically */
+    .d-flex.flex-wrap.justify-content-between.align-items-center.gap-2.mb-3 {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .d-flex.flex-wrap.justify-content-between.align-items-center.gap-2.mb-3 > div {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .btn-add-invoice {
+        width: 100%;
+        justify-content: center;
+        padding: 8px 12px;
+        font-size: 12px;
     }
 
     .custom-table tbody td {
@@ -1011,5 +1018,114 @@
         width: 28px;
         height: 28px;
         font-size: 11px !important;
+    }
+
+    /* modals full-width on tiny screens */
+    .premium-modal .modal-content {
+        border-radius: 12px;
+        margin: 12px;
+    }
+    .premium-modal .modal-header {
+        padding: 16px 16px 10px 16px;
+    }
+    .premium-modal .modal-body {
+        padding: 12px 16px;
+    }
+    .premium-modal .modal-footer {
+        flex-direction: column;
+        padding: 12px 16px 16px 16px;
+    }
+    .premium-modal .modal-footer .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    .btn-cancel,
+    .btn-submit {
+        width: 100% !important;
+        padding: 10px !important;
+        font-size: 13px !important;
+    }
+
+    /* table row – allow text wrapping */
+    .custom-table tbody td {
+        white-space: normal !important;
+        word-break: break-word;
+    }
+    .custom-table thead th {
+        white-space: normal !important;
+    }
+
+    /* pagination info – center */
+    .d-flex.flex-column.flex-sm-row.gap-3.justify-content-between.align-items-center.py-3.py-md-4.px-3.px-md-4 {
+        flex-direction: column !important;
+        gap: 12px !important;
+        text-align: center;
+    }
+}
+
+/* ============================================
+   EXTRA TINY PHONES (< 400px)
+   ============================================ */
+@media (max-width: 399px) {
+    .stat-cards-row .metric-col {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .metric-card {
+        min-height: 80px;
+    }
+    .metric-number {
+        font-size: 15px;
+    }
+    .metric-icon-box {
+        width: 26px;
+        height: 26px;
+    }
+    .metric-icon-box svg {
+        width: 13px;
+        height: 13px;
+    }
+    .metric-body {
+        padding: 10px 8px !important;
+    }
+    .metric-title {
+        font-size: 7px;
+    }
+    .metric-growth {
+        font-size: 8px;
+    }
+
+    .custom-table thead th {
+        font-size: 7px;
+        padding: 6px 4px;
+    }
+    .custom-table tbody td {
+        font-size: 10px;
+        padding: 6px 4px;
+    }
+    .custom-table .badge-status {
+        font-size: 8px;
+        padding: 2px 6px;
+    }
+    .event-badge {
+        font-size: 8px !important;
+        padding: 2px 8px !important;
+    }
+    .avatar-initials {
+        width: 22px;
+        height: 22px;
+        font-size: 9px !important;
+    }
+    .status-tab-active,
+    .status-tab-inactive {
+        font-size: 9px !important;
+        padding: 3px 8px !important;
+    }
+    .custom-pagination-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 9px;
     }
 }

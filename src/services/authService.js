@@ -20,3 +20,29 @@ export const forgotPassword = (email) =>
 
 export const resetPassword = (token, password) =>
   api.post(`/auth/reset-password/${token}`, { password });
+
+// Profile APIs
+export const getProfile = () =>
+  api.get("/auth/me");
+
+export const updateProfile = (data) =>
+  api.put("/auth/profile", data);
+
+export const getProfileStats = () =>
+  api.get("/auth/profile/stats");
+
+export const getRecentEnquiries = () =>
+  api.get("/auth/profile/recent-enquiries");
+export const changePassword = (data) =>
+  api.put("/auth/change-password", data);
+export const uploadProfileImage = (formData) => {
+  return axiosInstance.post(
+    "/auth/upload-profile-image",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+};
