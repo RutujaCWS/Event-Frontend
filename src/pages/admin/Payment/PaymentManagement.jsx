@@ -11,7 +11,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { FiClock } from "react-icons/fi";
-import "./PaymentManagement.css";
+import "./paymentManagement.css";
 
 
 const PaymentManagement = () => {
