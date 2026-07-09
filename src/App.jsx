@@ -34,8 +34,6 @@ import InvoiceGSTManagement from "./pages/admin/InvoiceGSTManagement";
 import Notifications from "./pages/shared/Notifications/Notifications";
 
 import CustomerInvoice from "./pages/customer/invoice/CustomerInvoice";
-import Payment from "./pages/customer/Payments";
-import Invoices from "./pages/customer/Invoices";
 
 import CustomerPayment from "./pages/customer/CustomerPayment";
 const DashboardIndex = () => {
@@ -110,7 +108,6 @@ function App() {
             <Route path="customer/profile" element={<CustomerProfile />} />
             <Route path="customer/bookings" element={<CustomerBooking />} />
             <Route path="customer/notifications" element={<Notifications />} />
-           <Route path="/customer/payments" element={<Payment/>} />
 
 
 
