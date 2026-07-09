@@ -1,5 +1,6 @@
-import React from "react";
-
+import React, { useEffect, useState } from "react";
+import { getCmsSection } from "../../services/cmsService";
+{/* 
 const coreFeatures = [
   {
     icon: "bi bi-journal-text ",
@@ -47,8 +48,45 @@ const coreFeatures = [
     desc: "Manage banners, pages, services, galleries, testimonials, and contact information.",
   },
 ];
-
+*/}
 const CoreFeaturesSection = () => {
+  const [coreFeature, setCoreFeature] = useState({
+  badge: "",
+  title: "",
+  description: "",
+  cards: [],
+});
+
+useEffect(() => {
+  fetchCoreFeatures();
+}, []);
+
+const fetchCoreFeatures = async () => {
+  try {
+    const res = await getCmsSection("core-features");
+
+    if (res.data?.data?.content) {
+      const content = res.data.data.content;
+
+      let cards = [];
+
+      if (Array.isArray(content.cards)) {
+        cards = content.cards;
+      } else if (typeof content.cards === "string") {
+        cards = JSON.parse(content.cards);
+      }
+
+      setCoreFeature({
+        badge: content.badge || "",
+        title: content.title || "",
+        description: content.description || "",
+        cards,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
   return (
     <section
       id="features"
@@ -74,7 +112,7 @@ const CoreFeaturesSection = () => {
                 textTransform: "uppercase",
               }}
           >
-            Core Features
+            {coreFeature.badge}
           </span>
           <h1
             className="fw-bold mb-3"
@@ -90,10 +128,10 @@ const CoreFeaturesSection = () => {
 
               }}
           >
-            Everything You Need to Plan and Manage Events
+            {coreFeature.title}
           </h1>
           <p 
-            className="text-muted mx-auto" 
+            className=" mx-auto" 
              style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -102,13 +140,13 @@ const CoreFeaturesSection = () => {
                 maxWidth: "520px",
               }}
           >
-            A comprehensive suite of tools designed to streamline every aspect of event management from first contact to final execution.
+           {coreFeature.description}
           </p>
         </div>
 
         {/* 9 Cards Grid */}
         <div className="row g-4 mt-2">
-          {coreFeatures.map((item, index) => (
+         {coreFeature.cards.map((item, index) => (
             <div className="col-lg-4 col-md-6" key={index}>
               <div
                 style={{
@@ -176,7 +214,7 @@ const CoreFeaturesSection = () => {
                     lineHeight: "1.6"
                   }}
                 >
-                  {item.desc}
+                  {item.description}
                 </p>
               </div>
             </div>

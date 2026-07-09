@@ -170,14 +170,15 @@
 }
 
 /* Pill Tabs Layout */
-.custom-pill-tabs {
-    background-color: transparent;
+.enquiry-pill-tabs {
+    background-color: transparent !important;
+    border: none !important;
     display: inline-flex;
     gap: 8px;
     flex-wrap: wrap;
 }
 
-.tab-pill-btn {
+.enquiry-pill-btn {
     border: 1.5px solid var(--stroke) !important;
     border-radius: 50px !important;
     padding: 6px 18px !important;
@@ -188,12 +189,12 @@
     font-weight: 600 !important;
 }
 
-.tab-pill-btn:hover {
+.enquiry-pill-btn:hover {
     background-color: #f8fafc !important;
     border-color: #cbd5e1 !important;
 }
 
-.tab-pill-btn.active {
+.enquiry-pill-btn.active {
     background-color: #E6F4F2 !important;
     color: var(--brand-primary) !important;
     border-color: #a7f3d0 !important;
@@ -318,6 +319,11 @@
 .event-badge-religious {
     background-color: #FEF7E0 !important;
     color: #B06000 !important;
+}
+
+.event-badge-conference {
+    background-color: #E0F2F1 !important;
+    color: #00695C !important;
 }
 
 .event-badge-other {
@@ -490,4 +496,83 @@
     padding: 6px 10px !important;
     font-size: 12px !important;
   }
+}
+/* ============================================
+   Filter Capsule Styles (matching UserManagement)
+   ============================================ */
+.filter-capsule-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    padding: 4px 12px 4px 4px;
+}
+
+.filter-select-inner {
+    border: none !important;
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    color: var(--text-body) !important;
+    height: 32px;
+    outline: none !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 10px 10px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+}
+
+.filter-select-roles {
+    width: 130px !important;
+    padding: 4px 28px 4px 12px !important;
+}
+
+.filter-select-status {
+    width: 140px !important;
+    padding: 4px 28px 4px 12px !important;
+}
+
+.filter-clear-btn {
+    color: var(--brand-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    padding: 0 4px;
+    text-decoration: none;
+}
+
+.filter-clear-btn:hover {
+    color: var(--brand-secondary);
+}
+
+/* Keep the sort dropdown consistent */
+.filter-sort-select {
+    border-radius: 10px !important;
+    border: 1px solid var(--stroke) !important;
+    color: var(--text-body) !important;
+    height: 42px;
+    width: 175px !important;
+    padding: 4px 32px 4px 16px !important;
+    background-color: #ffffff !important;
+    outline: none !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 12px center !important;
+    background-size: 10px 10px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
 }

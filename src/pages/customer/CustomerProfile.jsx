@@ -23,6 +23,8 @@ import {
   changePassword ,
   uploadProfileImage,
 } from "../../services/authService";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const theme = {
   colors: {
@@ -187,21 +189,24 @@ const pillStyle = (selected) => ({
 
 const handleChange = (e) => {
   const { name, value } = e.target;
-
-  if (["street", "city", "state", "pincode", "country"].includes(name)) {
-    const IMAGE_URL = "http://localhost:5000";
-
-setProfile((prev) => ({
-  ...prev,
-  profileImage: `${IMAGE_URL}${res.data.profileImage}`,
-}));
+  
+  if (name.includes('.')) {
+    const [parent, child] = name.split('.');
+    setProfile((prev) => ({
+      ...prev,
+      [parent]: {
+        ...prev[parent],
+        [child]: value
+      }
+    }));
   } else {
     setProfile((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }));
   }
 };
+
 const handlePasswordChange = (e) => {
   const { name, value } = e.target;
 
@@ -252,14 +257,26 @@ const togglePassword = (field) => {
     [field]: !prev[field],
   }));
 };
+
 const handleSaveProfile = async () => {
   try {
-    await updateProfile(profile);
+    const profileData = {
+      name: profile?.name,
+      email: profile?.email,
+      mobile: profile?.mobile,
+      gstin: profile?.gstin,
+      address: profile?.address || {},
+      profileImage: profile?.profileImage
+    };
+    
+    await updateProfile(profileData);
     alert("Profile updated successfully");
   } catch (error) {
     console.error(error);
+    alert(error.response?.data?.message || "Failed to update profile");
   }
 };
+
 const handleSavePreferences = async () => {
   try {
     await updateProfile({
@@ -303,6 +320,152 @@ const handleProfileImage = async (e) => {
     console.log(err);
   }
 };
+
+const handleExportData = () => {
+  try {
+    const doc = new jsPDF();
+    
+    doc.setFontSize(24);
+    doc.setTextColor(13, 148, 136);
+    doc.text(`My Profile Data`, 14, 22);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Exported on: ${new Date().toLocaleDateString()}`, 14, 32);
+    
+    doc.setDrawColor(13, 148, 136);
+    doc.setLineWidth(0.5);
+    doc.line(14, 36, 200, 36);
+    
+    let startY = 44;
+    
+    doc.setFontSize(16);
+    doc.setTextColor(13, 148, 136);
+    doc.text(`Personal Information`, 14, startY);
+    
+    startY += 6;
+    
+    const personalData = [
+      ["Name", profile?.name || ""],
+      ["Email", profile?.email || ""],
+      ["Mobile", profile?.mobile || ""],
+      ["Role", profile?.role || "Customer"],
+      ["GSTIN", profile?.gstin || "N/A"],
+      ["Member Since", profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : "N/A"],
+      ["Verified", profile?.isEmailVerified && profile?.isMobileVerified ? "Yes" : "No"],
+    ];
+    
+    autoTable(doc, {
+      startY: startY,
+      head: [["Field", "Value"]],
+      body: personalData,
+      theme: "grid",
+      styles: { fontSize: 10 },
+      headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255] },
+    });
+    
+    let finalY = doc.lastAutoTable.finalY + 10;
+    
+    if (profile?.address && (profile.address.street || profile.address.city || profile.address.state)) {
+      doc.setFontSize(16);
+      doc.setTextColor(13, 148, 136);
+      doc.text(`Address Information`, 14, finalY);
+      
+      finalY += 6;
+      
+      const addressData = [
+        ["Street", profile.address.street || "-"],
+        ["City", profile.address.city || "-"],
+        ["State", profile.address.state || "-"],
+        ["Pincode", profile.address.pincode || "-"],
+        ["Country", profile.address.country || "India"],
+      ];
+      
+      autoTable(doc, {
+        startY: finalY,
+        head: [["Field", "Value"]],
+        body: addressData,
+        theme: "grid",
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255] },
+      });
+      
+      finalY = doc.lastAutoTable.finalY + 10;
+    }
+    
+    if (profile?.eventPreferences) {
+      const hasPrefs = Object.values(profile.eventPreferences).some(arr => arr && arr.length > 0);
+      
+      if (hasPrefs) {
+        doc.setFontSize(16);
+        doc.setTextColor(13, 148, 136);
+        doc.text(`Event Preferences`, 14, finalY);
+        
+        finalY += 6;
+        
+        const prefData = [
+          ["Event Types", profile.eventPreferences.eventTypes?.join(", ") || "None"],
+          ["Catering", profile.eventPreferences.catering?.join(", ") || "None"],
+          ["Venue", profile.eventPreferences.venue?.join(", ") || "None"],
+          ["Guest Count", profile.eventPreferences.guests?.join(", ") || "None"],
+        ];
+        
+        autoTable(doc, {
+          startY: finalY,
+          head: [["Category", "Selection"]],
+          body: prefData,
+          theme: "grid",
+          styles: { fontSize: 10 },
+          headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255] },
+        });
+        
+        finalY = doc.lastAutoTable.finalY + 10;
+      }
+    }
+    
+    if (stats.totalEnquiries > 0 || stats.convertedEvents > 0) {
+      doc.setFontSize(16);
+      doc.setTextColor(13, 148, 136);
+      doc.text(`Account Statistics`, 14, finalY);
+      
+      finalY += 6;
+      
+      const statsData = [
+        ["Total Enquiries", stats.totalEnquiries || 0],
+        ["Converted Events", stats.convertedEvents || 0],
+        ["Quotations Sent", stats.quotationsSent || 0],
+        ["Pending Enquiries", stats.pendingEnquiries || 0],
+      ];
+      
+      autoTable(doc, {
+        startY: finalY,
+        head: [["Metric", "Count"]],
+        body: statsData,
+        theme: "grid",
+        styles: { fontSize: 10 },
+        headStyles: { fillColor: [13, 148, 136], textColor: [255, 255, 255] },
+      });
+      
+      finalY = doc.lastAutoTable.finalY + 10;
+    }
+    
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text(`Generated from Vevora Profile • ${new Date().toLocaleString()}`, 14, finalY + 10);
+    
+    const fileName = profile?.name 
+      ? `${profile.name.replace(/\s+/g, '_')}_Profile_${new Date().toISOString().slice(0,10)}.pdf`
+      : `profile_data_${new Date().toISOString().slice(0,10)}.pdf`;
+    
+    doc.save(fileName);
+    
+  } catch (error) {
+    console.error("PDF Export Error:", error);
+    alert("Failed to export data. Please try again.");
+  }
+};
+
+
   const tabs = [
     {
       key: "personal",
@@ -324,6 +487,7 @@ const handleProfileImage = async (e) => {
   if (loading) {
   return <div>Loading...</div>;
 }
+
 
   return (
     <div
@@ -503,6 +667,7 @@ const handleProfileImage = async (e) => {
             <Button
               variant="light"
               className="border d-flex align-items-center gap-2"
+              onClick={handleExportData}
             >
               <FaDownload />
               Export My Data
@@ -651,7 +816,7 @@ const handleProfileImage = async (e) => {
                   <Form.Group className="mb-4">
                     <Form.Label>City</Form.Label>
                     <Form.Control
-                      name="city"
+                      name="address.city" 
                       value={profile?.address?.city || ""}
                       onChange={handleChange}
                       style={{
@@ -667,7 +832,7 @@ const handleProfileImage = async (e) => {
                   <Form.Group className="mb-4">
                     <Form.Label>State</Form.Label>
                     <Form.Control
-                      name="state"
+                      name="address.state"
                       value={profile?.address?.state || ""}
                       onChange={handleChange}
                       style={{
@@ -684,7 +849,7 @@ const handleProfileImage = async (e) => {
                   <Form.Group className="mb-4">
                     <Form.Label>Address</Form.Label>
                    <Form.Control
-                      name="street"
+                      name="address.street"
                       value={profile?.address?.street || ""}
                       onChange={handleChange}
                       style={{

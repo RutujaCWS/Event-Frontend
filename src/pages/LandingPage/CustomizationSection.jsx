@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
-
+import { getCmsSection } from "../../services/cmsService";
+{/*
 const features = [
   {
     icon: "bi-calendar2-check",
@@ -33,8 +34,48 @@ const features = [
     description: "Event tracking and insights",
   },
 ];
-
+ */}
 const CustomizationSection = () => {
+  const [customization, setCustomization] = useState({
+  badge: "",
+  title: "",
+  description: "",
+  cards: [],
+});
+useEffect(() => {
+  fetchCustomization();
+}, []);
+
+const fetchCustomization = async () => {
+  try {
+    const res = await getCmsSection("customization");
+
+    if (res.data?.data?.content) {
+      const content = res.data.data.content;
+
+      let cards = [];
+
+      if (Array.isArray(content.cards)) {
+        cards = content.cards;
+      } else if (typeof content.cards === "string") {
+        try {
+          cards = JSON.parse(content.cards);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      setCustomization({
+        badge: content.badge || "",
+        title: content.title || "",
+        description: content.description || "",
+        cards,
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
   return (
     <>
       {/* Top Stroke Band */}
@@ -66,7 +107,7 @@ const CustomizationSection = () => {
                 textTransform: "uppercase",
               }}
               >
-                CUSTOMIZATION
+                {customization.badge}
               </span>
 
               <h1
@@ -82,13 +123,13 @@ const CustomizationSection = () => {
 
               }}
               >
-                Designed Around Your Fully Needs
+               {customization.title}
               </h1>
             </div>
 
             <div className="col-lg-4">
               <p
-                className="text-muted mx-auto" 
+                className=" mx-auto" 
              style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -97,14 +138,14 @@ const CustomizationSection = () => {
                 maxWidth: "520px",
               }}
               >
-                Every event is unique. Customize services, budgets, and requirements to match your vision. A flexible platform designed to bring your event vision to life.
+               {customization.description}
               </p>
             </div>
           </div>
 
           {/* Cards */}
           <div className="row g-4">
-            {features.map((item, index) => (
+            {customization.cards.map((item, index) => (
               <div className="col-lg-4 col-md-6" key={index}>
                 <div
                   style={{

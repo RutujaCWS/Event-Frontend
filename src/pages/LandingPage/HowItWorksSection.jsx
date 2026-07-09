@@ -70,7 +70,7 @@ const HowItWorksSection = () => {
             How It Works
           </h2>
           <p 
-            className="text-muted mx-auto" 
+            className=" mx-auto" 
              style={{
                 fontSize: "16px",
                   fontWeight: "400",

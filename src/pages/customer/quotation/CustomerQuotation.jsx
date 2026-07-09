@@ -3,33 +3,97 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Modal, Button, Form, Table, Row, Col, Card, Badge, Spinner, Alert } from 'react-bootstrap';
 import { FaEye, FaCheck, FaTimes, FaPrint } from 'react-icons/fa';
-import { 
-  getCustomerQuotations,  
-  approveQuotation, 
+import {
+  getCustomerQuotations,
+  approveQuotation,
   rejectQuotation,
   getQuotationByToken
 } from '../../../services/quotationService';
 import { formatDate } from '../../../utils/formatDate';
+import {
+  FileText,
+  Download,
+  BadgeIndianRupee,
+  TriangleAlert,
+  Check,
+  X,
+  MessageSquare,
+  List,
+  Percent
+} from "lucide-react";
 
 const CustomerQuotation = () => {
   const { token } = useParams();
   const navigate = useNavigate();
-  const [quotations, setQuotations] = useState([]);
-  const [filteredQuotations, setFilteredQuotations] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [selectedQuotation, setSelectedQuotation] = useState(null);
-  const [viewMode, setViewMode] = useState('list');
+
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState('');
   const [selectedQuotationId, setSelectedQuotationId] = useState(null);
-  
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('ALL');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [quotations, setQuotations] = useState([]);
+  const [filteredQuotations, setFilteredQuotations] = useState([]);
+  const [viewMode, setViewMode] = useState("list");
+  const [showQuotationList, setShowQuotationList] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [isHover, setIsHover] = useState(false);
+  const [hoveredId, setHoveredId] = useState(null);
 
+  const quotation =
+    selectedQuotation ||
+    filteredQuotations[0];
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "SENT":
+        return "Awaiting Your Approval";
+
+      case "VIEWED":
+      case "PENDING":
+        return "Pending Approval";
+
+      case "APPROVED":
+        return "Approved";
+
+      case "REJECTED":
+        return "Rejected";
+
+      default:
+        return status || "-";
+    }
+  };
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "APPROVED":
+        return {
+          background: "#ECFDF3",
+          color: "#16A34A",
+          border: "1px solid #BBF7D0"
+        };
+
+      case "REJECTED":
+        return {
+          background: "#FEF2F2",
+          color: "#DC2626",
+          border: "1px solid #FECACA"
+        };
+
+      default:
+        return {
+          background: "#FFF7E6",
+          color: "#F59E0B",
+          border: "1px solid #FDE68A"
+        };
+    }
+  };
+  const statusStyle = getStatusStyle(quotation?.status);
+  // Filter states
+  console.log("Token:", token);
   // Fetch quotations on component mount
   useEffect(() => {
     if (token) {
@@ -39,64 +103,78 @@ const CustomerQuotation = () => {
     }
   }, [token]);
 
-  // Apply filters
-  useEffect(() => {
-    let filtered = [...quotations];
-    
-    if (searchTerm) {
-      filtered = filtered.filter(q => 
-        q.quotationNumber?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        q.leadId?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        q.guestName?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-    
-    if (statusFilter !== 'ALL') {
-      filtered = filtered.filter(q => q.status === statusFilter);
-    }
-    
-    setFilteredQuotations(filtered);
-  }, [quotations, searchTerm, statusFilter]);
 
-  // Fetch all quotations for the customer
+
   const fetchAllQuotations = async () => {
     setLoading(true);
-    setError('');
+    setError("");
+
     try {
       const response = await getCustomerQuotations();
-      console.log('Customer quotations:', response.data);
-      
+
       if (response.data.success) {
         setQuotations(response.data.data);
         setFilteredQuotations(response.data.data);
       } else {
-        setError('Failed to fetch quotations');
+        setError("Failed to fetch quotations");
       }
     } catch (err) {
-      console.error('Error fetching quotations:', err);
-      setError(err.response?.data?.message || 'Failed to load quotations');
+      setError(err.response?.data?.message || "Failed to load quotations");
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    let filtered = [...quotations];
+
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (q) =>
+          q.quotationNumber
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          q.leadId?.fullName
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
+      );
+    }
+
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter(
+        (q) => q.status === statusFilter
+      );
+    }
+
+    setFilteredQuotations(filtered);
+  }, [quotations, searchTerm, statusFilter]);
   // Fetch quotation by token
   const fetchQuotationByToken = async (token) => {
+    console.log("Token:", token);
+
     setLoading(true);
-    setError('');
+    setError("");
+
     try {
+      console.log("Before API");
+
       const response = await getQuotationByToken(token);
-      console.log('Quotation by token:', response.data);
-      
+
+      console.log("After API", response);
+      console.log("Success:", response.data.success);
+      console.log("Data:", response.data);
+
       if (response.data.success) {
         setSelectedQuotation(response.data.data);
-        setViewMode('detail');
+        console.log("State Updated");
       } else {
-        setError('Invalid quotation link');
+        setError("Invalid quotation link");
       }
     } catch (err) {
-      console.error('Error fetching quotation:', err);
-      setError(err.response?.data?.message || 'Failed to load quotation');
+      console.log("API ERROR", err);
+      console.log("Response", err.response);
+
+      setError(err.response?.data?.message || "Failed to load quotation");
     } finally {
       setLoading(false);
     }
@@ -104,19 +182,22 @@ const CustomerQuotation = () => {
 
   // Handle approve
   const handleApprove = async () => {
+    setIsSubmitting(true);
     try {
       const response = await approveQuotation(selectedQuotationId);
-      
+
       if (response.data.success) {
         alert('Quotation approved successfully!');
         setShowApproveModal(false);
-        fetchAllQuotations();
+
         setShowDetailModal(false);
         setSelectedQuotation(null);
       }
     } catch (err) {
       console.error('Error approving quotation:', err);
       alert(err.response?.data?.message || 'Failed to approve quotation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -127,22 +208,25 @@ const CustomerQuotation = () => {
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      const response = await rejectQuotation(selectedQuotationId, { 
-        reason: rejectionReason 
+      const response = await rejectQuotation(selectedQuotationId, {
+        reason: rejectionReason
       });
-      
+
       if (response.data.success) {
         alert('Quotation rejected successfully!');
         setShowRejectModal(false);
         setRejectionReason('');
-        fetchAllQuotations();
+
         setShowDetailModal(false);
         setSelectedQuotation(null);
       }
     } catch (err) {
       console.error('Error rejecting quotation:', err);
       alert(err.response?.data?.message || 'Failed to reject quotation');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -154,31 +238,6 @@ const CustomerQuotation = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount || 0);
-  };
-
-  // Get status badge
-  const getStatusBadge = (status) => {
-    const statusMap = {
-      'DRAFT': { color: 'secondary', label: 'Draft' },
-      'SENT': { color: 'info', label: 'Sent' },
-      'VIEWED': { color: 'primary', label: 'Viewed' },
-      'APPROVED': { color: 'success', label: 'Approved' },
-      'REJECTED': { color: 'danger', label: 'Rejected' },
-      'SUPERSEDED': { color: 'warning', label: 'Superseded' },
-    };
-    return statusMap[status] || { color: 'secondary', label: status };
-  };
-
-  // Get status count
-  const getStatusCount = (status) => {
-    if (status === 'TOTAL') return quotations.length;
-    return quotations.filter(q => q.status === status).length;
-  };
-
-  // Reset filters
-  const resetFilters = () => {
-    setSearchTerm('');
-    setStatusFilter('ALL');
   };
 
   // Loading state
@@ -200,11 +259,11 @@ const CustomerQuotation = () => {
         <Alert variant="danger">
           <Alert.Heading>Error!</Alert.Heading>
           <p>{error}</p>
-          <Button 
+          <Button
             variant="primary"
             onClick={() => {
               setError('');
-              fetchAllQuotations();
+
             }}
           >
             Try Again
@@ -214,519 +273,983 @@ const CustomerQuotation = () => {
     );
   }
 
-  // Detail view for single quotation (with token)
-  if (viewMode === 'detail' && selectedQuotation) {
-    const quotation = selectedQuotation;
-    const statusBadge = getStatusBadge(quotation.status);
-
-    return (
-      <div className="container-fluid px-4">
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h3 className="mb-0">Quotation Details</h3>
-            <small className="text-muted">
-              View complete quotation information
-            </small>
-          </div>
-          <Button 
-            variant="outline-secondary"
-            onClick={() => {
-              setViewMode('list');
-              setSelectedQuotation(null);
-              if (token) navigate('/customer/quotations');
-            }}
-          >
-            ← Back to Quotations
-          </Button>
-        </div>
-
-        <Card className="shadow-sm">
-          <Card.Header className="bg-primary text-white">
-            <div className="d-flex justify-content-between align-items-center">
-              <h5 className="mb-0">{quotation.quotationNumber}</h5>
-              <Badge bg={statusBadge.color}>
-                {statusBadge.label}
-              </Badge>
-            </div>
-          </Card.Header>
-          <Card.Body>
-            <Row className="mb-4">
-              <Col md={6}>
-                <h6 className="text-muted">Quotation Details</h6>
-                <p><strong>Date:</strong> {formatDate(quotation.createdAt)}</p>
-                {quotation.eventDate && (
-                  <p><strong>Event Date:</strong> {formatDate(quotation.eventDate)}</p>
-                )}
-                {quotation.validUntil && (
-                  <p><strong>Valid Until:</strong> {formatDate(quotation.validUntil)}</p>
-                )}
-                <p><strong>Version:</strong> V{quotation.version || 1}</p>
-              </Col>
-              <Col md={6}>
-                <h6 className="text-muted">Customer Details</h6>
-                <p><strong>Name:</strong> {quotation.leadId?.fullName || quotation.guestName || 'N/A'}</p>
-                <p><strong>Email:</strong> {quotation.leadId?.email || quotation.guestEmail || 'N/A'}</p>
-                {quotation.leadId?.phone && (
-                  <p><strong>Phone:</strong> {quotation.leadId.phone}</p>
-                )}
-              </Col>
-            </Row>
-
-            {/* Services Table */}
-            {quotation.services && quotation.services.length > 0 && (
-              <div className="mb-4">
-                <h6 className="text-muted">Services</h6>
-                <Table bordered responsive>
-                  <thead className="table-light">
-                    <tr>
-                      <th>#</th>
-                      <th>Service</th>
-                      <th>Description</th>
-                      <th>Qty</th>
-                      <th>Unit Price</th>
-                      <th>Discount %</th>
-                      <th>CGST %</th>
-                      <th>SGST %</th>
-                      <th>Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {quotation.services.map((item, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.serviceName || 'N/A'}</td>
-                        <td>{item.description || '-'}</td>
-                        <td>{item.quantity || 1}</td>
-                        <td>{formatCurrency(item.unitPrice || 0)}</td>
-                        <td>{item.discountPercent || 0}%</td>
-                        <td>{item.cgstPercent || 0}%</td>
-                        <td>{item.sgstPercent || 0}%</td>
-                        <td>{formatCurrency(item.lineTotal || 0)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan="8" className="text-end"><strong>Grand Total</strong></td>
-                      <td><strong>{formatCurrency(quotation.totalAmount)}</strong></td>
-                    </tr>
-                  </tfoot>
-                </Table>
-              </div>
-            )}
-
-            {/* Totals Summary */}
-            <Row className="justify-content-end mb-4">
-              <Col md={5}>
-                <Table bordered>
-                  <tbody>
-                    <tr>
-                      <td>Subtotal</td>
-                      <td>{formatCurrency(quotation.subtotal || 0)}</td>
-                    </tr>
-                    <tr>
-                      <td>Total Discount</td>
-                      <td className="text-danger">-{formatCurrency(quotation.totalDiscount || 0)}</td>
-                    </tr>
-                    <tr>
-                      <td>Taxable Amount</td>
-                      <td>{formatCurrency((quotation.subtotal || 0) - (quotation.totalDiscount || 0))}</td>
-                    </tr>
-                    <tr>
-                      <td>CGST</td>
-                      <td>{formatCurrency(quotation.totalCGST || 0)}</td>
-                    </tr>
-                    <tr>
-                      <td>SGST</td>
-                      <td>{formatCurrency(quotation.totalSGST || 0)}</td>
-                    </tr>
-                    <tr>
-                      <td>Total GST</td>
-                      <td>{formatCurrency(quotation.totalGST || 0)}</td>
-                    </tr>
-                    <tr className="fw-bold bg-light">
-                      <td>Grand Total</td>
-                      <td>{formatCurrency(quotation.totalAmount)}</td>
-                    </tr>
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
-
-            {/* Notes & Terms */}
-            {quotation.notes && (
-              <div className="mb-3">
-                <h6 className="text-muted">Notes</h6>
-                <p className="bg-light p-3 rounded">{quotation.notes}</p>
-              </div>
-            )}
-
-            {quotation.termsAndConditions && (
-              <div className="mb-3">
-                <h6 className="text-muted">Terms & Conditions</h6>
-                <p className="bg-light p-3 rounded">{quotation.termsAndConditions}</p>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            {(quotation.status === 'SENT' || quotation.status === 'VIEWED') && (
-              <div className="d-flex gap-3 mt-3">
-                <Button 
-                  variant="success"
-                  onClick={() => {
-                    setSelectedQuotationId(quotation._id);
-                    setShowApproveModal(true);
-                  }}
-                >
-                  <FaCheck className="me-2" /> Approve Quotation
-                </Button>
-                <Button 
-                  variant="danger"
-                  onClick={() => {
-                    setSelectedQuotationId(quotation._id);
-                    setShowRejectModal(true);
-                  }}
-                >
-                  <FaTimes className="me-2" /> Reject Quotation
-                </Button>
-              </div>
-            )}
-
-            {quotation.status === 'APPROVED' && (
-              <Alert variant="success" className="mt-3">
-                <FaCheck className="me-2" /> This quotation has been approved.
-              </Alert>
-            )}
-
-            {quotation.status === 'REJECTED' && (
-              <Alert variant="danger" className="mt-3">
-                <FaTimes className="me-2" /> This quotation has been rejected.
-                {quotation.rejectionReason && (
-                  <p className="mt-2 mb-0"><strong>Reason:</strong> {quotation.rejectionReason}</p>
-                )}
-              </Alert>
-            )}
-          </Card.Body>
-        </Card>
-      </div>
-    );
-  }
-
   // List view (all quotations) - Table format like Showquotation
   return (
     <>
-      {/* Page Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h3 className="mb-0">My Quotations</h3>
-          <small className="text-muted">
-            View and manage all your quotations
-          </small>
-        </div>
-      </div>
+      <Row className="align-items-center mb-4">
+        <Col>
+          <h2 className="fw-bold mb-1">Quotation</h2>
+          <p className="text-muted mb-0">
+            Review your quotation, service breakdown and applicable taxes before you decide.
+          </p>
+        </Col>
 
-      {/* Summary Cards */}
-      <Row className="mb-4">
-      <Col md={3}>
-  <Card className="border-0 shadow-sm">
-    <Card.Body>
-      <h6 className="text-muted">Total</h6>
-      <h3 className="mb-0">{getStatusCount('TOTAL')}</h3>
-    </Card.Body>
-  </Card>
-</Col>
-<Col md={3}>
-  <Card className="border-0 shadow-sm">
-    <Card.Body>
-      <h6 className="text-muted">Sent</h6>
-      <h3 className="mb-0 text-info">{getStatusCount('SENT')}</h3>
-    </Card.Body>
-  </Card>
-</Col>
-<Col md={3}>
-  <Card className="border-0 shadow-sm">
-    <Card.Body>
-      <h6 className="text-muted">Approved</h6>
-      <h3 className="mb-0 text-success">{getStatusCount('APPROVED')}</h3>
-    </Card.Body>
-  </Card>
-</Col>
-<Col md={3}>
-  <Card className="border-0 shadow-sm">
-    <Card.Body>
-      <h6 className="text-muted">Rejected</h6>
-      <h3 className="mb-0 text-danger">{getStatusCount('REJECTED')}</h3>
-    </Card.Body>
-  </Card>
-</Col>
+        <Col xs="auto" className="d-flex gap-2">
+
+          <Button
+            onClick={() => setShowQuotationList(!showQuotationList)}
+            onMouseEnter={() => setIsHover(true)}
+            onMouseLeave={() => setIsHover(false)}
+            style={{
+              background: isHover ? "#14B8A6" : "#fff",
+              border: "1px solid #14B8A6",
+              color: isHover ? "#fff" : "#14B8A6",
+              borderRadius: "10px",
+              height: "40px",
+              padding: "0 16px",
+              fontSize: "14px",
+              fontWeight: 500,
+              transition: "all 0.3s ease"
+            }}
+          >
+            <FileText
+              size={16}
+              className="me-2"
+              color={isHover ? "#fff" : "#14B8A6"}
+            />
+
+            {showQuotationList ? "Hide Quotations" : "View All Quotations"}
+          </Button>
+
+          <Button
+            variant="light"
+            style={{
+              border: "1px solid #D0D5DD",
+              borderRadius: "10px",
+              background: "#fff",
+              height: "40px",
+              padding: "0 16px",
+              fontSize: "14px",
+            }}
+          >
+            <Download size={18} className="me-2" />
+            Download PDF
+          </Button>
+
+        </Col>
+        {showQuotationList && (
+
+          <Card className="border-0 shadow-sm rounded-4 mb-4">
+
+            <Card.Body>
+
+              <h5 className="mb-3">
+                All Quotations
+              </h5>
+
+              <Table hover responsive>
+
+                <thead>
+
+                  <tr>
+
+                    <th>Quotation No</th>
+
+                    <th>Event</th>
+
+                    <th>Date</th>
+
+                    <th>Amount</th>
+
+                    <th>Status</th>
+
+                    <th></th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+
+                  {filteredQuotations.map((item) => (
+
+                    <tr key={item._id}>
+
+                      <td>{item.quotationNumber}</td>
+
+                      <td>{item.eventType}</td>
+
+                      <td>{formatDate(item.createdAt)}</td>
+
+                      <td>{formatCurrency(item.totalAmount)}</td>
+
+                      <td>
+
+                        <Badge bg="warning">
+
+                          {item.status}
+
+                        </Badge>
+
+                      </td>
+
+                      <td>
+
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setSelectedQuotation(item);
+                            setShowQuotationList(false);
+                          }}
+                          onMouseEnter={() => setHoveredId(item._id)}
+                          onMouseLeave={() => setHoveredId(null)}
+                          style={{
+                            background: hoveredId === item._id ? "#14B8A6" : "#fff",
+                            border: "1px solid #14B8A6",
+                            color: hoveredId === item._id ? "#fff" : "#14B8A6",
+                            borderRadius: "8px",
+                            height: "34px",
+                            padding: "0 14px",
+                            fontSize: "13px",
+                            fontWeight: 500,
+                            transition: "all 0.2s ease"
+                          }}
+                        >
+                          View
+                        </Button>
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </Table>
+
+            </Card.Body>
+
+          </Card>
+
+        )}
       </Row>
-
-      {/* Filters */}
-      <Card className="mb-3 border-0 shadow-sm">
+      <Card className="border-0 shadow-sm rounded-4 mb-4">
         <Card.Body>
-          <Row>
-            <Col md={4}>
-              <Form.Control
-                placeholder="Search quotation no, customer..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+          <Row className="align-items-center">
+
+            {/* Left Side */}
+            <Col lg={8}>
+              <div className="d-flex align-items-start">
+
+                <div
+                  className="d-flex justify-content-center align-items-center me-3"
+                  style={{
+                    width: "55px",
+                    height: "55px",
+                    borderRadius: "12px",
+                    background: "#EAF8F6"
+                  }}
+                >
+                  <FileText size={22} color="#0D9488" strokeWidth={2} />
+                </div>
+
+                <div>
+                  <h4 className="fw-semibold mb-1">
+                    Quotation #{quotation?.quotationNumber || "-"}
+                  </h4>
+
+                  <h6 className="mb-1">
+                    {quotation?.eventTitle ||
+                      quotation?.eventType ||
+                      "Event Name"}
+                  </h6>
+
+                  <small className="text-muted">
+                    Linked Enquiry #
+                    {quotation?.enquiryId?.enquiryNumber || "N/A"}
+                    {" • "}
+                    Issued{" "}
+                    {quotation?.createdAt
+                      ? formatDate(quotation.createdAt)
+                      : "-"}
+                  </small>
+                </div>
+
+              </div>
             </Col>
-            <Col md={3}>
-              <Form.Select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
+
+            {/* Right Side */}
+
+            <Col lg={4} className="text-lg-end mt-4 mt-lg-0">
+
+              <h2
+                className=" mb-0"
+                style={{ color: "#00A76F" }}
               >
-                <option value="ALL">All Status</option>
-                <option value="SENT">SENT</option>
-                <option value="APPROVED">APPROVED</option>
-                <option value="REJECTED">REJECTED</option>
-              </Form.Select>
-            </Col>
-            <Col md={2}>
-              <Button 
-                variant="outline-secondary" 
-                onClick={resetFilters}
-                className="w-100"
+                {formatCurrency(quotation?.totalAmount)}
+              </h2>
+
+              <small className="text-muted d-block">
+                Total Payable (Incl. GST)
+              </small>
+
+
+              <span
+                style={{
+                  ...statusStyle,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  padding: "4px 12px",
+                  borderRadius: "999px",
+                  fontWeight: 500,
+                  fontSize: "13px"
+                }}
               >
-                Reset Filters
-              </Button>
+                ● {getStatusLabel(quotation?.status)}
+              </span>
             </Col>
+
           </Row>
         </Card.Body>
       </Card>
-
-      {/* Quotations Table */}
-      <Card className="border-0 shadow-sm">
+      <Card className="border-0 shadow-sm rounded-4 mb-4">
         <Card.Body>
-          <Table hover responsive>
-            <thead>
-              <tr>
-                <th>Quotation No</th>
-                <th>Event Type</th>
-                <th>Event Date</th>
-                <th>Amount</th>
-                <th>Version</th>
-                <th>Valid Till</th>
-                <th>Status</th>
-                <th width="180">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredQuotations.length === 0 ? (
-                <tr>
-                  <td colSpan="9" className="text-center py-4">
-                    <p className="text-muted mb-0">No quotations found</p>
-                  </td>
-                </tr>
-              ) : (
-                filteredQuotations.map((quotation) => {
-                  const statusBadge = getStatusBadge(quotation.status);
-                  const canAct = quotation.status === 'SENT' || quotation.status === 'VIEWED';
 
-                  return (
-                    <tr key={quotation._id}>
-                      <td className="fw-bold">{quotation.quotationNumber}</td>
-                      <td>{quotation.eventType || 'N/A'}</td>
-                      <td>{quotation.eventDate ? formatDate(quotation.eventDate) : 'N/A'}</td>
-                      <td>{formatCurrency(quotation.totalAmount)}</td>
-                      <td>V{quotation.version || 1}</td>
-                      <td>{quotation.validUntil ? formatDate(quotation.validUntil) : 'N/A'}</td>
-                      <td>
-                        <Badge bg={statusBadge.color}>
-                          {statusBadge.label}
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center gap-2 flex-nowrap">
-                          <Button
-                            size="sm"
-                            variant="outline-primary"
-                            onClick={() => {
-                              setSelectedQuotation(quotation);
-                              setShowDetailModal(true);
-                            }}
-                          >
-                            View
-                          </Button>
-                          {canAct && (
-                            <>
-                              <Button
-                                size="sm"
-                                variant="outline-success"
-                                onClick={() => {
-                                  setSelectedQuotationId(quotation._id);
-                                  setShowApproveModal(true);
-                                }}
-                              >
-                                Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline-danger"
-                                onClick={() => {
-                                  setSelectedQuotationId(quotation._id);
-                                  setShowRejectModal(true);
-                                }}
-                              >
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </Table>
-        </Card.Body>
-      </Card>
+          <div className="d-flex align-items-center gap-3">
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                background: "#E8FAF8",
+                borderRadius: "12px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "5px"
+              }}
+            >
+              <FileText size={22} color="#0F9D94" />
+            </div>
 
-      {/* Detail Modal */}
-      <Modal 
-        show={showDetailModal} 
-        onHide={() => setShowDetailModal(false)} 
-        size="lg"
-        centered
-      >
-        <Modal.Header closeButton className="bg-primary text-white">
-          <Modal.Title>
-            {selectedQuotation?.quotationNumber}
-            <Badge bg="light" className="ms-2 text-dark">
-              {getStatusBadge(selectedQuotation?.status).label}
-            </Badge>
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedQuotation && (
-            <>
-              {/* Basic Details */}
-              <Row className="mb-3">
-                <Col md={6}>
-                  <p><strong>Customer:</strong> {selectedQuotation.customerId?.name || selectedQuotation.leadId?.fullName || selectedQuotation.guestName || 'N/A'}</p>
-                  <p><strong>Email:</strong> {selectedQuotation.customerId?.email || selectedQuotation.leadId?.email || selectedQuotation.guestEmail || 'N/A'}</p>
-                  <p><strong>Event Type:</strong> {selectedQuotation.eventType || 'N/A'}</p>
-                </Col>
-                <Col md={6}>
-                  <p><strong>Event Date:</strong> {selectedQuotation.eventDate ? formatDate(selectedQuotation.eventDate) : 'N/A'}</p>
-                  <p><strong>Valid Until:</strong> {selectedQuotation.validUntil ? formatDate(selectedQuotation.validUntil) : 'N/A'}</p>
-                  <p><strong>Version:</strong> V{selectedQuotation.version || 1}</p>
-                </Col>
-              </Row>
+            <h5 className="mb-2 fw-semibold">
+              Quotation Details
+            </h5>
+          </div>
 
-              {/* Services */}
-              {selectedQuotation.services && selectedQuotation.services.length > 0 && (
-                <div className="mb-3">
-                  <h6 className="text-muted">Services</h6>
-                  <Table bordered responsive size="sm">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Service</th>
-                        <th>Qty</th>
-                        <th>Price</th>
-                        <th>Disc %</th>
-                        <th>CGST %</th>
-                        <th>SGST %</th>
-                        <th>Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {selectedQuotation.services.map((item, index) => (
-                        <tr key={index}>
-                          <td>{item.serviceName || 'N/A'}</td>
-                          <td>{item.quantity || 1}</td>
-                          <td>{formatCurrency(item.unitPrice || 0)}</td>
-                          <td>{item.discountPercent || 0}%</td>
-                          <td>{item.cgstPercent || 0}%</td>
-                          <td>{item.sgstPercent || 0}%</td>
-                          <td>{formatCurrency(item.lineTotal || 0)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              )}
+          <Row className="g-0 border-top overflow-hidden">
 
-              {/* Tax Summary */}
-              <Row className="justify-content-end">
-                <Col md={7}>
-                  <Table bordered size="sm" className="mb-0">
-                    <tbody>
-                      <tr>
-                        <td><strong>Subtotal</strong></td>
-                        <td className="text-end">{formatCurrency(selectedQuotation.subtotal || 0)}</td>
-                      </tr>
-                      <tr>
-                        <td><strong>Total Discount</strong></td>
-                        <td className="text-end text-danger">-{formatCurrency(selectedQuotation.totalDiscount || 0)}</td>
-                      </tr>
-                      <tr>
-                        <td><strong>Taxable Amount</strong></td>
-                        <td className="text-end">{formatCurrency((selectedQuotation.subtotal || 0) - (selectedQuotation.totalDiscount || 0))}</td>
-                      </tr>
-                      <tr>
-                        <td><strong>CGST</strong></td>
-                        <td className="text-end">{formatCurrency(selectedQuotation.totalCGST || 0)}</td>
-                      </tr>
-                      <tr>
-                        <td><strong>SGST</strong></td>
-                        <td className="text-end">{formatCurrency(selectedQuotation.totalSGST || 0)}</td>
-                      </tr>
-                      <tr>
-                        <td><strong>Total GST</strong></td>
-                        <td className="text-end">{formatCurrency(selectedQuotation.totalGST || 0)}</td>
-                      </tr>
-                      <tr className="table-success">
-                        <td><strong>Grand Total</strong></td>
-                        <td className="text-end fw-bold">{formatCurrency(selectedQuotation.totalAmount)}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </Col>
-              </Row>
+            {/* Row 1 */}
 
-              {/* Notes */}
-              {selectedQuotation.notes && (
-                <div className="mt-3">
-                  <h6 className="text-muted">Notes</h6>
-                  <div className="bg-light p-2 rounded">{selectedQuotation.notes}</div>
-                </div>
-              )}
-            </>
-          )}
-        </Modal.Body>
-        <Modal.Footer>
-          {(selectedQuotation?.status === 'SENT' || selectedQuotation?.status === 'VIEWED') && (
-            <>
-              <Button 
-                variant="success"
-                onClick={() => {
-                  setSelectedQuotationId(selectedQuotation._id);
-                  setShowDetailModal(false);
-                  setShowApproveModal(true);
+            <Col md={4} className="py-3 px-4 border-end border-bottom">
+              <small className="text-muted d-block">Quotation No.</small>
+              <h6 className="mt-1 mb-0">
+                {quotation?.quotationNumber || "-"}
+              </h6>
+            </Col>
+
+            <Col md={4} className="py-3 px-4 border-end border-bottom">
+              <small className="text-muted d-block">Issue Date</small>
+              <h6 className="mt-1 mb-0">
+                {quotation?.createdAt
+                  ? formatDate(quotation.createdAt)
+                  : "-"}
+              </h6>
+            </Col>
+
+            <Col md={4} className="py-3 px-4 border-bottom">
+              <small className="text-muted d-block">Valid Until</small>
+              <h6 className=" mt-1 mb-0">
+                {quotation?.validUntil
+                  ? formatDate(quotation.validUntil)
+                  : "-"}
+              </h6>
+
+              <small className="text-muted">
+                14 days validity
+              </small>
+            </Col>
+
+            {/* Row 2 */}
+
+            <Col md={4} className="py-3 px-4 border-end border-bottom">
+              <small className="text-muted d-block">Client</small>
+
+              <h6 className=" mt-1 mb-0">
+                {quotation?.leadId?.fullName ||
+                  quotation?.guestName ||
+                  "-"}
+              </h6>
+
+              <small className="text-muted">
+                {quotation?.leadId?.email ||
+                  quotation?.guestEmail}
+              </small>
+            </Col>
+
+            <Col md={4} className="py-3 px-4 border-end border-bottom">
+              <small className="text-muted d-block">Event Date</small>
+
+              <h6 className=" mt-1 mb-0">
+                {quotation?.eventDate
+                  ? formatDate(quotation.eventDate)
+                  : "-"}
+              </h6>
+            </Col>
+
+            <Col md={4} className="py-3 px-4 border-bottom">
+              <small className="text-muted d-block">Venue</small>
+
+              <h6 className=" mt-1 mb-0">
+                {quotation?.venue || "-"}
+              </h6>
+
+              <small className="text-muted">
+                {quotation?.guestCount || ""} Guests
+              </small>
+            </Col>
+
+            {/* Row 3 */}
+
+            <Col md={4} className="py-3 px-4 border-end">
+              <small className="text-muted d-block">
+                Prepared By
+              </small>
+
+              <h6 className=" mt-1 mb-0">
+                {quotation?.preparedBy || "-"}
+              </h6>
+            </Col>
+
+            <Col md={4} className="py-3 px-4 border-end">
+              <small className="text-muted d-block">
+                Payment Terms
+              </small>
+
+              <h6 className=" mt-1 mb-0">
+                {quotation?.paymentTerms || "-"}
+              </h6>
+            </Col>
+
+            <Col md={4} className="py-3 px-4">
+              <small className="text-muted d-block">
+                Status
+              </small>
+
+              <span
+                style={{
+                  ...statusStyle,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  padding: "4px 12px",
+                  borderRadius: "999px",
+                  fontWeight: 500,
+                  fontSize: "13px"
                 }}
               >
-                <FaCheck className="me-2" /> Approve
-              </Button>
-              <Button 
-                variant="danger"
+                ● {getStatusLabel(quotation?.status)}
+              </span>
+            </Col>
+
+          </Row>
+
+        </Card.Body>
+      </Card>
+      <Row
+        className="mb-4"
+        style={{
+          rowGap: "20px"
+        }}
+      >
+
+        {/* Service Breakdown */}
+
+        <Col lg={8} className="d-flex">
+
+          <Card
+            className="border-0 shadow-sm rounded-4 w-100"
+            style={{
+              height: "100%"
+            }}
+          >
+
+            <Card.Body className="p-0">
+
+              <div
+                className="d-flex align-items-center justify-content-between px-4"
+                style={{
+                  height: "68px",
+                  borderBottom: "1px solid #EAECF0"
+                }}
+              >
+
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      background: "#E8FAF8",
+                      borderRadius: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <List size={22} color="#0F9D94" />
+                  </div>
+
+                  <h5 className="mb-0 fw-semibold">
+                    Service Breakdown
+                  </h5>
+                </div>
+
+              </div>
+
+              <Table
+                responsive
+                className="mb-0"
+                style={{
+                  borderCollapse: "collapse"
+                }}
+              >
+
+                <thead
+                  style={{
+                    background: "#F9FAFB",
+
+                  }}
+                >
+
+                  <tr>
+
+                    <th
+                      style={{
+                        padding: "10px 22px",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        color: "#667085",
+                        borderBottom: "1px solid #EAECF0"
+                      }}
+                    >
+                      Service
+                    </th>
+
+                    <th
+                      style={{
+                        padding: "14px 22px",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        color: "#667085",
+                        borderBottom: "1px solid #EAECF0"
+                      }}
+                    >
+                      Qty
+                    </th>
+
+                    <th
+                      style={{
+                        padding: "14px 22px",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        color: "#667085",
+                        borderBottom: "1px solid #EAECF0"
+                      }}
+                    >
+                      Rate
+                    </th>
+
+                    <th
+                      className="text-end"
+                      style={{
+                        padding: "14px 22px",
+                        fontWeight: 500,
+                        fontSize: "13px",
+                        color: "#667085",
+                        borderBottom: "1px solid #EAECF0"
+                      }}
+                    >
+                      Amount
+                    </th>
+
+                  </tr>
+
+                </thead>
+
+                <tbody>
+                  {quotation?.services?.map((service, index) => (
+                    <tr key={index} >
+
+                      <td
+                        style={{
+                          padding: "10px 22px",
+                          lineHeight: "18px",
+                          borderBottom: "1px solid #EAECF0",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: "15px",
+                            marginBottom: "25px",
+                            fontWeight: 600,
+                            color: "#101828",
+                            lineHeight: "15px"
+                          }}
+                        >
+                          {service.serviceName}
+                        </div>
+
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            color: "#667085",
+                            lineHeight: "18px",
+                            marginTop: "-15px",
+                            marginBottom: "10px",
+                          }}
+                        >
+                          {service.description}
+                        </div>
+                      </td>
+
+                      <td
+                        style={{
+                          padding: "12px 22px",
+                          fontSize: "15px",
+                          color: "#344054",
+                          borderBottom: "1px solid #EAECF0",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        {service.quantity}
+                      </td>
+
+                      <td
+                        style={{
+                          padding: "12px 22px",
+                          fontSize: "15px",
+                          color: "#344054",
+                          borderBottom: "1px solid #EAECF0",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        {formatCurrency(service.unitPrice)}
+                      </td>
+
+                      <td
+                        className="text-end"
+                        style={{
+                          padding: "12px 22px",
+                          fontSize: "15px",
+                          fontWeight: 600,
+                          color: "#101828",
+                          borderBottom: "1px solid #EAECF0",
+                          verticalAlign: "middle"
+                        }}
+                      >
+                        {formatCurrency(service.lineTotal)}
+                      </td>
+
+                    </tr>
+                  ))}
+                </tbody>
+
+                <tfoot>
+
+                  <tr>
+
+                    <td
+                      colSpan={3}
+                      style={{
+                        padding: "18px 22px",
+                        fontSize: "18px",
+                        fontWeight: 600
+                      }}
+                    >
+
+                      Subtotal (before GST)
+
+                    </td>
+
+                    <td
+                      className="text-end"
+                      style={{
+                        padding: "18px 22px",
+                        fontSize: "18px",
+                        fontWeight: 700
+                      }}
+                    >
+
+                      {formatCurrency(quotation?.subtotal)}
+
+                    </td>
+
+                  </tr>
+
+                </tfoot>
+
+              </Table>
+
+            </Card.Body>
+
+          </Card>
+
+        </Col>
+
+        {/* GST */}
+
+        <Col lg={4} className="d-flex">
+
+          <Card className="border-0 shadow-sm rounded-4 w-100">
+
+            <Card.Body className="p-4">
+
+              {/* Header */}
+
+              <div
+                className="d-flex justify-content-between align-items-center pb-3 mb-4"
+                style={{
+                  borderBottom: "1px solid #EAECF0"
+                }}
+              >
+
+                <div className="d-flex align-items-center gap-3">
+                  <div
+                    style={{
+                      width: "42px",
+                      height: "42px",
+                      background: "#E8FAF8",
+                      borderRadius: "12px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Percent size={22} color="#0F9D94" />
+                  </div>
+
+                  <h5 className="mb-0 fw-semibold">
+                    GST Details
+                  </h5>
+                </div>
+
+                <span
+                  style={{
+                    background: "#ECFDF3",
+                    color: "#10B981",
+                    padding: "6px 14px",
+                    borderRadius: "10px",
+                    fontWeight: 500,
+                    fontSize: "14px"
+                  }}
+                >
+                  18% GST
+                </span>
+
+              </div>
+
+              {/* Taxable */}
+
+              <div className="d-flex justify-content-between mb-4">
+
+                <div>
+
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      color: "#101828"
+                    }}
+                  >
+                    Taxable Amount
+                  </div>
+
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 700
+                  }}
+                >
+                  {formatCurrency(quotation?.subtotal)}
+                </div>
+
+              </div>
+
+              {/* CGST */}
+
+              <div className="d-flex justify-content-between mb-4">
+
+                <div>
+
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600
+                    }}
+                  >
+                    CGST
+                  </div>
+
+                  <small className="text-muted">
+                    Central GST @ 9%
+                  </small>
+
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 700
+                  }}
+                >
+                  {formatCurrency(quotation?.totalCGST)}
+                </div>
+
+              </div>
+
+              {/* SGST */}
+
+              <div className="d-flex justify-content-between mb-4">
+
+                <div>
+
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600
+                    }}
+                  >
+                    SGST
+                  </div>
+
+                  <small className="text-muted">
+                    State GST @ 9%
+                  </small>
+
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 700
+                  }}
+                >
+                  {formatCurrency(quotation?.totalSGST)}
+                </div>
+
+              </div>
+
+              {/* IGST */}
+
+              <div className="d-flex justify-content-between mb-4">
+
+                <div>
+
+                  <div
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 600
+                    }}
+                  >
+                    IGST
+                  </div>
+
+                  <small className="text-muted">
+                    Not applicable
+                  </small>
+
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: 700
+                  }}
+                >
+                  ₹0
+                </div>
+
+              </div>
+
+              {/* Total GST */}
+
+              <div
+                className="d-flex justify-content-between align-items-center"
+                style={{
+                  background: "#E8FAF3",
+                  borderRadius: "16px",
+                  padding: "18px 20px",
+                  marginBottom: "28px"
+                }}
+              >
+
+                <div
+                  style={{
+                    color: "#10B981",
+                    fontWeight: 700,
+                    fontSize: "15px"
+                  }}
+                >
+                  Total GST (18%)
+                </div>
+
+                <div
+                  style={{
+                    color: "#10B981",
+                    fontWeight: 700,
+                    fontSize: "18px"
+                  }}
+                >
+                  {formatCurrency(quotation?.totalGST)}
+                </div>
+
+              </div>
+
+              {/* GSTIN */}
+
+              <div
+                className="text-muted"
+                style={{
+                  fontSize: "14px",
+                  lineHeight: "24px"
+                }}
+              >
+                GSTIN: {quotation?.gstin || "-"}
+              </div>
+
+            </Card.Body>
+
+          </Card>
+
+        </Col>
+
+      </Row>
+
+      <Card className="border-0 shadow-sm rounded-4"
+        style={{
+          border: "none",
+          borderRadius: "16px",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
+        }}>
+
+        <Card.Body>
+
+          <div className="d-flex align-items-center mb-3">
+
+            <div
+              className="me-3 d-flex align-items-center justify-content-center"
+              style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "14px",
+                background: "#FFF4E5"
+              }}
+            >
+              <TriangleAlert size={24} color="#F59E0B" strokeWidth={2.2} />
+            </div>
+
+            <div>
+
+              <h5 className="fw-semibold mb-1">
+                Accept or Reject Quotation
+              </h5>
+
+              <small className="text-muted">
+                Your decision confirms how we proceed with your event.
+              </small>
+
+            </div>
+
+          </div>
+          <div
+            className="rounded-4 p-4 mb-4"
+            style={{
+              background: "#F9FAFB",
+              border: "1px solid #E5E7EB",
+              color: "#374151",
+              fontSize: "16px",
+              lineHeight: "30px"
+            }}
+          >
+            By accepting, you agree to the total of{" "}
+            <strong>{formatCurrency(quotation?.totalAmount)}</strong> (incl. 18% GST)
+            and the payment terms of{" "}
+            <strong>{quotation?.paymentTerms || "50% advance"}</strong> with the balance
+            due before the event. Accepting will convert this quotation into a confirmed
+            booking. Choose <strong>Reject</strong> if you'd like our team to revise the
+            proposal.
+          </div>
+
+          <Row>
+
+            <Col md={4} className="mb-2">
+
+              <Button
+                className="w-100"
+                variant="light"
+                style={{
+                  height: "47px",
+                  borderRadius: "16px",
+                  border: "1px solid #FECACA",
+                  color: "#EF4444",
+                  background: "#fff",
+                  fontWeight: 500
+                }}
                 onClick={() => {
-                  setSelectedQuotationId(selectedQuotation._id);
-                  setShowDetailModal(false);
+                  setSelectedQuotationId(quotation._id);
                   setShowRejectModal(true);
                 }}
               >
-                <FaTimes className="me-2" /> Reject
+                <X size={18} className="me-2" />
+                Reject Quotation
               </Button>
-            </>
-          )}
-          <Button variant="secondary" onClick={() => setShowDetailModal(false)}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
+
+            </Col>
+
+            <Col md={4} className="mb-2">
+
+              <Button
+                variant="light"
+                className="w-100"
+                style={{
+                  height: "47px",
+                  borderRadius: "16px",
+                  border: "1px solid #D1D5DB",
+                  background: "#fff",
+                  fontWeight: 500,
+                  color: "#374151"
+                }}
+              >
+                <MessageSquare size={18} className="me-2" />
+                Request Changes
+              </Button>
+
+            </Col>
+
+            <Col md={4} className="mb-2">
+
+              <Button
+                className="w-100"
+                style={{
+                  height: "47px",
+                  borderRadius: "16px",
+                  background: "#16978D",
+                  border: "none",
+                  fontWeight: 500
+                }}
+                onClick={() => {
+                  setSelectedQuotationId(quotation._id);
+                  setShowApproveModal(true);
+                }}
+              >
+                <Check size={18} className="me-2" />
+                Accept Quotation
+              </Button>
+            </Col>
+          </Row>
+          <div className="text-center mt-3">
+            <small className="text-muted">
+              This quotation is valid until{" "}
+              {quotation?.validUntil
+                ? formatDate(quotation.validUntil)
+                : "-"}
+            </small>
+          </div>
+        </Card.Body>
+      </Card>
 
       {/* Approve Modal */}
       <Modal show={showApproveModal} onHide={() => setShowApproveModal(false)} centered>
@@ -741,8 +1264,8 @@ const CustomerQuotation = () => {
           <Button variant="secondary" onClick={() => setShowApproveModal(false)}>
             Cancel
           </Button>
-          <Button variant="success" onClick={handleApprove}>
-            Yes, Approve
+          <Button variant="success" onClick={handleApprove} disabled={isSubmitting}>
+            {isSubmitting ? 'Approving...' : 'Yes, Approve'}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -776,8 +1299,8 @@ const CustomerQuotation = () => {
           }}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleReject}>
-            Yes, Reject
+          <Button variant="danger" onClick={handleReject} disabled={isSubmitting}>
+            {isSubmitting ? 'Rejecting...' : 'Yes, Reject'}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -6,6 +6,7 @@ import { getCmsSection } from "../../services/cmsService";
 const HeroSection = () => {
   const navigate = useNavigate();
   const [heroData, setHeroData] = useState(null);
+  
 
 useEffect(() => {
   fetchHeroSection();
@@ -25,7 +26,6 @@ const fetchHeroSection = async () => {
     console.error(error);
   }
 };
-
   return (
     <section
       id="home"
@@ -87,7 +87,7 @@ const fetchHeroSection = async () => {
 
             {/* Subtext */}
             <p
-              className="text-muted mb-5"
+              className=" mb-5"
               style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -184,8 +184,11 @@ const fetchHeroSection = async () => {
                 }}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80"
-                  alt="Couple Smiling"
+                  src={
+                    heroData?.heroImage1 ||
+                    "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80"
+                  }
+                  alt="Hero 1"
                   style={{
                     width: "100%",
                     height: "100%",
@@ -214,15 +217,18 @@ const fetchHeroSection = async () => {
                   zIndex: 3,
                 }}
               >
-                <img
-                  src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=600&q=80"
-                  alt="Singer Performing"
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
+               <img
+                src={
+                  heroData?.heroImage2 ||
+                  "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&w=600&q=80"
+                }
+                alt="Hero 2"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
               </div>
 
               {/* Concert Arch Image (Bottom Left) */}
@@ -240,8 +246,11 @@ const fetchHeroSection = async () => {
                 }}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80"
-                  alt="Concert Crowd"
+                  src={
+                    heroData?.heroImage3 ||
+                    "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=600&q=80"
+                  }
+                  alt="Hero 3"
                   style={{
                     width: "100%",
                     height: "100%",

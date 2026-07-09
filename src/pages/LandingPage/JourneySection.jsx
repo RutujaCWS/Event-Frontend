@@ -1,6 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getCmsSection } from "../../services/cmsService";
 import "./EventLandingPage.css";
 const JourneySection = () => {
+  const [journeyData, setJourneyData] = useState({
+  badge: "",
+  title: "",
+  description: "",
+  feature1: "",
+  feature2: "",
+  feature3: "",
+  feature4: "",
+  image1: "",
+  image2: "",
+  image3: "",
+  image4: "",
+});
+useEffect(() => {
+  fetchJourneyData();
+}, []);
+
+const fetchJourneyData = async () => {
+  try {
+    const res = await getCmsSection("journey");
+
+    if (res.data?.data?.content) {
+      setJourneyData(res.data.data.content);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
   return (
     <section
       
@@ -28,7 +57,10 @@ const JourneySection = () => {
                 }}
               >
                 <img 
-                  src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80" 
+                 src={
+                  journeyData.image1 ||
+                  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80"
+                }
                   alt="Event Stage" 
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
@@ -47,7 +79,10 @@ const JourneySection = () => {
                   }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=600&q=80"
+                    src={
+                      journeyData.image2 ||
+                      "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=600&q=80"
+                    }
                     alt="Event Dancer"
                     style={{
                       width: "100%",
@@ -71,7 +106,10 @@ const JourneySection = () => {
                   }}
                 >
                   <img 
-                    src="https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=600&q=80"
+                   src={
+                    journeyData.image3 ||
+                    "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?auto=format&fit=crop&w=600&q=80"
+                  }
                     alt="Festival Crowd" 
                     style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
@@ -88,7 +126,10 @@ const JourneySection = () => {
                 }}
               >
                 <img 
-                  src="https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=600&q=80" 
+                 src={
+                    journeyData.image4 ||
+                    "https://images.unsplash.com/photo-1465847899084-d164df4dedc6?auto=format&fit=crop&w=600&q=80"
+                  }
                   alt="Event Performance" 
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
@@ -116,7 +157,7 @@ const JourneySection = () => {
                 textTransform: "uppercase",
               }}
             >
-              Be Part of Our Journey
+              {journeyData.badge}
             </span>
 
             {/* Title */}
@@ -132,12 +173,12 @@ const JourneySection = () => {
                 textShadow: "0.5px 0 0 currentColor",
               }}
             >
-              Celebrate Better Plan Smarter Today
+              {journeyData.title}
             </h1>
 
             {/* Paragraph */}
             <p 
-              className="text-muted mb-5"
+              className=" mb-5"
               style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -146,17 +187,19 @@ const JourneySection = () => {
                 maxWidth: "520px",
               }}
             >
-              Turn your ideas into unforgettable events with a streamlined system that lets you explore services, request quotes, manage bookings, and track everything in one place. Whether it's a wedding, birthday, or corporate gathering we've got you covered.
+              {journeyData.description}
             </p>
 
             {/* Features Checklist */}
             <div className="row g-3 ">
-              {[
-                "Easy Event Enquiry & Booking",
-                "Customized Quotations",
-                "End-to-End Event Management",
-                "Secure Payments & Invoicing"
-              ].map((item, index) => (
+             {[
+                journeyData.feature1,
+                journeyData.feature2,
+                journeyData.feature3,
+                journeyData.feature4,
+              ]
+                .filter(Boolean)
+                .map((item, index) => (
                 <div className="col-md-6" key={index}>
                   <div className="d-flex align-items-center gap-3">
                     <div 
@@ -164,7 +207,7 @@ const JourneySection = () => {
                         width: "28px",
                         height: "28px",
                         borderRadius: "50%",
-                        backgroundColor: "rgba(10, 132, 132, 0.08)",
+                         backgroundColor: "#CCFBF1",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -182,7 +225,7 @@ const JourneySection = () => {
                       >
                         <path 
                           d="M10.6667 1L3.99997 7.66667L1.3333 5" 
-                          stroke="#0a8484" 
+                          stroke="#14B8A6" 
                           strokeWidth="2" 
                           strokeLinecap="round" 
                           strokeLinejoin="round"

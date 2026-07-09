@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Container, Row, Col, Card, Form, Button, Alert, Spinner } from "react-bootstrap";
+import { useAuth } from "../Context/Auth/AuthContext";   // ✅ correct import
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { loginUser, sendLoginOtp, mobileLogin } from "../services/authService";
+import mailImg from "../assets/images/mail-forgot-pass.png";
+import mobileImg from "../assets/images/mobile.png";
+import "./Login.css";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();   // ✅ now works
 
   // Login Method Toggle: "email" or "mobile"
   const [loginMethod, setLoginMethod] = useState("email");
@@ -72,7 +77,7 @@ const LoginPage = () => {
     try {
       await sendLoginOtp(mobile);
       setOtpSent(true);
-      setCooldown(30); // 30 seconds resend cooldown
+      setCooldown(30);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to send OTP.");
     } finally {
@@ -97,14 +102,14 @@ const LoginPage = () => {
       }
 
       const { token, user } = response.data;
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+
+      // ✅ Use context login instead of manual localStorage
+      login(user, token);
 
       // Role-based redirects
       if (user.role === "admin") navigate("/admin/dashboard");
       else if (user.role === "staff") navigate("/staff/dashboard");
       else navigate("/customer/dashboard");
-
     } catch (err) {
       setError(err.response?.data?.message || err.response?.data?.error || "Login failed");
     } finally {
@@ -112,232 +117,356 @@ const LoginPage = () => {
     }
   };
 
-  const getInputClass = (value, errorMsg) => {
-    if (!value) return "form-control-custom";
-    return errorMsg ? "form-control-custom is-invalid-custom" : "form-control-custom is-valid-custom";
-  };
-
-  const getMobileInputClass = (value, errorMsg) => {
-    if (!value) return "form-control-custom";
-    return errorMsg ? "form-control-custom is-invalid-custom" : "form-control-custom";
-  };
-
   return (
-    <div className="login-page-scope login-bg">
-      <Container>
-        <Row className="justify-content-center">
-          <Col xs={11} sm={8} md={5} lg={4} className="login-card-container">
-            <Card className="login-card-wrapper border-0">
-              <div className="login-border-title">
-                hi, welcome back
+    <div className="login-split-container">
+      {/* Left Panel */}
+      <div 
+        className="login-left-panel"
+        style={{ backgroundImage: `url(${loginMethod === "email" ? mailImg : mobileImg})` }}
+      >
+        <div className="login-left-content">
+          <div className="login-logo-section">
+            <div className="login-logo-brand">Vevora</div>
+            <div className="login-logo-sub">EVENT MANAGEMENT</div>
+          </div>
+
+          <div className="login-middle-section">
+            <h1 className="login-headline">
+              {loginMethod === "email" ? (
+                <>
+                  Manage events<br />
+                  Track payments<br />
+                  Grow faster
+                </>
+              ) : (
+                <>
+                  One tap. Instant<br />
+                  access. Zero hassle
+                </>
+              )}
+            </h1>
+            <p className="login-description">
+              {loginMethod === "email" 
+                ? "Everything you need to run seamless events bookings, payments, tax compliance, and real-time insights, all in one professional workspace."
+                : "Login securely with a one-time password sent to your registered mobile number. No password needed."}
+            </p>
+
+            <div className="login-stats-row">
+              {loginMethod === "email" ? (
+                <>
+                  <div className="login-stat-card">
+                    <div className="login-stat-value">12K+</div>
+                    <div className="login-stat-label">Events Hosted</div>
+                  </div>
+                  <div className="login-stat-card">
+                    <div className="login-stat-value">98%</div>
+                    <div className="login-stat-label">Uptime SLA</div>
+                  </div>
+                  <div className="login-stat-card">
+                    <div className="login-stat-value">4.9★</div>
+                    <div className="login-stat-label">Partner Rating</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="login-stat-card">
+                    <div className="login-stat-value text-uppercase">OTP</div>
+                    <div className="login-stat-label text-uppercase">6-Digit Code</div>
+                  </div>
+                  <div className="login-stat-card">
+                    <div className="login-stat-value text-uppercase">30s</div>
+                    <div className="login-stat-label text-uppercase">Delivery Time</div>
+                  </div>
+                  <div className="login-stat-card">
+                    <div className="login-stat-value text-uppercase">2FA</div>
+                    <div className="login-stat-label text-uppercase">Secured Login</div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="login-footer-copyright">
+            © 2026 Vevora Event Management. • All rights reserved.
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel */}
+      <div className="login-right-panel">
+        <div className="login-form-wrapper">
+          <h2 className="login-form-title">
+            {loginMethod === "email" ? "Welcome back" : "Mobile OTP Login"}
+          </h2>
+          <p className="login-form-subtitle">
+            {loginMethod === "email" 
+              ? "Sign in to your Vevora professional account"
+              : "Enter your registered mobile number to receive a verification code."}
+          </p>
+
+          <div className="login-toggle-tab">
+            <button
+              type="button"
+              className={`login-toggle-btn ${loginMethod === "email" ? "active" : ""}`}
+              onClick={() => {
+                setLoginMethod("email");
+                setError("");
+              }}
+            >
+              Email & Password
+            </button>
+            <button
+              type="button"
+              className={`login-toggle-btn ${loginMethod === "mobile" ? "active" : ""}`}
+              onClick={() => {
+                setLoginMethod("mobile");
+                setError("");
+              }}
+            >
+              Mobile OTP
+            </button>
+          </div>
+
+          {error && (
+            <Alert variant="danger" className="py-2 px-3 small border-0 animate__animated animate__fadeIn mb-3" style={{ borderRadius: "8px", backgroundColor: "#ffdad6", color: "#93000a" }}>
+              {error}
+            </Alert>
+          )}
+
+          {/* Email Form */}
+          {loginMethod === "email" ? (
+            <Form onSubmit={handleLoginSubmit} className="d-flex flex-column gap-3">
+              <Form.Group>
+                <Form.Label className="login-field-label">Email Address</Form.Label>
+                <div className="login-input-wrapper">
+                  <i className="bi bi-envelope login-input-icon"></i>
+                  <Form.Control
+                    type="email"
+                    className="login-input-field"
+                    placeholder="you@company.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                {email && emailError && (
+                  <span className="validation-error-text">{emailError}</span>
+                )}
+              </Form.Group>
+
+              <Form.Group>
+                <Form.Label className="login-field-label">Password</Form.Label>
+                <div className="login-input-wrapper">
+                  <i className="bi bi-lock login-input-icon"></i>
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    className="login-input-field"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                  <i
+                    className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"} login-password-toggle`}
+                    onClick={() => setShowPassword(!showPassword)}
+                  />
+                </div>
+                <div className="d-flex justify-content-end mt-1">
+                  <Link to="/forgot-password" className="login-forgot-link">
+                    Forgot password?
+                  </Link>
+                </div>
+                {password && passError && (
+                  <span className="validation-error-text">{passError}</span>
+                )}
+              </Form.Group>
+
+              <Form.Group className="login-checkbox-group">
+                <Form.Check
+                  type="checkbox"
+                  id="remember-me"
+                  label="Remember me on this device"
+                  className="login-checkbox"
+                />
+              </Form.Group>
+
+              <Button
+                type="submit"
+                className="login-submit-btn"
+                disabled={loading || !email || !password || !!emailError || !!passError}
+              >
+                {loading ? (
+                  <Spinner size="sm" animation="border" />
+                ) : (
+                  <>
+                    <i className="bi bi-box-arrow-in-right me-2"></i> Sign In
+                  </>
+                )}
+              </Button>
+              <div className="text-center mt-3">
+                <Link
+                  to="/"
+                  className="d-inline-flex align-items-center gap-1"
+                  style={{ 
+                    textDecoration: "none", 
+                    color: "#00685f", 
+                    fontSize: "14px", 
+                    fontWeight: "500" 
+                  }}
+                >
+                  <i className="bi bi-arrow-left"></i> Back to Home
+                </Link>
               </div>
-
-              <Card.Body className="p-4 p-md-5 mt-2 login-card-body-fixed">
-                {/* Top Section: Logo, Tabs, Forms */}
-                <div>
-                  {/* Brand Logo Section */}
-                  <div className="text-center mb-3">
-                    <h1 style={{ fontSize: '26px', fontWeight: '800', color: '#00685f', margin: 0, letterSpacing: '-0.02em' }}>
-                      CreativeWS
-                    </h1>
+            </Form>
+          ) : (
+            /* Mobile OTP Form */
+            <Form onSubmit={handleLoginSubmit} className="d-flex flex-column gap-3">
+              <Form.Group>
+                <Form.Label className="login-field-label">Mobile Number</Form.Label>
+                <div className="login-mobile-input-container">
+                  <Form.Select className="login-country-select">
+                    <option value="+91">+91</option>
+                  </Form.Select>
+                  <div className="login-input-wrapper flex-grow-1">
+                    <i className="bi bi-phone login-input-icon"></i>
+                    <Form.Control
+                      type="text"
+                      className="login-input-field"
+                      placeholder="9876543210"
+                      value={mobile}
+                      onChange={(e) => setMobile(e.target.value.replace(/[^0-9]/g, ''))}
+                      required
+                    />
                   </div>
+                </div>
+                {mobile && mobileError && (
+                  <span className="validation-error-text">{mobileError}</span>
+                )}
+                {otpSent && (
+                  <span className="text-success small mt-2 d-block" style={{ fontSize: "12px", fontWeight: 500 }}>
+                    OTP sent. Valid for 5 minutes.
+                  </span>
+                )}
+              </Form.Group>
 
-                  {/* Tab Navigation Segment Controls */}
-                  <div className="login-tabs-container">
-                    <button
-                      type="button"
-                      className={`login-tab-btn ${loginMethod === "email" ? "active" : "inactive"}`}
-                      onClick={() => {
-                        setLoginMethod("email");
-                        setError("");
-                      }}
-                    >
-                      Email
-                    </button>
-                    <button
-                      type="button"
-                      className={`login-tab-btn ${loginMethod === "mobile" ? "active" : "inactive"}`}
-                      onClick={() => {
-                        setLoginMethod("mobile");
-                        setError("");
-                      }}
-                    >
-                      Mobile
-                    </button>
+              {otpSent && (
+                <Form.Group>
+                  <Form.Label className="login-field-label">OTP Code</Form.Label>
+                  <div className="login-input-wrapper">
+                    <i className="bi bi-shield-lock login-input-icon"></i>
+                    <Form.Control
+                      type="text"
+                      className="login-input-field"
+                      placeholder="Enter 6-digit OTP"
+                      value={otpCode}
+                      onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
+                      required
+                    />
                   </div>
-
-                  {error && (
-                    <Alert variant="danger" className="py-2 px-3 small border-0 animate__animated animate__fadeIn mb-3" style={{ borderRadius: "8px", backgroundColor: "#ffdad6", color: "#93000a" }}>
-                      {error}
-                    </Alert>
+                  {otpCode && otpError && (
+                    <span className="validation-error-text">{otpError}</span>
                   )}
+                </Form.Group>
+              )}
 
-                  {/* Email Form */}
-                  {loginMethod === "email" && (
-                    <Form onSubmit={handleLoginSubmit} className="d-flex flex-column gap-2">
-                      <Form.Group>
-                        <Form.Label className="form-label-custom">email</Form.Label>
-                        <Form.Control
-                          type="email"
-                          className={getInputClass(email, emailError)}
-                          placeholder="Enter email address"
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          required
-                        />
-                        {email && emailError && (
-                          <span className="validation-error-text">{emailError}</span>
-                        )}
-                      </Form.Group>
+              {!otpSent && (
+                <div className="login-info-box">
+                  <i className="bi bi-check-circle-fill login-info-icon"></i>
+                  <span className="login-info-text">
+                    A 6-digit OTP will be sent to your number. Standard SMS charges may apply.
+                  </span>
+                </div>
+              )}
 
-                      <Form.Group>
-                        <Form.Label className="form-label-custom">password</Form.Label>
-                        <div className="position-relative">
-                          <Form.Control
-                            type={showPassword ? "text" : "password"}
-                            className={getInputClass(password, passError)}
-                            placeholder="Enter your password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                          />
-                          <i
-                            className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
-                            onClick={() => setShowPassword(!showPassword)}
-                            style={{
-                              position: "absolute",
-                              right: "14px",
-                              top: "50%",
-                              transform: "translateY(-50%)",
-                              cursor: "pointer",
-                              fontSize: "18px",
-                              color: "#3d4947",
-                            }}
-                          />
-                        </div>
-                        {password && passError && (
-                          <span className="validation-error-text">{passError}</span>
-                        )}
-                      </Form.Group>
+              <div className="d-flex flex-column gap-2 mt-2">
+                {otpSent ? (
+                  <Button
+                    type="submit"
+                    className="login-submit-btn"
+                    disabled={loading || !mobile || !otpCode || !!mobileError || !!otpError}
+                  >
+                    {loading ? (
+                      <Spinner size="sm" animation="border" />
+                    ) : (
+                      <>
+                        <i className="bi bi-box-arrow-in-right me-2"></i> Sign In with OTP
+                      </>
+                    )}
+                  </Button>
+                ) : (
+                  <Button
+                    type="button"
+                    className="login-submit-btn"
+                    disabled={cooldown > 0 || !mobile || !!mobileError || sendingOtp}
+                    onClick={handleSendOtp}
+                  >
+                    {sendingOtp ? (
+                      <Spinner size="sm" animation="border" />
+                    ) : (
+                      <>
+                        <i className="bi bi-send me-2"></i> {cooldown > 0 ? `Resend OTP (${cooldown}s)` : "Send OTP"}
+                      </>
+                    )}
+                  </Button>
+                )}
 
-                      <div className="text-end" style={{ marginTop: "-4px" }}>
-                        <Link to="/forgot-password" className="auth-link small">
-                          forgot password?
-                        </Link>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-100 btn-login mt-2"
-                        disabled={loading || !email || !password || !!emailError || !!passError}
-                      >
-                        {loading ? <Spinner size="sm" animation="border" /> : "Sign In"}
-                      </Button>
-                    </Form>
-                  )}
-
-                  {/* Mobile OTP Form */}
-                  {loginMethod === "mobile" && (
-                    <Form onSubmit={handleLoginSubmit} className="d-flex flex-column gap-2">
-                      <Form.Group>
-                        <Form.Label className="form-label-custom">mobile number</Form.Label>
-                        <div className="d-flex gap-2">
-                          <div className="flex-grow-1">
-                            <Form.Control
-                              type="text"
-                              className={getMobileInputClass(mobile, mobileError)}
-                              placeholder="Enter 10-digit mobile"
-                              value={mobile}
-                              onChange={(e) => setMobile(e.target.value.replace(/[^0-9]/g, ''))}
-                              disabled={false} // we change as per the security req this is for temp
-                              required
-                            />
-                          </div>
-                          <Button
-                            type="button"
-                            className="btn-outline-custom"
-                            disabled={cooldown > 0 || !mobile || !!mobileError || sendingOtp}
-                            onClick={handleSendOtp}
-                            style={{ whiteSpace: "nowrap" }}
-                          >
-                            {cooldown > 0 ? `Resend (${cooldown}s)` : sendingOtp ? "Sending..." : "Send OTP"}
-                          </Button>
-                        </div>
-                        {mobile && mobileError && (
-                          <span className="validation-error-text">{mobileError}</span>
-                        )}
-                        {otpSent && (
-                          <span className="text-success small mt-2 d-block" style={{ fontSize: "12px", fontWeight: 500 }}>
-                            OTP sent. Valid for 5 minutes.
-                          </span>
-                        )}
-                      </Form.Group>
-
-                      {otpSent && (
-                        <Form.Group>
-                          <Form.Label className="form-label-custom">otp code</Form.Label>
-                          <Form.Control
-                            type="text"
-                            className={getMobileInputClass(otpCode, otpError)}
-                            placeholder="Enter 6-digit OTP"
-                            value={otpCode}
-                            onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
-                            required
-                          />
-                          {otpCode && otpError && (
-                            <span className="validation-error-text">{otpError}</span>
-                          )}
-                        </Form.Group>
-                      )}
-
-                      <Button
-                        type="submit"
-                        className="w-100 btn-login mt-2"
-                        disabled={loading || !mobile || !otpCode || !!mobileError || !!otpError || !otpSent}
-                      >
-                        {loading ? <Spinner size="sm" animation="border" /> : "Sign In with OTP"}
-                      </Button>
-                    </Form>
-                  )}
+                <div className="login-separator">
+                  <span className="login-separator-text">OR</span>
                 </div>
 
-                {/* Bottom Section: Links */}
-                <div>
-                  <hr className="my-3" style={{ borderColor: "#bcc9c6" }} />
-
-                  <p className="text-center mb-0 small text-muted">
-                    Don't have an account?{" "}
-                    <Link to="/register" className="auth-link">
-                      Register
-                    </Link>
-                  </p>
-                  <div className="text-center mt-3">
-                    <Link
-                      to="/"
-                      className="auth-link small d-inline-flex align-items-center gap-1"
-                      style={{ textDecoration: "none" }}
-                    >
-                      <i className="bi bi-arrow-left"></i> Back to Home
-                    </Link>
-                  </div>
+                <Button
+                  type="button"
+                  className="login-secondary-btn"
+                  onClick={() => {
+                    setLoginMethod("email");
+                    setError("");
+                  }}
+                >
+                  <i className="bi bi-envelope me-2"></i> Login with Email instead
+                </Button>
+                <div className="text-center mt-3">
+                  <Link
+                    to="/"
+                    className="d-inline-flex align-items-center gap-1"
+                    style={{ 
+                      textDecoration: "none", 
+                      color: "#00685f", 
+                      fontSize: "14px", 
+                      fontWeight: "500" 
+                    }}
+                  >
+                    <i className="bi bi-arrow-left"></i> Back to Home
+                  </Link>
                 </div>
-              </Card.Body>
-            </Card>
-
-            {/* Bottom Trust Indicators */}
-            <div className="trust-indicators">
-              <div className="trust-item">
-                <i className="bi bi-shield-lock-fill"></i>
-                <span>Secure Encryption</span>
               </div>
-              <div className="trust-item">
-                <i className="bi bi-shield-check"></i>
-                <span>PCI-DSS Compliant</span>
+            </Form>
+          )}
+
+          {/* Footer */}
+          {loginMethod === "email" ? (
+            <div className="login-right-footer mt-5">
+              <div className="d-flex justify-content-center gap-3">
+                <Link to="#" className="login-footer-link">Privacy Policy</Link>
+                <Link to="#" className="login-footer-link">Terms of Service</Link>
+                <Link to="#" className="login-footer-link">Help Center</Link>
+              </div>
+              <div className="text-center mt-3">
+                <span className="text-muted small">Don't have an account? </span>
+                <Link to="/register" className="login-create-link">
+                  Create one
+                </Link>
               </div>
             </div>
-          </Col>
-        </Row>
-      </Container>
+          ) : (
+            <div className="login-right-footer mt-4 text-center">
+              <span className="text-muted small">Don't have an account? </span>
+              <Link to="/register" className="login-create-link">
+                Create one
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

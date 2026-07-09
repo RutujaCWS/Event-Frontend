@@ -3,7 +3,8 @@ import { Row, Col, Card, Table, Spinner, Form, Dropdown, Modal, Button } from "r
 import { TbUserStar, TbUserCheck, TbUsers, TbUserCog, TbUserOff, TbUserPlus, TbTrendingUp, TbAlertTriangle, TbDotsVertical, TbDownload } from "react-icons/tb";
 import API from "../../services/api";
 import "./Styles/UserManagement.css";
-
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 const UserManagement = () => {
   const [activeTab, setActiveTab] = useState("customer"); // 'customer' or 'staff'
   const [users, setUsers] = useState([]);
@@ -15,7 +16,7 @@ const UserManagement = () => {
   const [roleFilter, setRoleFilter] = useState("");
   // pagination coontrol states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
 
   // track selected users for checkbox selection and deselection
   const [selectedUserIds, setSelectedUserIds] = useState([]);
@@ -37,12 +38,30 @@ const UserManagement = () => {
     mobile: "",
     password: "",
     city: "",
+    permissions: {
+      enquiries: true,
+      events: true,
+      tasks: true,
+      schedule: true,
+      statusUpdates: true,
+      viewPayments: true,
+      recordPayments: false,
+    }
   });
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
     mobile: "",
-    city: ""
+    city: "",
+    permissions: {
+      enquiries: true,
+      events: true,
+      tasks: true,
+      schedule: true,
+      statusUpdates: true,
+      viewPayments: true,
+      recordPayments: false,
+    }
   });
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
@@ -195,14 +214,30 @@ const UserManagement = () => {
           pincode: "",
           country: "India"
         },
-        isActive: true
+        isActive: true,
+        ...(activeTab === 'staff' && { permissions: addForm.permissions })
       };
 
       await API.post("/admin/users/create", payload);
       triggerToast(`${addForm.name} created successfully!`, "success");
       setShowAddModal(false);
       // Reset form
-      setAddForm({ name: "", email: "", mobile: "", password: "", city: "" });
+      setAddForm({
+        name: "",
+        email: "",
+        mobile: "",
+        password: "",
+        city: "",
+        permissions: {
+          enquiries: true,
+          events: true,
+          tasks: true,
+          schedule: true,
+          statusUpdates: true,
+          viewPayments: true,
+          recordPayments: false,
+        }
+      });
       // Refresh lists
       fetchUsers();
       fetchStats();
@@ -235,7 +270,8 @@ const UserManagement = () => {
           state: selectedUser.address?.state || "",
           pincode: selectedUser.address?.pincode || "",
           country: selectedUser.address?.country || "India"
-        }
+        },
+        ...(selectedUser?.role === 'staff' && { permissions: editForm.permissions })
       };
 
       await API.put(`/admin/users/${selectedUser._id}`, payload);
@@ -297,6 +333,41 @@ const UserManagement = () => {
     }
   };
 
+  // Prefill default permissions from settings
+  const openAddModal = async () => {
+    setModalError("");
+    let initialPerms = {
+      enquiries: true,
+      events: true,
+      tasks: true,
+      schedule: true,
+      statusUpdates: true,
+      viewPayments: true,
+      recordPayments: false,
+    };
+
+    if (activeTab === "staff") {
+      try {
+        const res = await API.get("/admin/settings/default-permissions");
+        if (res.data && res.data.success && res.data.data) {
+          initialPerms = res.data.data;
+        }
+      } catch (err) {
+        console.error("Failed to load default permissions:", err);
+      }
+    }
+
+    setAddForm({
+      name: "",
+      email: "",
+      mobile: "",
+      password: "",
+      city: "",
+      permissions: initialPerms
+    });
+    setShowAddModal(true);
+  };
+
   // Helpers to prefill forms
   const openEditModal = (user) => {
     setSelectedUser(user);
@@ -304,7 +375,16 @@ const UserManagement = () => {
       name: user.name || "",
       email: user.email || "",
       mobile: user.mobile || "",
-      city: user.address?.city || ""
+      city: user.address?.city || "",
+      permissions: user.permissions || {
+        enquiries: true,
+        events: true,
+        tasks: true,
+        schedule: true,
+        statusUpdates: true,
+        viewPayments: true,
+        recordPayments: false,
+      }
     });
     setModalError("");
     setShowEditModal(true);
@@ -348,6 +428,71 @@ const UserManagement = () => {
     }
   };
 
+
+const handleExportPDF = () => {
+  const doc = new jsPDF("l", "mm", "a4");
+
+  const exportData = [...filteredUsers];
+
+  doc.setFontSize(18);
+  doc.text("User Management Report", 14, 15);
+
+  doc.setFontSize(10);
+  doc.text(`Generated On : ${new Date().toLocaleString()}`, 14, 22);
+
+  doc.text(`Role : ${activeTab}`, 14, 30);
+  doc.text(`Status : ${statusFilter || "All"}`, 70, 30);
+  doc.text(`Search : ${search || "-"}`, 140, 30);
+
+  autoTable(doc, {
+    startY: 38,
+
+    head: [[
+      "Name",
+      "Email",
+      "Phone",
+      "City",
+      "Bookings",
+      "Total Spend",
+      "Joined",
+      "Status"
+    ]],
+
+    body: exportData.map((user, idx) => {
+      const metrics = getMockedMetrics(user);
+
+      return [
+        user.name,
+        user.email,
+        user.mobile,
+        user.address?.city || "-",
+        metrics.bookings,
+        `Rs. ${metrics.spend.toLocaleString("en-IN")}`,
+        user.createdAt
+          ? new Date(user.createdAt).toLocaleDateString("en-IN")
+          : "-",
+        user.isActive
+          ? (idx % 4 === 0 ? "VIP" : "Active")
+          : "Inactive",
+      ];
+    }),
+
+    theme: "grid",
+
+    headStyles: {
+      fillColor: [58, 95, 190],
+      textColor: 255,
+      fontStyle: "bold",
+    },
+
+    styles: {
+      fontSize: 8,
+      cellPadding: 2,
+    },
+  });
+
+  doc.save("User_Management_Report.pdf");
+};
   return (
     <div className="user-mgmt-container p-3 p-md-4">
       {/* Floating Toast Notification */}
@@ -377,7 +522,7 @@ const UserManagement = () => {
       )}
 
       {/* 5 Trend Cards */}
-      <Row className="mb-4 g-3 g-md-4">
+      <Row className="mb-4 g-2 g-md-3">
         {/* Total Users */}
         <Col xl lg={4} md={6} sm={6} xs={6}>
           <Card className="metric-card">
@@ -516,15 +661,13 @@ const UserManagement = () => {
         </div>
 
         <div className="d-flex gap-2 align-self-stretch align-self-md-auto justify-content-md-end">
-          <button className="btn btn-export d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-md-grow-0">
+          <button className="btn btn-export d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-md-grow-0"
+          onClick={handleExportPDF}>
             <TbDownload size={16} /> Export
           </button>
           <button
             className="btn btn-add-customer d-flex align-items-center justify-content-center gap-2 flex-grow-1 flex-md-grow-0"
-            onClick={() => {
-              setModalError("");
-              setShowAddModal(true);
-            }}
+            onClick={openAddModal}
           >
             <TbUserPlus size={16} /> {activeTab === "customer" ? "Add Customer" : "Add Staff"}
           </button>
@@ -818,6 +961,81 @@ const UserManagement = () => {
                 onChange={(e) => setAddForm({ ...addForm, city: e.target.value })}
               />
             </Form.Group>
+
+            {activeTab === "staff" && (
+              <div className="mt-4 border-top pt-3">
+                <Form.Label className="fw-bold mb-2">Staff Permissions</Form.Label>
+                <Row>
+                  <Col md={6}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Assigned Enquiries"
+                      checked={addForm.permissions?.enquiries}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, enquiries: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Assigned Events"
+                      checked={addForm.permissions?.events}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, events: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Tasks"
+                      checked={addForm.permissions?.tasks}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, tasks: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Event Schedule"
+                      checked={addForm.permissions?.schedule}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, schedule: e.target.checked }
+                      }))}
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Status Updates"
+                      checked={addForm.permissions?.statusUpdates}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, statusUpdates: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="View Payments"
+                      checked={addForm.permissions?.viewPayments}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, viewPayments: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Record Payments"
+                      checked={addForm.permissions?.recordPayments}
+                      onChange={(e) => setAddForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, recordPayments: e.target.checked }
+                      }))}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button
@@ -895,6 +1113,81 @@ const UserManagement = () => {
                 onChange={(e) => setEditForm({ ...editForm, city: e.target.value })}
               />
             </Form.Group>
+
+            {selectedUser?.role === "staff" && (
+              <div className="mt-4 border-top pt-3">
+                <Form.Label className="fw-bold mb-2">Staff Permissions</Form.Label>
+                <Row>
+                  <Col md={6}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Assigned Enquiries"
+                      checked={editForm.permissions?.enquiries}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, enquiries: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Assigned Events"
+                      checked={editForm.permissions?.events}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, events: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Tasks"
+                      checked={editForm.permissions?.tasks}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, tasks: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Event Schedule"
+                      checked={editForm.permissions?.schedule}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, schedule: e.target.checked }
+                      }))}
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <Form.Check
+                      type="checkbox"
+                      label="Status Updates"
+                      checked={editForm.permissions?.statusUpdates}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, statusUpdates: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="View Payments"
+                      checked={editForm.permissions?.viewPayments}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, viewPayments: e.target.checked }
+                      }))}
+                    />
+                    <Form.Check
+                      type="checkbox"
+                      label="Record Payments"
+                      checked={editForm.permissions?.recordPayments}
+                      onChange={(e) => setEditForm(prev => ({
+                        ...prev,
+                        permissions: { ...prev.permissions, recordPayments: e.target.checked }
+                      }))}
+                    />
+                  </Col>
+                </Row>
+              </div>
+            )}
           </Modal.Body>
           <Modal.Footer>
             <Button

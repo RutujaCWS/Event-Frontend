@@ -1,0 +1,391 @@
+/* ============================================
+   Booking Management - Complete Styles
+   Font: Manrope
+   ============================================ */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+/* ---------- Root Variables (matching other pages) ---------- */
+:root {
+    --brand-primary: #0D9488;
+    --brand-secondary: #14B8A6;
+    --semantic-success: #10B981;
+    --semantic-danger: #EF4444;
+    --semantic-warning: #F59E0B;
+    --semantic-info: #3B82F6;
+    --text-primary: #111827;
+    --text-body: #374151;
+    --text-secondary: #64748B;
+    --text-muted: #94A3B8;
+    --bg-page: #F8FAFC;
+    --stroke: #E2E8F0;
+    --bg-main: #f8fafc;
+}
+
+/* ---------- Page Container ---------- */
+.booking-page {
+    background-color: var(--bg-page);
+    min-height: 100vh;
+    font-family: 'Manrope', sans-serif;
+}
+
+/* ---------- Page Title & Count Pill ---------- */
+.page-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.booking-count-pill {
+    background-color: #E6F4F2;
+    color: var(--brand-primary);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 50px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ---------- Filter & Export Buttons ---------- */
+.booking-filter-btn {
+    background-color: #ffffff !important;
+    border: 1.5px solid var(--stroke) !important;
+    color: var(--text-secondary) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    white-space: nowrap !important;
+    transition: all 0.2s ease;
+}
+
+.booking-filter-btn:hover {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+}
+
+.booking-export-btn {
+    background-color: #ffffff !important;
+    border: 1.5px solid var(--brand-primary) !important;
+    color: var(--brand-primary) !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    white-space: nowrap !important;
+    transition: all 0.2s ease;
+}
+
+.booking-export-btn:hover {
+    background-color: #e6f4f2 !important;
+}
+
+/* ---------- Filter Capsule Styles (reused from UserManagement) ---------- */
+.filter-capsule-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--bg-main);
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    padding: 4px 12px 4px 4px;
+}
+
+.filter-select-inner {
+    border: none !important;
+    background-color: #ffffff !important;
+    border-radius: 8px !important;
+    color: var(--text-body) !important;
+    height: 32px;
+    outline: none !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23475569' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 10px 10px !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+}
+
+.filter-select-roles {
+    width: 110px !important;
+    padding: 4px 28px 4px 12px !important;
+}
+
+.filter-select-status {
+    width: 110px !important;
+    padding: 4px 28px 4px 12px !important;
+}
+
+.filter-clear-btn {
+    color: var(--brand-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+    padding: 0 4px;
+    text-decoration: none;
+}
+
+.filter-clear-btn:hover {
+    color: var(--brand-secondary);
+}
+
+/* ---------- Table Styles ---------- */
+.custom-table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+}
+
+.custom-table th {
+    background-color: #f8fafc !important;
+    color: #374151 !important;
+    padding: 14px 16px !important;
+    border-bottom: 1.5px solid var(--stroke) !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase;
+}
+
+.custom-table td {
+    padding: 14px 16px !important;
+    border-bottom: 1px solid var(--stroke) !important;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #f8fafc !important;
+}
+
+/* ---------- Pagination ---------- */
+.custom-pagination-btn {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--stroke);
+    background-color: #ffffff;
+    color: var(--text-secondary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.custom-pagination-btn.active {
+    background-color: var(--brand-primary);
+    color: #ffffff;
+    border-color: var(--brand-primary);
+}
+
+.custom-pagination-btn:hover:not(.active):not(:disabled) {
+    background-color: var(--stroke);
+}
+
+.custom-pagination-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* ---------- Booking Row Specific ---------- */
+.booking-id-text {
+    font-weight: 700;
+    color: #111827;
+    font-size: 13px;
+}
+
+.booking-id-subtext {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    margin-top: 1px;
+}
+
+.booking-customer-name {
+    font-weight: 700;
+    color: #111827;
+    font-size: 13px;
+}
+
+.booking-customer-email {
+    font-size: 11px;
+    color: #64748B;
+    font-weight: 500;
+    margin-top: 1px;
+}
+
+/* ---------- Status Badges ---------- */
+.badge-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px !important;
+    border-radius: 30px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em;
+}
+
+.badge-dot-confirmed {
+    background-color: #E6F4EA !important;
+    color: #198754 !important;
+}
+.badge-dot-confirmed .status-dot {
+    background-color: #10B981 !important;
+}
+
+.badge-dot-pending {
+    background-color: #FEF7E0 !important;
+    color: #B06000 !important;
+}
+.badge-dot-pending .status-dot {
+    background-color: #F59E0B !important;
+}
+
+.badge-dot-cancelled {
+    background-color: #FCE8E6 !important;
+    color: #C5221F !important;
+}
+.badge-dot-cancelled .status-dot {
+    background-color: #EF4444 !important;
+}
+
+.badge-dot-completed {
+    background-color: #E8F0FE !important;
+    color: #1A73E8 !important;
+}
+.badge-dot-completed .status-dot {
+    background-color: #3B82F6 !important;
+}
+
+.badge-dot-inprogress {
+    background-color: #F3E5F5 !important;
+    color: #7B1FA2 !important;
+}
+.badge-dot-inprogress .status-dot {
+    background-color: #8B5CF6 !important;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ---------- Event Type Badges ---------- */
+.event-type-badge {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    padding: 4px 12px !important;
+    border-radius: 50px !important;
+    letter-spacing: 0.02em !important;
+    display: inline-flex;
+    align-items: center;
+}
+
+.event-badge-wedding {
+    background-color: #FCE8E6 !important;
+    color: #C5221F !important;
+}
+.event-badge-birthday {
+    background-color: #FEF7E0 !important;
+    color: #B06000 !important;
+}
+.event-badge-corporate {
+    background-color: #E8F0FE !important;
+    color: #1A73E8 !important;
+}
+.event-badge-religious {
+    background-color: #E6F4EA !important;
+    color: #198754 !important;
+}
+.event-badge-custom {
+    background-color: #F3E5F5 !important;
+    color: #7B1FA2 !important;
+}
+.event-badge-other {
+    background-color: #F1F5F9 !important;
+    color: #334155 !important;
+}
+
+/* ---------- Booking Amount ---------- */
+.booking-amount {
+    font-weight: 700;
+    color: #111827;
+    font-size: 13px;
+}
+
+/* ---------- Venue ---------- */
+.booking-venue {
+    font-weight: 500;
+    color: #475569;
+    font-size: 13px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 575.98px) {
+    .page-title {
+        font-size: 16px !important;
+    }
+
+    .booking-filter-btn,
+    .booking-export-btn {
+        padding: 6px 10px !important;
+        font-size: 12px !important;
+    }
+
+    .filter-capsule-container {
+        flex-wrap: wrap;
+        padding: 4px 8px 4px 4px;
+        width: 100%;
+    }
+
+    .filter-select-inner {
+        width: 100% !important;
+        min-width: 100px;
+    }
+
+    .filter-select-roles,
+    .filter-select-status {
+        width: 100% !important;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 10px 12px !important;
+        font-size: 11px !important;
+    }
+
+    .custom-pagination-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 11px;
+    }
+
+    .booking-count-pill {
+        font-size: 10px;
+        padding: 2px 8px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .filter-capsule-container {
+        flex: 1 0 auto;
+        min-width: 150px;
+    }
+
+    .filter-select-roles,
+    .filter-select-status {
+        width: 120px !important;
+    }
+}

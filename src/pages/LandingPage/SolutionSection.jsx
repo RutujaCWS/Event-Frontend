@@ -1,6 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getCmsSection } from "../../services/cmsService";
 import "./EventLandingPage.css";
 const SolutionSection = () => {
+  const [solutionData, setSolutionData] = useState({
+  badge: "",
+  title: "",
+  description: "",
+  feature1: "",
+  feature2: "",
+  feature3: "",
+  feature4: "",
+  image: "",
+});
+useEffect(() => {
+  fetchSolutionData();
+}, []);
+
+const fetchSolutionData = async () => {
+  try {
+    const res = await getCmsSection("solution");
+
+    if (res.data?.data?.content) {
+      setSolutionData(res.data.data.content);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
   return (
     <section
       id="solution"
@@ -24,8 +50,11 @@ const SolutionSection = () => {
                 height: "380px",
               }}
             >
-              <img 
-                src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1000&q=80" 
+             <img
+                src={
+                  solutionData.image ||
+                  "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1000&q=80"
+                }
                 alt="Digital Event Solution" 
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
@@ -49,7 +78,7 @@ const SolutionSection = () => {
                 textTransform: "uppercase",
               }}
             >
-              The Solution
+             {solutionData.badge}
             </span>
 
             {/* Title */}
@@ -65,12 +94,12 @@ const SolutionSection = () => {
                 textShadow: "0.5px 0 0 currentColor",
               }}
             >
-              A Complete Digital Solution for Event Planning
+              {solutionData.title}
             </h1>
 
             {/* Paragraph */}
             <p 
-              className="text-muted mb-5"
+              className="mb-5"
                style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -79,17 +108,19 @@ const SolutionSection = () => {
                 maxWidth: "520px",
               }}
             >
-              Our platform simplifies the entire event lifecycle from enquiry to execution ensuring a smooth and organized experience.
+              {solutionData.description}
             </p>
 
             {/* Teal check list (Grid of 4 items) */}
             <div className="row g-4">
               {[
-                "Real-time booking and tracking",
-                "Centralized event planning",
-                "Easy enquiry and quotation process",
-                "Seamless communication"
-              ].map((item, index) => (
+                  solutionData.feature1,
+                  solutionData.feature2,
+                  solutionData.feature3,
+                  solutionData.feature4,
+                ]
+                  .filter(Boolean)
+                  .map((item, index) => (
                 <div className="col-md-6" key={index}>
                   <div className="d-flex align-items-center gap-3">
                     <div 
@@ -97,7 +128,7 @@ const SolutionSection = () => {
                         width: "28px",
                         height: "28px",
                         borderRadius: "50%",
-                        backgroundColor: "rgba(209, 146, 146, 0.08)",
+                         backgroundColor: "#CCFBF1",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -115,7 +146,7 @@ const SolutionSection = () => {
                       >
                         <path 
                           d="M10.6667 1L3.99997 7.66667L1.3333 5" 
-                          stroke="#0a8484" 
+                          stroke="#14B8A6" 
                           strokeWidth="2" 
                           strokeLinecap="round" 
                           strokeLinejoin="round"
@@ -126,6 +157,7 @@ const SolutionSection = () => {
                       className="fw-semibold" 
                       style={{ 
                         color: "#14B8A6",
+                        
                         fontSize: "12px",
                         lineHeight: "1.4"
                       }}

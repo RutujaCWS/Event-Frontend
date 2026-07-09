@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local Agent Workspace context files
+PROJECT_MEMORY.md
+.agents/
+.gemini/

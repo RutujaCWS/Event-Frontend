@@ -24,7 +24,20 @@ const HomeManagement = () => {
   const [preview1, setPreview1] = useState("");
   const [preview2, setPreview2] = useState("");
   const [preview3, setPreview3] = useState("");
+const removeImage1 = () => {
+  setHeroImage1(null);
+  setPreview1("");
+};
 
+const removeImage2 = () => {
+  setHeroImage2(null);
+  setPreview2("");
+};
+
+const removeImage3 = () => {
+  setHeroImage3(null);
+  setPreview3("");
+};
   useEffect(() => {
     fetchHomeContent();
   }, []);
@@ -96,18 +109,18 @@ const HomeManagement = () => {
       const data = new FormData();
 
       data.append("badgeText", formData.badgeText);
-data.append("bannerTitle", formData.bannerTitle);
-data.append("bannerDescription", formData.bannerDescription);
+      data.append("bannerTitle", formData.bannerTitle);
+      data.append("bannerDescription", formData.bannerDescription);
 
-data.append("button1", formData.button1);
-
-
-data.append("button2", formData.button2);
+      data.append("button1", formData.button1);
 
 
-data.append("welcomeMessage", formData.welcomeMessage);
+      data.append("button2", formData.button2);
 
-data.append("phoneNumber", formData.phoneNumber);
+
+      data.append("welcomeMessage", formData.welcomeMessage);
+
+      data.append("phoneNumber", formData.phoneNumber);
 
       if (heroImage1) {
         data.append("heroImage1", heroImage1);
@@ -120,6 +133,17 @@ data.append("phoneNumber", formData.phoneNumber);
       if (heroImage3) {
         data.append("heroImage3", heroImage3);
       }
+        if (!preview1) {
+          data.append("removeHeroImage1", "true");
+        }
+
+        if (!preview2) {
+          data.append("removeHeroImage2", "true");
+        }
+
+        if (!preview3) {
+          data.append("removeHeroImage3", "true");
+        }
 
       await updateCmsSection("home", data);
 
@@ -248,7 +272,8 @@ data.append("phoneNumber", formData.phoneNumber);
           onChange={handleImage1Change}
         />
 
-        {preview1 && (
+       {preview1 && (
+        <>
           <img
             src={preview1}
             alt="Hero 1"
@@ -261,7 +286,16 @@ data.append("phoneNumber", formData.phoneNumber);
               border: "1px solid #ddd",
             }}
           />
-        )}
+
+          <button
+            type="button"
+            className="btn btn-danger btn-sm mt-2 d-block"
+            onClick={removeImage1}
+          >
+            Remove Image
+          </button>
+        </>
+      )}
       </div>
 
       {/* Hero Image 2 */}
@@ -278,18 +312,28 @@ data.append("phoneNumber", formData.phoneNumber);
         />
 
         {preview2 && (
-          <img
-            src={preview2}
-            alt="Hero 2"
-            className="mt-3"
-            style={{
-              width: "220px",
-              height: "150px",
-              objectFit: "cover",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-            }}
-          />
+          <>
+            <img
+              src={preview2}
+              alt="Hero 2"
+              className="mt-3"
+              style={{
+                width: "220px",
+                height: "150px",
+                objectFit: "cover",
+                borderRadius: "10px",
+                border: "1px solid #ddd",
+              }}
+            />
+
+            <button
+              type="button"
+              className="btn btn-danger btn-sm mt-2 d-block"
+              onClick={removeImage1}
+            >
+              Remove Image
+            </button>
+          </>
         )}
       </div>
 
@@ -305,21 +349,31 @@ data.append("phoneNumber", formData.phoneNumber);
           className="form-control"
           onChange={handleImage3Change}
         />
+          {preview3 && (
+          <>
+            <img
+              src={preview3}
+              alt="Hero 3"
+              className="mt-3"
+              style={{
+                width: "220px",
+                height: "150px",
+                objectFit: "cover",
+                borderRadius: "10px",
+                border: "1px solid #ddd",
+              }}
+            />
 
-        {preview3 && (
-          <img
-            src={preview3}
-            alt="Hero 3"
-            className="mt-3"
-            style={{
-              width: "220px",
-              height: "150px",
-              objectFit: "cover",
-              borderRadius: "10px",
-              border: "1px solid #ddd",
-            }}
-          />
+            <button
+              type="button"
+              className="btn btn-danger btn-sm mt-2 d-block"
+              onClick={removeImage1}
+            >
+              Remove Image
+            </button>
+          </>
         )}
+
       </div>
 
       <button

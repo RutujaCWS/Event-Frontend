@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Outlet, Navigate } from "react-router-dom";
+import { Outlet, Navigate , useLocation } from "react-router-dom";
 import Sidebar from "../component/Sidebar";
 import Header from "../component/Header";
 
 const MainLayout = () => {
+  const location = useLocation();
   const token = localStorage.getItem("token") || "mock-token";
   const userStr = localStorage.getItem("user") || JSON.stringify({ name: "Rahul Kapoor", role: "admin" });
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -14,7 +15,11 @@ const MainLayout = () => {
       {/* Main content - controlled by responsive class instead of fixed inline margin */}
       <div className={`main-content-wrapper ${sidebarOpen ? "sidebar-open" : ""}`}>
         <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        <div className="main-content-body p-3 p-md-4">
+        <div className={
+            location.pathname === "/admin/settings"
+              ? "main-content-body p-0"
+              : "main-content-body p-3 p-md-4"
+          }>
           <Outlet />
         </div>
       </div>

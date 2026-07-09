@@ -208,12 +208,18 @@ const fetchGalleryImages = async () => {
 };
 const fetchServiceData = async () => {
   try {
-    const res = await getCmsSection(slug);
+    // Fetch the Services CMS section
+    const res = await getCmsSection("services");
 
-    console.log("Service Data:", res.data);
+    if (res.data.success) {
+      const categories = res.data.data.content.categories || [];
 
-    if (res.data?.data?.content) {
-      setService(res.data.data.content);
+      // Find the clicked category using slug
+      const selectedCategory = categories.find(
+        (item) => item.slug === slug
+      );
+
+      setService(selectedCategory || null);
     }
   } catch (error) {
     console.log(error);
@@ -233,7 +239,7 @@ const fetchServiceData = async () => {
         className="position-relative"
         style={{
         height: "550px",
-        backgroundImage: `url(${serviceImages[0]})`,
+        backgroundImage: `url(${service.image})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         }}

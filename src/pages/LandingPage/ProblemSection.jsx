@@ -1,6 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getCmsSection } from "../../services/cmsService";
 import "./EventLandingPage.css";
 const ProblemSection = () => {
+  const [problemData, setProblemData] = useState({
+  badge: "",
+  title: "",
+  description: "",
+  point1: "",
+  point2: "",
+  point3: "",
+  point4: "",
+  point5: "",
+  point6: "",
+  image: "",
+});
+useEffect(() => {
+  fetchProblemData();
+}, []);
+
+const fetchProblemData = async () => {
+  try {
+    const res = await getCmsSection("problem");
+
+    if (res.data?.data?.content) {
+      setProblemData(res.data.data.content);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
   return (
     <section
       id="problem"
@@ -28,7 +56,7 @@ const ProblemSection = () => {
                 textTransform: "uppercase",
               }}
             >
-              The Problem
+             {problemData.badge}
             </span>
 
             {/* Title */}
@@ -44,12 +72,12 @@ const ProblemSection = () => {
                 textShadow: "0.5px 0 0 currentColor",
               }}
             >
-              Planning Events Is Time Consuming and Stressful
+              {problemData.title}
             </h1>
 
             {/* Paragraph */}
             <p 
-              className="text-muted mb-5"
+              className=" mb-5"
               style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -58,19 +86,21 @@ const ProblemSection = () => {
                 maxWidth: "520px",
               }}
             >
-              Managing vendors, budgets, and coordination manually leads to confusion and delays. Poor planning leads to stressful experiences and inconsistent event quality.
+             {problemData.description}
             </p>
 
             {/* Red X list (Grid of 6 items) */}
             <div className="row g-4">
-              {[
-                "Difficulty finding reliable service providers",
-                "Budget management issues",
-                "No clear pricing or quotations",
-                "Lack of centralized event tracking",
-                "Multiple follow-ups and communication gaps",
-                "Time-consuming manual coordination"
-              ].map((item, index) => (
+            {[
+              problemData.point1,
+              problemData.point2,
+              problemData.point3,
+              problemData.point4,
+              problemData.point5,
+              problemData.point6,
+            ]
+              .filter(Boolean)
+              .map((item, index) => (
                 <div className="col-md-6" key={index}>
                   <div className="d-flex align-items-center gap-3">
                     <div 
@@ -87,22 +117,17 @@ const ProblemSection = () => {
 
                       }}
                     >
-                      <svg 
-                        width="10" 
-                        height="10" 
-                        viewBox="0 0 10 10" 
-                        
-                        fill="none" 
-                        xmlns="http://www.w3.org/2000/svg"
+                     <span
+                        style={{
+                          color: "#EF4444",
+                          fontSize: "14px",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
                       >
-                        <path 
-                          d="M9 1L1 9M1 1L9 9" 
-                          stroke="#EF4444" 
-                          strokeWidth="2" 
-                          strokeLinecap="round" 
-                          strokeLinejoin="round"
-                        />
-                      </svg>
+                        <i className="bi bi-x-circle"></i>
+                      </span>
                     </div>
                     <span
                     className="fw-semibold"
@@ -134,7 +159,10 @@ const ProblemSection = () => {
               }}
             >
               <img 
-                src="https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1000&q=80" 
+                 src={
+                  problemData.image ||
+                  "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1000&q=80"
+                }
                 alt="Crowded Stressful Event" 
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />

@@ -65,9 +65,13 @@ function InvoiceGSTManagement() {
     const [statusFilter, setStatusFilter] = useState("all");
     const [sortOrder, setSortOrder] = useState("newest");
 
+    // ---------- NEW FILTER STATES ----------
+    const [showFilter, setShowFilter] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 4;
+    const itemsPerPage = 5;
 
     // Selection
     const [selectedInvoiceIds, setSelectedInvoiceIds] = useState([]);
@@ -292,12 +296,19 @@ function InvoiceGSTManagement() {
         return map[status] || map.Pending;
     };
 
-    // ========== FILTERING & SORTING ==========
+    // ========== FILTERING & SORTING (updated with search) ==========
     const filteredInvoices = invoices
         .filter((inv) => {
+            // Status filter
             const matchesStatus =
                 statusFilter === "all" || inv.status.toLowerCase() === statusFilter.toLowerCase();
-            return matchesStatus;
+            // Search filter (customer name, email, invoice number)
+            const matchesSearch =
+                !searchQuery ||
+                inv.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                inv.customer.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                inv.invoiceNumber.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesStatus && matchesSearch;
         })
         .sort((a, b) => {
             const dateA = new Date(a.date);
@@ -475,7 +486,7 @@ function InvoiceGSTManagement() {
                         <Card.Body className="metric-body">
                             <div className="metric-top">
                                 <div className="metric-icon-box" style={{ backgroundColor: "#F3E8FF", color: "#7C3AED" }}>
-                                    <MdOutlineAccountBalanceWallet  size={22} />
+                                    <MdOutlineAccountBalanceWallet size={22} />
                                 </div>
                                 <h2 className="metric-number">{stats.gstCollected}</h2>
                             </div>
@@ -516,6 +527,7 @@ function InvoiceGSTManagement() {
                         variant="outline-secondary"
                         className="d-flex align-items-center gap-1"
                         style={{ borderRadius: "12px", padding: "8px 18px", fontSize: "13px", fontWeight: "600" }}
+                        onClick={() => setShowFilter(!showFilter)}
                     >
                         <TbFilter2 size={16} /> Filter
                     </Button>
@@ -529,6 +541,54 @@ function InvoiceGSTManagement() {
                     </Button>
                 </div>
             </div>
+
+            {/* ===== NEW CAPSULE FILTER BAR ===== */}
+            {showFilter && (
+                <div className="mb-3 p-3" style={{ border: "1px solid #E5E7EB", borderRadius: "12px", background: "#fff" }}>
+                    <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3 justify-content-start justify-content-lg-end">
+                        {/* Search */}
+                        <div className="filter-capsule-container" style={{ padding: "4px 12px 4px 8px" }}>
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Search</span>
+                            <Form.Control
+                                type="text"
+                                placeholder="customer or invoice..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="filter-select-inner"
+                                style={{ border: "none", background: "#ffffff", height: "32px", width: "160px", fontSize: "12px", fontWeight: "400", padding: "4px 8px" }}
+                            />
+                            <span className="filter-clear-btn" onClick={() => setSearchQuery("")}>Clear</span>
+                        </div>
+
+                        {/* Status */}
+                        <div className="filter-capsule-container">
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Status</span>
+                            <Form.Select
+                                className="filter-select-inner filter-select-status"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                style={{ width: "120px" }}
+                            >
+                                <option value="all">All</option>
+                                <option value="paid">Paid</option>
+                                <option value="partial">Partial</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="pending">Pending</option>
+                            </Form.Select>
+                            <span className="filter-clear-btn" onClick={() => setStatusFilter("all")}>Clear All</span>
+                        </div>
+
+                        {/* Reset */}
+                        <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => { setSearchQuery(""); setStatusFilter("all"); }}
+                            style={{ fontSize: "12px", fontWeight: "600", borderRadius: "8px" }}
+                        >
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* ===== TABLE CARD with top border ===== */}
             <Card className="border-0 shadow-sm" style={{ borderRadius: "16px", overflow: "hidden" }}>

@@ -3,42 +3,59 @@ import HomeManagement from "./HomeManagemen";
 
 import ContactManagement from "./ContactManagement";
 import GalleryManagement from "./GalleryManagement";
-import ServiceManagement from "./ServiceManagement";
+//import ServiceManagement from "./ServiceManagement";
 import VisibilityManagement from "./VisibilityManagement";
 import LogoManagement from "./LogoManagement";
 import AboutManagement from "./AboutManagement/AboutManagement";
+import JourneyManagement from "./JourneyManagement";
+import ProblemSolutionManagement from "./ProblemSolutionManagement";
+import CustomizationManagement from "./CustomizationManagement";
+import CoreFeatureManagement from "./CoreFeatureManagement";
+import WhyChooseUsManagement from "./WhyChooseUsManagement";
 
 const CmsPage = () => {
   const [activeTab, setActiveTab] = useState("home");
 
   const tabs = [
     { id: "home", label: "Home" },
+   { id: "journey", label: "Journey Section" },
+   { id: "problem-solution", label: "Problem & Solution" },
+     { id: "customization", label: "Customization" },
+     { id: "core-features", label: "Core Features" }, 
+     { id: "why-choose-us", label: "Why Choose Us" },
     { id: "about", label: "About Us" },
     { id: "services", label: "Services" },
     { id: "gallery", label: "Gallery" },
     { id: "contact", label: "Contact Us" },
     { id: "logo", label: "Company Logo" },
-    { id: "footer", label: "Footer" },
-    { id: "banner", label: "Banner" },
     { id: "testimonial", label: "Testimonials" },
     { id: "faq", label: "FAQ" },
-    { id: "inquiry", label: "Inquiries" },
     { id: "visibility", label: "Visibility" },
-    { id: "announcement", label: "Announcement" },
-    { id: "logs", label: "Activity Logs" },
+   
   ];
 
   const renderContent = () => {
     switch (activeTab) {
       case "home":
         return  <HomeManagement />;
+      case "journey":
+         return <JourneyManagement />;
+
+      case "problem-solution":
+         return <ProblemSolutionManagement />;
+      case "customization":
+         return <CustomizationManagement />;
+      case "core-features":
+         return <CoreFeatureManagement />;
+      case "why-choose-us":
+          return <WhyChooseUsManagement />;
 
       case "about":
         return <AboutManagement/>;
-
+{/* 
       case "services":
         return <ServiceManagement/>
-
+*/}
       case "gallery":
         return <GalleryManagement/>
 
@@ -47,29 +64,6 @@ const CmsPage = () => {
 
       case "logo":
         return <LogoManagement/>
-
-      case "footer":
-        return (
-          <div>
-            <h4>Footer Management</h4>
-            <textarea
-              className="form-control"
-              placeholder="Footer Content"
-            />
-          </div>
-        );
-
-      case "banner":
-        return (
-          <div>
-            <h4>Banner Management</h4>
-            <input
-              className="form-control mb-2"
-              placeholder="Banner Title"
-            />
-            <input type="file" className="form-control" />
-          </div>
-        );
 
       case "testimonial":
         return (
@@ -101,39 +95,12 @@ const CmsPage = () => {
           </div>
         );
 
-      case "inquiry":
-        return (
-          <div>
-            <h4>Contact Inquiry Management</h4>
-            <p>List of website inquiries will appear here.</p>
-          </div>
-        );
 
       case "visibility":
         return <VisibilityManagement/>
 
-      case "announcement":
-        return (
-          <div>
-            <h4>Announcement Bar</h4>
-            <input
-              className="form-control mb-2"
-              placeholder="Announcement Text"
-            />
-            <button className="btn btn-primary">
-              Publish
-            </button>
-          </div>
-        );
 
-      case "logs":
-        return (
-          <div>
-            <h4>Activity Logs</h4>
-            <p>Admin activity history will be displayed here.</p>
-          </div>
-        );
-
+     
       default:
         return null;
     }

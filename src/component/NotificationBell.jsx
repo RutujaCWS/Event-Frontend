@@ -37,11 +37,28 @@ const NotificationBell = () => {
     }
   };
 
+  // ========== nutan changes -26-06-2026 ==========
+  // ✅ Content-based deduplication – removes duplicate notifications
+  // ========== end nutan changes ==========
   const fetchNotifications = async () => {
     setLoading(true);
     try {
       const res = await getNotifications(1, 10);
-      setNotifications(res.data);
+      // Deduplicate based on actual content (message, type, references)
+      const seen = new Set();
+      const uniqueNotifications = res.data.filter((n) => {
+        const key = `${n.message}|${n.type}|${
+          n.enquiryRef?._id || n.enquiryRef || ''
+        }|${n.quotationRef?._id || n.quotationRef || ''}|${
+          n.bookingRef?._id || n.bookingRef || ''
+        }|${n.paymentRef?._id || n.paymentRef || ''}|${
+          n.staffRef?._id || n.staffRef || ''
+        }`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setNotifications(uniqueNotifications);
       setUnreadCount(res.unreadCount);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -143,62 +160,62 @@ const NotificationBell = () => {
         )}
       </button>
 
-     {isOpen && (
-  <div className="notification-dropdown">
-    <div className="notification-dropdown-header">
-      <h3>Notifications</h3>
-      {unreadCount > 0 && (
-        <button onClick={handleMarkAllAsRead} className="mark-all-read-btn">
-          <CheckCheck size={16} /> Mark all read
-        </button>
-      )}
-    </div>
-
-    <div className="notification-list">
-      {loading ? (
-        <div className="spinner"><div className="spinner-inner"></div></div>
-      ) : notifications.length === 0 ? (
-        <div className="empty-state">
-          <Bell size={40} />
-          <span>No notifications</span>
-        </div>
-      ) : (
-        notifications.map((notification) => (
-          <div
-            key={notification._id}
-            className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
-          >
-            <div className={`notification-icon ${getTypeColor(notification.type)}`}>
-              <Bell size={16} />
-            </div>
-            <div className="notification-content">
-              <p className={`notification-message ${!notification.isRead ? 'unread' : ''}`}>
-                {notification.message}
-              </p>
-              <p className="notification-time">{formatTime(notification.createdAt)}</p>
-            </div>
-            <div className="notification-actions">
-              {!notification.isRead && (
-                <button
-                  onClick={() => handleMarkAsRead(notification._id)}
-                  className="notification-action-btn"
-                >
-                  <Check size={14} />
-                </button>
-              )}
-            </div>
+      {isOpen && (
+        <div className="notification-dropdown">
+          <div className="notification-dropdown-header">
+            <h3>Notifications</h3>
+            {unreadCount > 0 && (
+              <button onClick={handleMarkAllAsRead} className="mark-all-read-btn">
+                <CheckCheck size={16} /> Mark all read
+              </button>
+            )}
           </div>
-        ))
-      )}
-    </div>
 
-    <div className="notification-footer">
-      <Link to="/notifications" onClick={() => setIsOpen(false)}>
-        View all notifications
-      </Link>
-    </div>
-  </div>
-)}
+          <div className="notification-list">
+            {loading ? (
+              <div className="spinner"><div className="spinner-inner"></div></div>
+            ) : notifications.length === 0 ? (
+              <div className="empty-state">
+                <Bell size={40} />
+                <span>No notifications</span>
+              </div>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification._id}
+                  className={`notification-item ${!notification.isRead ? 'unread' : ''}`}
+                >
+                  <div className={`notification-icon ${getTypeColor(notification.type)}`}>
+                    <Bell size={16} />
+                  </div>
+                  <div className="notification-content">
+                    <p className={`notification-message ${!notification.isRead ? 'unread' : ''}`}>
+                      {notification.message}
+                    </p>
+                    <p className="notification-time">{formatTime(notification.createdAt)}</p>
+                  </div>
+                  <div className="notification-actions">
+                    {!notification.isRead && (
+                      <button
+                        onClick={() => handleMarkAsRead(notification._id)}
+                        className="notification-action-btn"
+                      >
+                        <Check size={14} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="notification-footer">
+            <Link to="/notifications" onClick={() => setIsOpen(false)}>
+              View all notifications
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

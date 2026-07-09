@@ -1,0 +1,503 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --primary: #0d9488;
+  --primary-light: #ddf5f0;
+  --secondary: #14b8a6;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --info: #3b82f6;
+
+  --text-primary: #111827;
+  --text-body: #374151;
+  --text-secondary: #6b7280;
+  --text-muted: #94a3b8;
+
+  --bg-page: #f9fafb;
+  --white: #ffffff;
+  --border: #e2e8f0;
+
+  --shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 1px 3px rgba(16, 24, 40, 0.06);
+
+  --font: "Manrope", sans-serif;
+}
+
+/* ====================================
+   PAGE
+==================================== */
+
+.customer-invoice-container {
+  min-height: 100vh;
+  background: var(--bg-page);
+  font-family: var(--font);
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: Semi-bold;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ===================================
+   DOWNLOAD BUTTON
+==================================== */
+
+.download-all-btn {
+  background: var(--white) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  padding: 10px 18px !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.download-all-btn:hover {
+  background: #f8fafc !important;
+}
+
+/* ====================================
+   METRIC CARDS
+==================================== */
+.metric-card {
+  min-height: 100px;
+  border-radius: 14px !important;
+}
+
+.metric-body {
+  padding: 10px;
+}
+
+.metric-top {
+  margin-bottom: 8px;
+}
+
+.metric-icon-box {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.metric-icon-box svg {
+  width: 14px;
+  height: 14px;
+}
+
+.metric-number {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.metric-title {
+  font-size: 9px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.metric-growth,
+.metric-alert,
+.caption {
+  font-size: 10px;
+  line-height: 1.2;
+}
+/* ====================================
+   ICON COLORS
+==================================== */
+
+.avatar-initials-teal {
+  background: #dff4ef;
+  color: var(--primary);
+}
+
+.avatar-initials-green {
+  background: #e8fbf2;
+  color: var(--success);
+}
+
+.avatar-initials-blue {
+  background: #eaf2ff;
+  color: var(--info);
+}
+
+.avatar-initials-orange {
+  background: #fff4df;
+  color: var(--warning);
+}
+
+/* ====================================
+   TABLE CARD
+==================================== */
+
+.card {
+  border-radius: 20px !important;
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow) !important;
+}
+
+/* ====================================
+   FILTER TABS
+==================================== */
+
+.FilterTabs {
+  display: flex !important;
+  gap: 8px !important;
+  border: 1px solid var(--border) !important;
+  background-color: #f9f9fb;
+  border-radius: 10px !important;
+  padding: 4px !important;
+}
+.status-tab-active {
+  background: var(--white) !important;
+  color: var(--primary) !important;
+  border: none !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 8px !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.status-tab-active:hover {
+  background: var(--primary-light) !important;
+  color: var(--primary) !important;
+}
+
+.status-tab-inactive {
+  background: none !important;
+  color: var(--text-secondary) !important;
+  border: none !important;
+
+  border-radius: 12px !important;
+
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.status-tab-inactive:hover {
+  background: #f8fafc !important;
+}
+
+/* ====================================
+   SEARCH
+==================================== */
+.filter-search{
+  display: flex;
+  gap: 8px;
+}
+
+.FilterButton:hover{
+  box-shadow: var(--shadow) !important;
+  transition: 0.2s ease;
+  transform: translateY(-2px);
+}
+
+.search-wrapper {
+  position: relative;
+  min-width: 260px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.search-input {
+  width: 100%;
+  height: 44px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  padding-left: 42px;
+  padding-right: 12px;
+
+  font-size: 14px;
+  font-family: var(--font);
+
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* ====================================
+   TABLE
+==================================== */
+
+.custom-table {
+  margin-bottom: 0;
+}
+
+.custom-table thead th {
+  background: #f8fafc;
+
+  padding: 14px 18px;
+
+  border-bottom: 1px solid var(--border);
+
+  color: #6b7280 !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.custom-table tbody td {
+  padding: 18px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.table-hover > tbody > tr:hover > * {
+  background-color: #dff9f7 !important;
+}
+
+.custom-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ====================================
+   BADGES
+==================================== */
+
+.badge-status {
+  padding: 6px 12px;
+  border-radius: 30px;
+
+  display: inline-flex;
+  align-items: center;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-paid {
+  background: #e8fbf2;
+  color: var(--success);
+}
+
+.badge-partial {
+  background: #fff7e8;
+  color: var(--warning);
+}
+
+.badge-pending {
+  background: #fdecec;
+  color: var(--danger);
+}
+
+
+/* ====================================
+   PAGINATION
+==================================== */
+
+.custom-pagination-btn {
+  width: 40px;
+  height: 40px;
+
+  border-radius: 10px;
+  border: 1px solid var(--border);
+
+  background: var(--white);
+  color: var(--text-primary);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: 0.2s;
+}
+
+.custom-pagination-btn:hover:not(:disabled) {
+  background: #f8fafc;
+}
+
+.custom-pagination-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+
+.custom-pagination-btn:disabled {
+  opacity: 0.4;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 992px) {
+  .page-title {
+    font-size: 24px;
+  }
+
+  .metric-number {
+    font-size: 30px;
+  }
+
+  .metric-body {
+    padding: 18px;
+  }
+
+  .filter-search {
+    width: 100%;
+  }
+
+  .search-wrapper {
+    flex: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .customer-invoice-container {
+    padding: 16px !important;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+
+  .page-subtitle {
+    font-size: 14px;
+  }
+
+  /* Header */
+
+  .customer-invoice-container .mb-4:first-child {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 12px;
+  }
+
+  .download-all-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Search + Filter */
+
+  .filter-search {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .search-wrapper {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .FilterButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Tabs */
+
+  .FilterTabs {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .FilterTabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .status-tab-active,
+  .status-tab-inactive {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Cards */
+
+  .metric-number {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 576px) {
+  .customer-invoice-container {
+    padding: 12px !important;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .page-subtitle {
+    font-size: 13px;
+  }
+
+  .metric-body {
+    padding: 16px;
+  }
+
+  .metric-number {
+    font-size: 22px;
+  }
+
+  .metric-title {
+    font-size: 11px;
+  }
+
+  .metric-growth,
+  .metric-alert,
+  .caption {
+    font-size: 11px;
+  }
+
+  .metric-icon-box {
+    width: 46px;
+    height: 46px;
+  }
+
+  .metric-icon-box svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .custom-pagination-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .search-input {
+    font-size: 13px;
+    height: 40px;
+  }
+
+  .custom-table {
+    min-width: 700px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+}

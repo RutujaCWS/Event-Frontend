@@ -1,17 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { Bell, Check, CheckCheck, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import './notification.css';
+import { 
+  FiBell, 
+  FiMail, 
+  FiCheckCircle, 
+  FiXCircle, 
+  FiCalendar, 
+  FiUser, 
+  FiAlertCircle,
+  FiArrowLeft,
+  FiCheck,
+  FiCheckCircle as FiCheckAll
+} from 'react-icons/fi';
 import {
   getNotifications,
   markAsRead,
   markAllAsRead,
 } from '../../../services/notificationService';
+import './notification.css';
 
 // ========== nutan changes -26-06-2026 ==========
+
+// ✅ Icon mapping for the box (same as customer dashboard)
+const getIconForType = (type) => {
+  const icons = {
+    ENQUIRY: FiMail,
+    QUOTATION_SENT: FiCheckCircle,
+    QUOTATION_APPROVED: FiCheckCircle,
+    QUOTATION_REJECTED: FiXCircle,
+    BOOKING_CONFIRMED: FiCalendar,
+    BOOKING_CANCELLED: FiXCircle,
+    PAYMENT_RECEIVED: FiCheckCircle,
+    LEAD_ASSIGNED: FiUser,
+    SYSTEM_ALERT: FiAlertCircle,
+    ENQUIRY_STATUS_UPDATED: FiBell,
+  };
+  return icons[type] || FiBell;
+};
+
+// ✅ Color mapping for the box (same as customer dashboard)
+const getColorForType = (type) => {
+  const colors = {
+    ENQUIRY: 'blue',
+    QUOTATION_SENT: 'purple',
+    QUOTATION_APPROVED: 'green',
+    QUOTATION_REJECTED: 'red',
+    BOOKING_CONFIRMED: 'emerald',
+    BOOKING_CANCELLED: 'rose',
+    PAYMENT_RECEIVED: 'teal',
+    LEAD_ASSIGNED: 'orange',
+    SYSTEM_ALERT: 'gray',
+    ENQUIRY_STATUS_UPDATED: 'cyan',
+  };
+  return colors[type] || 'gray';
+};
+
+// ✅ Label mapping (shorter for the meta, can keep full for message)
+const getTypeLabel = (type) => {
+  const labels = {
+    ENQUIRY: 'Enquiry',
+    QUOTATION_SENT: 'Quotation Sent',
+    QUOTATION_APPROVED: 'Quotation Approved',
+    QUOTATION_REJECTED: 'Quotation Rejected',
+    BOOKING_CONFIRMED: 'Booking Confirmed',
+    BOOKING_CANCELLED: 'Booking Cancelled',
+    PAYMENT_RECEIVED: 'Payment Received',
+    LEAD_ASSIGNED: 'Lead Assigned',
+    SYSTEM_ALERT: 'System Alert',
+    ENQUIRY_STATUS_UPDATED: 'Status Updated',
+  };
+  return labels[type] || 'Notification';
+};
+
 const Notifications = () => {
   const navigate = useNavigate();
-
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -26,7 +88,14 @@ const Notifications = () => {
     setLoading(true);
     try {
       const res = await getNotifications(page, 20);
-      setNotifications(res.data);
+      const seen = new Set();
+      const unique = res.data.filter((n) => {
+        const key = `${n.message}|${n.type}|${n.enquiryRef?._id || n.enquiryRef || ''}|${n.quotationRef?._id || n.quotationRef || ''}|${n.bookingRef?._id || n.bookingRef || ''}|${n.paymentRef?._id || n.paymentRef || ''}|${n.staffRef?._id || n.staffRef || ''}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+      setNotifications(unique);
       setTotalPages(res.pagination?.pages || 1);
       setUnreadCount(res.unreadCount || 0);
     } catch (error) {
@@ -57,13 +126,9 @@ const Notifications = () => {
   const goBack = () => {
     const userStr = localStorage.getItem('user');
     const user = userStr ? JSON.parse(userStr) : null;
-    if (user?.role === 'admin') {
-      navigate('/admin/dashboard');
-    } else if (user?.role === 'staff') {
-      navigate('/staff/dashboard');
-    } else {
-      navigate('/customer/dashboard');
-    }
+    if (user?.role === 'admin') navigate('/admin/dashboard');
+    else if (user?.role === 'staff') navigate('/staff/dashboard');
+    else navigate('/customer/dashboard');
   };
 
   const formatTime = (date) => {
@@ -78,143 +143,109 @@ const Notifications = () => {
     return new Date(date).toLocaleDateString();
   };
 
-  const getTypeLabel = (type) => {
-    const labels = {
-      ENQUIRY: 'New Enquiry',
-      QUOTATION_SENT: 'Quotation Sent',
-      QUOTATION_APPROVED: 'Quotation Approved',
-      QUOTATION_REJECTED: 'Quotation Rejected',
-      BOOKING_CONFIRMED: 'Booking Confirmed',
-      BOOKING_CANCELLED: 'Booking Cancelled',
-      PAYMENT_RECEIVED: 'Payment Received',
-      LEAD_ASSIGNED: 'Lead Assigned',
-      SYSTEM_ALERT: 'System Alert',
-      ENQUIRY_STATUS_UPDATED: 'Status Updated',
-    };
-    return labels[type] || 'Notification';
-  };
-
-  const getTypeColor = (type) => {
-    const colors = {
-      ENQUIRY: 'bg-blue-100 text-blue-700',
-      QUOTATION_SENT: 'bg-purple-100 text-purple-700',
-      QUOTATION_APPROVED: 'bg-green-100 text-green-700',
-      QUOTATION_REJECTED: 'bg-red-100 text-red-700',
-      BOOKING_CONFIRMED: 'bg-emerald-100 text-emerald-700',
-      BOOKING_CANCELLED: 'bg-rose-100 text-rose-700',
-      PAYMENT_RECEIVED: 'bg-teal-100 text-teal-700',
-      LEAD_ASSIGNED: 'bg-orange-100 text-orange-700',
-      SYSTEM_ALERT: 'bg-gray-100 text-gray-700',
-      ENQUIRY_STATUS_UPDATED: 'bg-cyan-100 text-cyan-700',
-    };
-    return colors[type] || 'bg-gray-100 text-gray-700';
-  };
-
   if (loading && page === 1) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+      <div className="notif-page-loading">
+        <div className="spinner"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={goBack}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Go back"
-          >
-            <ArrowLeft size={20} />
+    <div className="notif-page">
+      {/* Header – unchanged */}
+      <div className="notif-page-header">
+        <div className="notif-page-header-left">
+          <button onClick={goBack} className="notif-page-back" aria-label="Go back">
+            <FiArrowLeft size={22} />
           </button>
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
+          <h1 className="notif-page-title">Notifications</h1>
           {unreadCount > 0 && (
-            <span className="bg-blue-100 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
-              {unreadCount} unread
-            </span>
+            <span className="notif-page-badge">{unreadCount} new</span>
           )}
         </div>
         {unreadCount > 0 && (
-          <button
-            onClick={handleMarkAllAsRead}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition"
-          >
-            <CheckCheck size={18} />
+          <button onClick={handleMarkAllAsRead} className="notif-page-mark-all">
+            <FiCheckAll size={18} />
             Mark all read
           </button>
         )}
       </div>
 
+      {/* Notification list – now with icon boxes, like the dashboard widget */}
       {notifications.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-gray-400 bg-gray-50 rounded-lg">
-          <Bell size={64} className="mb-4 opacity-30" />
-          <p className="text-lg font-medium">No notifications</p>
-          <p className="text-sm">You're all caught up!</p>
+        <div className="notif-empty">
+          <FiBell size={48} />
+          <p>No notifications</p>
+          <span>You're all caught up!</span>
         </div>
       ) : (
-        <div className="space-y-3">
-          {notifications.map((notification) => (
-            <div
-              key={notification._id}
-              className={`p-4 rounded-lg border transition ${
-                !notification.isRead
-                  ? 'bg-blue-50 border-blue-200'
-                  : 'bg-white border-gray-200 hover:shadow-sm'
-              }`}
-            >
-              <div className="flex items-start gap-4">
-                <div className={`flex-shrink-0 px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(notification.type)}`}>
-                  {getTypeLabel(notification.type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm ${!notification.isRead ? 'font-semibold text-gray-900' : 'text-gray-700'}`}>
-                    {notification.message}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-400">
-                    <span>{formatTime(notification.createdAt)}</span>
-                    {notification.triggeredBy?.name && (
-                      <span>• By {notification.triggeredBy.name}</span>
-                    )}
-                    {!notification.isRead && (
-                      <span className="text-blue-600 font-medium">• New</span>
-                    )}
+        <div className="notif-list">
+          {notifications.map((notification) => {
+            const Icon = getIconForType(notification.type);
+            const color = getColorForType(notification.type);
+            const isUnread = !notification.isRead;
+
+            return (
+              <div
+                key={notification._id}
+                className={`notification-row ${isUnread ? 'bg-blue-50/50' : ''}`}
+                style={{ padding: '12px 16px', borderBottom: '1px solid #f1f5f9' }}
+              >
+                <div className="notification-left">
+                  {/* ✅ Icon Box – same as dashboard widget */}
+                  <div className={`notification-icon-box ${color}`}>
+                    <Icon size={15} />
+                  </div>
+
+                  <div className="notification-content">
+                    <h6 style={{ fontSize: '0.9rem', fontWeight: 600, margin: 0 }}>
+                      {notification.message}
+                    </h6>
+                    <p style={{ fontSize: '0.75rem', color: '#64748b', margin: '2px 0' }}>
+                      {getTypeLabel(notification.type)}
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', fontSize: '0.7rem', color: '#94a3b8' }}>
+                      <span>{formatTime(notification.createdAt)}</span>
+                      {notification.triggeredBy?.name && (
+                        <span>• {notification.triggeredBy.name}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {!notification.isRead && (
+
+                {/* ✅ Dot for unread + Mark as read button */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  {isUnread && (
                     <button
                       onClick={() => handleMarkAsRead(notification._id)}
-                      className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-100 transition"
+                      className="notif-item-mark-read"
                       title="Mark as read"
                     >
-                      <Check size={18} />
+                      <FiCheck size={16} />
                     </button>
                   )}
+                  <span className={`notification-dot ${isUnread ? '' : 'bg-transparent'}`} />
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
+      {/* Pagination – unchanged */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-3 mt-6">
+        <div className="notif-pagination">
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="px-4 py-2 text-sm border rounded-lg disabled:opacity-50 hover:bg-gray-50"
           >
             Previous
           </button>
-          <span className="text-sm text-gray-600">
-            Page {page} of {totalPages}
-          </span>
+          <span>Page {page} of {totalPages}</span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="px-4 py-2 text-sm border rounded-lg disabled:opacity-50 hover:bg-gray-50"
           >
             Next
           </button>
@@ -225,3 +256,4 @@ const Notifications = () => {
 };
 
 export default Notifications;
+// ========== end nutan changes ==========

@@ -17,15 +17,17 @@ const ActiveBookings = ({ bookings }) => {
           </div>
         </div>
 
-      <div className="row g-2">
+      <div className="d-flex gap-2 flex-nowrap overflow-auto pb-2">
 
         {bookings.map((booking) => (
-          <div className="col-lg-3 col-md-6" key={booking._id}>
+          <div className="flex-shrink-0" style={{ width: "220px" }} key={booking._id}>
             <BookingCard booking={booking} />
           </div>
         ))}
 
       </div>
+
+      
     </>
   );
 };

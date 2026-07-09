@@ -1,0 +1,368 @@
+/* ============================================
+   ReportsManagement.css
+   Shared styles for UserManagement and ReportsManagement
+   ============================================ */
+
+/* ---------- Metric Cards ---------- */
+.metric-card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  height: 100%;
+  min-height: 120px;
+  transition: all 0.2s ease;
+}
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+.metric-body {
+  padding: 1.25rem 1.25rem 1rem;
+}
+.metric-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.metric-icon-box {
+  width: 50px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.metric-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  line-height: 1.2;
+}
+.metric-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6B7280;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+}
+.metric-growth,
+.metric-alert {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #10B981;
+}
+.metric-alert {
+  color: #EF4444;
+}
+
+/* ---------- Tab Pills ---------- */
+.custom-pill-tabs {
+  display: inline-flex;
+  background: #F1F5F9;
+  border-radius: 40px;
+  padding: 4px;
+}
+.tab-pill-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.tab-pill-btn.active {
+  background: #FFFFFF;
+  color: #0F766E;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.tab-pill-btn:hover:not(.active) {
+  color: #1E293B;
+}
+
+/* ---------- Filter Capsules (like UserManagement) ---------- */
+.filter-capsule-container {
+  display: inline-flex;
+  align-items: center;
+  background: #FFFFFF;
+  border: 1px solid #D9DEE8;
+  border-radius: 40px;
+  padding: 2px 6px 2px 12px;
+  transition: all 0.2s;
+  height: 34px;
+}
+.filter-capsule-container:focus-within {
+  border-color: #0F766E;
+  box-shadow: 0 0 0 3px rgba(15,118,110,0.15);
+}
+.filter-select-inner {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 20px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+  cursor: pointer;
+  outline: none;
+  height: 30px;
+  width: auto;
+  min-width: 80px;
+}
+.filter-select-inner:focus {
+  box-shadow: none !important;
+}
+.filter-select-inner option {
+  font-weight: 400;
+}
+.filter-clear-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94A3B8;
+  padding: 0 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+.filter-clear-btn:hover {
+  color: #EF4444;
+}
+
+/* Individual filter select widths (optional) */
+.filter-select-status {
+  min-width: 100px;
+}
+.filter-select-roles {
+  min-width: 100px;
+}
+
+/* Sort select (standalone, outside capsule) */
+.filter-sort-select {
+  border: 1px solid #D9DEE8;
+  border-radius: 40px;
+  padding: 0 28px 0 14px;
+  height: 34px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1E293B;
+  background: #FFFFFF;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 10px;
+}
+.filter-sort-select:focus {
+  border-color: #0F766E;
+  box-shadow: 0 0 0 3px rgba(15,118,110,0.15);
+}
+
+/* ---------- Buttons (Export / Add) ---------- */
+.btn-export,
+.btn-add-customer {
+  border: 1px solid #D9DEE8;
+  background: #FFFFFF;
+  color: #1E293B;
+  padding: 6px 18px;
+  border-radius: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-export:hover {
+  background: #F1F5F9;
+}
+.btn-add-customer {
+  background: #0F766E;
+  border-color: #0F766E;
+  color: #FFFFFF;
+}
+.btn-add-customer:hover {
+  background: #0D5F58;
+  border-color: #0D5F58;
+  color: #FFFFFF;
+}
+
+/* ---------- Custom Table ---------- */
+.custom-table {
+  font-family: 'Manrope', sans-serif;
+}
+.custom-table thead th {
+  background: #F8FAFC;
+  color: #64748B;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 12px 16px;
+  border-bottom: 1px solid #E9EDF2;
+}
+.custom-table tbody td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  font-size: 13px;
+  color: #1E293B;
+  border-bottom: 1px solid #F1F4F9;
+}
+.custom-table tbody tr:hover {
+  background: #F8FAFC;
+}
+
+.user-name {
+  font-weight: 600;
+  line-height: 1.3;
+}
+.user-email-text,
+.user-mobile-text,
+.user-city-text,
+.user-joined-text {
+  font-size: 12px;
+  color: #64748B;
+}
+.user-bookings-text,
+.user-spend-text {
+  font-weight: 500;
+}
+.user-spend-text {
+  font-weight: 600;
+  color: #0F766E;
+}
+
+/* Status badge with dot */
+.badge-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge-dot-active {
+  background: #DCFCE7;
+  color: #15803D;
+}
+.badge-dot-vip {
+  background: #FEF3C7;
+  color: #B45309;
+}
+.badge-dot-inactive {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ---------- Pagination ---------- */
+.custom-pagination-btn {
+  border: 1px solid #E5E7EB;
+  background: #FFFFFF;
+  color: #1E293B;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.custom-pagination-btn:hover:not(:disabled) {
+  background: #F1F5F9;
+}
+.custom-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.custom-pagination-btn.active {
+  background: #0F766E;
+  border-color: #0F766E;
+  color: #FFFFFF;
+}
+.body-small {
+  font-size: 13px;
+  color: #64748B;
+}
+
+/* ---------- Modals (premium) ---------- */
+.premium-modal .modal-content {
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  padding: 0.5rem 0;
+}
+.premium-modal .modal-header {
+  border-bottom: none;
+  padding: 1.5rem 1.75rem 0.5rem;
+}
+.premium-modal .modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+}
+.premium-modal .modal-body {
+  padding: 1rem 1.75rem 1.5rem;
+}
+.premium-modal .modal-footer {
+  border-top: none;
+  padding: 0.5rem 1.75rem 1.75rem;
+}
+.btn-cancel {
+  border-radius: 40px;
+  padding: 8px 22px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #64748B;
+  border-color: #D9DEE8;
+}
+.btn-cancel:hover {
+  background: #F1F5F9;
+}
+.btn-submit {
+  background: #0F766E;
+  border: none;
+  border-radius: 40px;
+  padding: 8px 22px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #FFFFFF;
+}
+.btn-submit:hover {
+  background: #0D5F58;
+}
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 768px) {
+  .filter-capsule-container {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .filter-select-inner {
+    flex: 1;
+    min-width: 60px;
+  }
+  .filter-sort-select {
+    width: 100%;
+  }
+  .metric-number {
+    font-size: 20px;
+  }
+}

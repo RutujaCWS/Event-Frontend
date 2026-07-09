@@ -1,6 +1,45 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getCmsSection } from "../../services/cmsService";
 
 const WhyChooseUsSection = () => {
+  const [cms, setCms] = useState(null);
+
+  useEffect(() => {
+    fetchCms();
+  }, []);
+
+  const fetchCms = async () => {
+    try {
+      const res = await getCmsSection("why-choose-us");
+
+      if (res.data?.data?.content) {
+        const content = res.data.data.content;
+
+        setCms({
+          ...content,
+
+          customerPoints:
+            typeof content.customerPoints === "string"
+              ? JSON.parse(content.customerPoints)
+              : content.customerPoints || [],
+
+          businessPoints:
+            typeof content.businessPoints === "string"
+              ? JSON.parse(content.businessPoints)
+              : content.businessPoints || [],
+
+          benefitPoints:
+            typeof content.benefitPoints === "string"
+              ? JSON.parse(content.benefitPoints)
+              : content.benefitPoints || [],
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (!cms) return null;
   return (
     <section
       id="why-choose-us"
@@ -25,7 +64,7 @@ const WhyChooseUsSection = () => {
                 textTransform: "uppercase",
               }}
           >
-            Why Choose Us
+           {cms.badge}
           </span>
           <h1
             className="fw-bold"
@@ -41,7 +80,7 @@ const WhyChooseUsSection = () => {
 
               }}
           >
-            Why Choose Our Event Management Platform
+            {cms.title}
           </h1>
         </div>
 
@@ -63,7 +102,11 @@ const WhyChooseUsSection = () => {
             }}
           >
             <img
-              src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80"
+              src={
+                cms?.leftImage ||
+                "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=600&q=80"
+              }
+
               alt="Creativity Singer"
               style={{
                 width: "100%",
@@ -89,11 +132,12 @@ const WhyChooseUsSection = () => {
                 paddingLeft: "10px",
               }}
             >
-              Where
-              <br />
-              Creativity Meets
-              <br />
-              Excellence
+             {cms.heading?.split("\n").map((line, index) => (
+              <React.Fragment key={index}>
+                {line}
+                <br />
+              </React.Fragment>
+            ))}
             </h2>
 
             {/* Customers Section */}
@@ -108,33 +152,47 @@ const WhyChooseUsSection = () => {
                 textTransform: "uppercase",
               }}
               >
-                For Customers
+                {cms.customerTitle}
               </span>
               <div className="d-flex flex-column gap-3">
-                {[
-                  "Hassle-free event planning",
-                  "Transparent pricing"
-                ].map((item, index) => (
-                  <div className="d-flex align-items-center gap-3" key={index}>
-                    <div 
-                      style={{
-                        width: "22px",
-                        height: "22px",
-                        borderRadius: "50%",
-                        backgroundColor: "rgba(10, 132, 132, 0.08)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0
-                      }}
+               {cms.customerPoints?.map((item, index) => (
+                <div className="d-flex align-items-center gap-3" key={index}>
+                  <div
+                    style={{
+                      width: "22px",
+                      height: "22px",
+                      borderRadius: "50%",
+                      backgroundColor: "rgba(10,132,132,0.08)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <svg
+                      width="10"
+                      height="8"
+                      viewBox="0 0 12 9"
+                      fill="none"
                     >
-                      <svg width="10" height="8" viewBox="0 0 12 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10.6667 1L3.99997 7.66667L1.3333 5" stroke="#0a8484" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
-                    </div>
-                    <span className="fw-semibold" style={{ color: "#334155", fontSize: "12px" }}>{item}</span>
+                      <path
+                        d="M10.6667 1L3.99997 7.66667L1.3333 5"
+                        stroke="#0a8484"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </div>
-                ))}
+
+                  <span
+                    className="fw-semibold"
+                    style={{ color: "#334155", fontSize: "12px" }}
+                  >
+                    {item}
+                  </span>
+                </div>
+              ))}
               </div>
             </div>
 
@@ -150,13 +208,10 @@ const WhyChooseUsSection = () => {
                 textTransform: "uppercase",
               }}
               >
-                For Business Owners
+               {cms.businessTitle}
               </span>
               <div className="d-flex flex-column gap-3">
-                {[
-                  "Better lead management",
-                  "Increased conversions"
-                ].map((item, index) => (
+                {cms.businessPoints?.map((item, index) => (
                   <div className="d-flex align-items-center gap-3" key={index}>
                     <div 
                       style={{
@@ -192,14 +247,10 @@ const WhyChooseUsSection = () => {
                 textTransform: "uppercase",
               }}
               >
-                Overall Benefits
+               {cms.benefitTitle}
               </span>
               <div className="d-flex flex-column gap-3">
-                {[
-                  "Reduced planning stress",
-                  "Scalable event business",
-                  "Improved event quality"
-                ].map((item, index) => (
+                {cms.benefitPoints?.map((item, index) => (
                   <div className="d-flex align-items-center gap-3" key={index}>
                     <div 
                       style={{
@@ -240,7 +291,10 @@ const WhyChooseUsSection = () => {
               }}
             >
               <img
-                src="https://images.unsplash.com/photo-1504439468489-c8920d796a29?auto=format&fit=crop&w=600&q=80"
+              src={
+                cms?.rightImage ||
+                "https://images.unsplash.com/photo-1504439468489-c8920d796a29?auto=format&fit=crop&w=600&q=80"
+              }
                 alt="Excellence Event Lights"
                 style={{
                   width: "100%",

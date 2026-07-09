@@ -4,7 +4,7 @@ import StatsCards from "./StatsCards";
 import UpcomingEvents from "./UpcomingEvents";
 import EnquiryStatus from "./EnquiryStatus";
 import PendingPayments from "./PendingPayments";
-import Notifications from "./../../shared/Notifications/Notifications";
+import Notifications from "./Notifications";
 import QuickActions from "./QuickActions";
 import {
   dashboardStats,

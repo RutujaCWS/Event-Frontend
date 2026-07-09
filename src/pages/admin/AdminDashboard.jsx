@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Row, Col, Table, Button, Spinner
+  Row, Col, Table, Button, Spinner, Card
 } from "react-bootstrap";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -12,11 +12,14 @@ import {
   FaFileInvoiceDollar, FaRegCalendarAlt, FaDownload,
   FaEllipsisV, FaExclamationTriangle, FaEdit
 } from "react-icons/fa";
+import "./Styles/UserManagement.css"
 
-import { TbTrendingUp, TbInfoCircle,TbMessageQuestion,TbConfetti} from "react-icons/tb";
-import { LuCalendarCheck2 , LuClockAlert } from "react-icons/lu";
+import { TbTrendingUp, TbInfoCircle, TbMessageQuestion, TbConfetti } from "react-icons/tb";
+import { LuCalendarCheck2, LuClockAlert } from "react-icons/lu";
 import { RiDeleteBinLine } from "react-icons/ri"; // <-- NEW import
 import { getTotalEnquiries, getRecentEnquiries } from "../../services/leadService";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // Custom dot renderer – only middle months have circles
 const CustomDot = (props) => {
@@ -87,7 +90,7 @@ const AdminDashboard = () => {
 
   // Mock upcoming events
   const upcomingEvents = [
-    
+
     { date: "21", month: "JUN", name: "TechCorp Annual Meet", desc: "Convention Hall • 500 pax", status: "Setup", badgeClass: "badge-custom-setup" },
     { date: "25", month: "JUN", name: "Patel Birthday Gala", desc: "Garden Venue • 120 guests", status: "Pending", badgeClass: "badge-custom-pending" },
     { date: "28", month: "JUN", name: "Gupta Reception", desc: "Rooftop Terrace • 200 pax", status: "Scheduled", badgeClass: "badge-custom-scheduled" },
@@ -167,6 +170,103 @@ const AdminDashboard = () => {
     }
   };
 
+const handleExportReport = () => {
+  const doc = new jsPDF();
+
+  // Title
+  doc.setFontSize(18);
+  doc.setTextColor(58, 95, 190);
+  doc.text("Creative Web Solutions", 14, 18);
+
+  doc.setFontSize(14);
+  doc.setTextColor(0, 0, 0);
+  doc.text("Event Management System", 14, 28);
+
+  doc.setFontSize(16);
+  doc.text("Dashboard Report", 14, 42);
+
+  doc.setFontSize(10);
+  doc.text(
+    `Generated On : ${new Date().toLocaleString()}`,
+    14,
+    50
+  );
+
+  // Dashboard Summary
+  doc.setFontSize(13);
+  doc.text("Dashboard Summary", 14, 65);
+
+  autoTable(doc, {
+    startY: 70,
+    theme: "grid",
+    head: [["Metric", "Value"]],
+    body: [
+      ["Total Enquiries", totalEnquiriesCount],
+      ["Total Bookings", "60"],
+      ["Monthly Revenue", "₹8.4L"],
+      ["Upcoming Events", "25"],
+      ["Pending Payments", "₹2.1L"],
+    ],
+  });
+
+  // Recent Bookings
+  doc.text(
+    "Recent Bookings",
+    14,
+    doc.lastAutoTable.finalY + 15
+  );
+
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 20,
+    head: [["Booking ID", "Client", "Date", "Amount", "Status"]],
+    body: bookingsData.map((item) => [
+      item.id,
+      item.name,
+      item.date,
+      item.amount,
+      item.status,
+    ]),
+  });
+
+  // User Management
+  doc.text(
+    "User Management",
+    14,
+    doc.lastAutoTable.finalY + 15
+  );
+
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 20,
+    head: [["Name", "Email", "Contact", "Status"]],
+    body: usersData.map((item) => [
+      item.name,
+      item.email,
+      item.contact,
+      item.status,
+    ]),
+  });
+
+  // Pending Payments
+  doc.text(
+    "Pending Payments",
+    14,
+    doc.lastAutoTable.finalY + 15
+  );
+
+  autoTable(doc, {
+    startY: doc.lastAutoTable.finalY + 20,
+    head: [["Booking ID", "Client", "Due Date", "Amount", "Status"]],
+    body: pendingPaymentsData.map((item) => [
+      item.id,
+      item.name,
+      item.date,
+      item.amount,
+      item.status,
+    ]),
+  });
+
+  doc.save("Dashboard_Report.pdf");
+};
   if (loading) {
     return (
       <div className="d-flex align-items-center justify-content-center" style={{ minHeight: "60vh" }}>
@@ -175,8 +275,8 @@ const AdminDashboard = () => {
     );
   }
 
-  return (
-    <div>
+ return (
+  <div>
       {/* Top Title & Actions Bar */}
       <div className="d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between gap-3 mb-4">
         <h2 className="page-title">Dashboard Overview</h2>
@@ -185,121 +285,128 @@ const AdminDashboard = () => {
             <FaRegCalendarAlt />
             <span>June 2026</span>
           </button>
-          <button className="dashboard-btn-primary">
-            <FaDownload />
-            <span>Export Report</span>
-          </button>
+         <button
+  className="dashboard-btn-primary"
+  onClick={handleExportReport}
+>
+  <FaDownload />
+  <span>Export Report</span>
+</button>
         </div>
       </div>
 
       {/* 5 KPI Cards Row */}
-      <div className="d-flex flex-wrap gap-3 mb-4">
+      <Row className="mb-4 g-3 g-md-4">
         {/* Card 1: Enquiries */}
-        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-          <div className="kpi-card-custom d-flex flex-column justify-content-between">
-            <div>
-              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-                <div className="kpi-icon-container kpi-icon-teal">
-                  <TbMessageQuestion />
+        <Col xl lg={4} md={6} sm={6} xs={6}>
+          <Card className="metric-card">
+            <Card.Body className="metric-body">
+              <div className="metric-top">
+                <div
+                  className="metric-icon-box"
+                  style={{ backgroundColor: "#DDF5F0", color: "#0F766E" }}
+                >
+                  <TbMessageQuestion size={20} />
                 </div>
-                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-                  {totalEnquiriesCount}
-                </h3>
+                <h2 className="metric-number">{totalEnquiriesCount}</h2>
               </div>
-              <p className="kpi-label">Total Enquiries</p>
-            </div>
-            <div className="kpi-trend trend-up">
-              <TbTrendingUp size={16} />
-              <span>+18% this month</span>
-            </div>
-          </div>
-        </div>
+              <div className="metric-title">TOTAL ENQUIRIES</div>
+              <div className="metric-growth">
+                <TbTrendingUp size={14} />
+                <span>+18% this month</span>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Card 2: Bookings */}
-        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-          <div className="kpi-card-custom d-flex flex-column justify-content-between">
-            <div>
-              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-                <div className="kpi-icon-container kpi-icon-blue">
-                  <LuCalendarCheck2 />
+        <Col xl lg={4} md={6} sm={6} xs={6}>
+          <Card className="metric-card">
+            <Card.Body className="metric-body">
+              <div className="metric-top">
+                <div
+                  className="metric-icon-box"
+                  style={{ backgroundColor: "#E8F0FE", color: "#2563EB" }}
+                >
+                  <LuCalendarCheck2 size={20} />
                 </div>
-                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-                  142
-                </h3>
+                <h2 className="metric-number">142</h2>
               </div>
-              <p className="kpi-label">Total Bookings</p>
-            </div>
-            <div className="kpi-trend trend-up">
-              <TbTrendingUp size={16} />
-              <span>+12% this month</span>
-            </div>
-          </div>
-        </div>
+              <div className="metric-title">TOTAL BOOKINGS</div>
+              <div className="metric-growth">
+                <TbTrendingUp size={14} />
+                <span>+12% this month</span>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Card 3: Monthly Revenue */}
-        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-          <div className="kpi-card-custom d-flex flex-column justify-content-between">
-            <div>
-              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-                <div className="kpi-icon-container kpi-icon-green">
-                  <FaRupeeSign />
+        <Col xl lg={4} md={6} sm={6} xs={6}>
+          <Card className="metric-card">
+            <Card.Body className="metric-body">
+              <div className="metric-top">
+                <div
+                  className="metric-icon-box"
+                  style={{ backgroundColor: "#E7F4EE", color: "#14B8A6" }}
+                >
+                  <FaRupeeSign size={20} />
                 </div>
-                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-                  ₹8.4L
-                </h3>
+                <h2 className="metric-number">₹8.4L</h2>
               </div>
-              <p className="kpi-label">Monthly Revenue</p>
-            </div>
-            <div className="kpi-trend trend-up">
-              <TbTrendingUp size={16} />
-              <span>+14% this month</span>
-            </div>
-          </div>
-        </div>
+              <div className="metric-title">MONTHLY REVENUE</div>
+              <div className="metric-growth">
+                <TbTrendingUp size={14} />
+                <span>+14% this month</span>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Card 4: Upcoming Events */}
-        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-          <div className="kpi-card-custom d-flex flex-column justify-content-between">
-            <div>
-              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-                <div className="kpi-icon-container kpi-icon-orange">
-                  <TbConfetti />
+        <Col xl lg={4} md={6} sm={6} xs={6}>
+          <Card className="metric-card">
+            <Card.Body className="metric-body">
+              <div className="metric-top">
+                <div
+                  className="metric-icon-box"
+                  style={{ backgroundColor: "#FEF3D7", color: "#D97706" }}
+                >
+                  <TbConfetti size={20} />
                 </div>
-                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-                  25
-                </h3>
+                <h2 className="metric-number">25</h2>
               </div>
-              <p className="kpi-label">Upcoming Events</p>
-            </div>
-            <div className="kpi-trend" style={{ color: "#3b82f6", cursor: "pointer" }}>
-              <TbInfoCircle size={14} style={{ marginRight: "4px" }} />
-              <span>Next 30 days</span>
-            </div>
-          </div>
-        </div>
+              <div className="metric-title">UPCOMING EVENTS</div>
+              <div className="metric-growth text-primary">
+                <TbInfoCircle size={14} />
+                <span>Next 30 days</span>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
 
         {/* Card 5: Pending Payments */}
-        <div className="flex-fill" style={{ minWidth: "180px", flex: "1 1 0px" }}>
-          <div className="kpi-card-custom d-flex flex-column justify-content-between">
-            <div>
-              <div className="d-flex align-items-start gap-1 mb-1 gap-3">
-                <div className="kpi-icon-container kpi-icon-red">
-                  <LuClockAlert />
+        <Col xl lg={4} md={6} sm={6} xs={6}>
+          <Card className="metric-card">
+            <Card.Body className="metric-body">
+              <div className="metric-top">
+                <div
+                  className="metric-icon-box"
+                  style={{ backgroundColor: "#FDE8E8", color: "#EF4444" }}
+                >
+                  <LuClockAlert size={20} />
                 </div>
-                <h3 className="kpi-value" style={{ marginBottom: 0, lineHeight: 1.4 }}>
-                  ₹2.1L
-                </h3>
+                <h2 className="metric-number">₹2.1L</h2>
               </div>
-              <p className="kpi-label">Pending Payments</p>
-            </div>
-            <div className="kpi-trend trend-down">
-              <FaExclamationTriangle size={11} />
-              <span>22 overdue</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
+              <div className="metric-title">PENDING PAYMENTS</div>
+              <div className="metric-alert">
+                <FaExclamationTriangle size={14} />
+                <span>22 overdue</span>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
       {/* Middle Section: Chart & Enquiry distribution */}
       <Row className="mb-4">
         {/* Revenue Trend Chart */}

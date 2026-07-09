@@ -4,6 +4,7 @@ import { formatDate } from "../../../utils/formatDate";
 import { createQuotation } from "../../../services/quotationService"
 import { getTaxDiscountSettings } from "../../../services/settingsService";
 import { useNavigate } from "react-router-dom";
+import { getCmsSection } from "../../../services/cmsService";
 
 
 
@@ -30,15 +31,24 @@ const availableServices = lead?.serviceRequired||[
     const [validUntil, setValidUntil] = useState("");
     const [notes, setNotes] = useState("");
     const [termsAndConditions, setTermsAndConditions] = useState("");
-
     const [adminTaxSettings, setAdminTaxSettings] = useState({
       cgstRate: 9,
       sgstRate: 9,
       defaultDiscountValue: 0
     });
+    const [dbServices, setDbServices] = useState([]);
 
     useEffect(() => {
       if (show) {
+
+      // calculate date 7 days from today
+
+      const today = new Date();
+      const seventDaysLater = new Date(today);
+      seventDaysLater.setDate(today.getDate() + 7);
+      const formattedDate = seventDaysLater.toISOString().split("T")[0];
+      setValidUntil(formattedDate);
+
         const fetchSettings = async () => {
           try {
             const response = await getTaxDiscountSettings();
@@ -54,8 +64,20 @@ const availableServices = lead?.serviceRequired||[
           }
         };
         fetchSettings();
+
+        const fetchCmsServices = async () => {
+          try {
+            const response = await getCmsSection("services");
+            if (response.data.success) {
+              setDbServices(response.data.data?.content?.services || []);
+            }
+          } catch (error) {
+            console.error("Error fetching services", error);
+          }
+        };
+        fetchCmsServices();
       }
-    }, [show]);
+    },[show]);
 
     // const DEFAULT_CGST = 9;
     // const DEFAULT_SGST = 9;
@@ -131,6 +153,17 @@ const updateService = (
 
   updated[index][field] = value;
 
+  // Auto populate when the service selection changes
+  if (field === "serviceName") {
+    const matchedService = dbServices.find(s => s.name === value);
+    if (matchedService) {
+      updated[index].unitPrice = matchedService.basePrice || 0;
+      updated[index].discountPercent = matchedService.discountpercent !== undefined ? matchedService.discountpercent : DEFAULT_DISCOUNT;
+      updated[index].cgstPercent = matchedService.cgstPercent !== undefined ? matchedService.cgstPercent : DEFAULT_CGST;
+      updated[index].sgstPercent = matchedService.sgstPercent !== undefined ? matchedService.sgstPercent : DEFAULT_SGST;
+    }
+  }
+
   updated[index] =
     calculateLine(updated[index]);
 
@@ -192,6 +225,23 @@ const totalAmount = useMemo(() => {
 
   const gstAmount = ((subtotal - discount) * GST_RATE) / 100;
   const grandTotal = subtotal - discount + gstAmount;
+
+const handleNotesChange = (e) => {
+  const value = e.target.value;
+
+  const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+  if (filteredValue.length <= 50) {
+    setNotes(filteredValue);
+  }
+}
+
+const handleTermsChange = (e) => {
+  const value = e.target.value;
+  const filteredValue = value.replace(/[^a-zA-Z\s]/g, "");
+  if (filteredValue.length <= 50) {
+    setTermsAndConditions(filteredValue);
+  }
+}
 
 const handleSubmit = async (status) => {
   try {
@@ -313,13 +363,13 @@ const handleSubmit = async (status) => {
               Select Service
             </option>
 
-            {availableServices.map(
+            {dbServices.filter(s => s.isActive).map(
               (service) => (
                 <option
-                  key={service}
-                  value={service}
+                  key={service.id}
+                  value={service.name}
                 >
-                  {service}
+                  {service.name}
                 </option>
               )
             )}
@@ -471,11 +521,8 @@ const handleSubmit = async (status) => {
         as="textarea"
         rows={4}
         value={notes}
-        onChange={(e) =>
-          setNotes(
-            e.target.value
-          )
-        }
+        maxLength={50}
+        onChange={handleNotesChange}
       />
     </Form.Group>
   </Col>
@@ -490,11 +537,8 @@ const handleSubmit = async (status) => {
         as="textarea"
         rows={4}
         value={termsAndConditions}
-        onChange={(e) =>
-          setTermsAndConditions(
-            e.target.value
-          )
-        }
+        maxLength={50}
+        onChange={handleTermsChange}
       />
     </Form.Group>
   </Col>

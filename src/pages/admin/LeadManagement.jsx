@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { getAllLeads, updateLead } from "../../services/leadService";
 import { Modal, Button, Form, Alert, Spinner, Row, Col, Card, Dropdown } from "react-bootstrap";
-import { 
-    TbFileUnknown, TbUserCheck, TbCircleCheck, TbClock, TbCircleX, 
-    TbTrendingUp, TbTrendingDown, TbFilter, TbDownload, TbPlus, TbDotsVertical 
+import {
+    TbFileUnknown, TbUserCheck, TbCircleCheck, TbClock, TbCircleX,
+    TbTrendingUp, TbTrendingDown, TbFilter, TbDownload, TbPlus, TbDotsVertical
 } from "react-icons/tb";
 import API from "../../services/api";
-import CreateQuotationModal from "../admin/Quotation/createQuotationModel"
+import CreateQuotationModal from "../admin/Quotation/createQuotationModel";
 import "./LeadManagement.css";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 const LeadManagement = () => {
     const [leads, setLeads] = useState([]);
@@ -17,7 +19,7 @@ const LeadManagement = () => {
     const [showEditModal, setShowEditModal] = useState(false);
     const [editLead, setEditLead] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+    const itemsPerPage = 5;
     const [showQuotationModal, setShowQuotationModal] = useState(false);
     const [selectedQuotationLead, setSelectedQuotationLead] = useState(null);
 
@@ -30,12 +32,13 @@ const LeadManagement = () => {
     const [assignLoading, setAssignLoading] = useState(false);
     const [assignError, setAssignError] = useState("");
 
-    // ---------- Mockup design state additions ----------
+    // ---------- Filter & UI States ----------
     const [activeTab, setActiveTab] = useState("all");
     const [sortOrder, setSortOrder] = useState("newest");
     const [searchQuery, setSearchQuery] = useState("");
     const [eventTypeFilter, setEventTypeFilter] = useState("");
-    const [locationFilter, setLocationFilter] = useState("");
+    const [priorityFilter, setPriorityFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("");
     const [showFilters, setShowFilters] = useState(false);
     const [selectedLeadIds, setSelectedLeadIds] = useState([]);
     const [toastAlert, setToastAlert] = useState({ show: false, message: "", type: "success" });
@@ -120,7 +123,80 @@ const LeadManagement = () => {
         document.body.removeChild(link);
         triggerToast("Enquiries exported successfully to CSV!");
     };
+const handleExportPDF = () => {
+    const doc = new jsPDF("l", "mm", "a4");
 
+    doc.setFontSize(18);
+    doc.text("Enquiry Management Report", 14, 15);
+
+    doc.setFontSize(10);
+    doc.text(`Generated On : ${new Date().toLocaleString()}`, 14, 22);
+
+    doc.text(`Status : ${activeTab === "all" ? "All" : activeTab}`, 14, 28);
+    doc.text(`Event Type : ${eventTypeFilter || "All"}`, 70, 28);
+    doc.text(`Location : ${locationFilter || "All"}`, 135, 28);
+    doc.text(`Search : ${searchQuery || "-"}`, 205, 28);
+
+    autoTable(doc, {
+        startY: 35,
+
+        head: [[
+            "Enquiry ID",
+            "Customer",
+            "Email",
+            "Mobile",
+            "Event Type",
+            "Event Date",
+            "Location",
+            "Budget",
+            "Guests",
+            "Status"
+        ]],
+
+        body: sortedLeads.map((lead) => [
+
+            `ENQ-${lead._id.slice(-4).toUpperCase()}`,
+
+            lead.customerId?.name || lead.fullName || "-",
+
+            lead.customerId?.email || lead.email || "-",
+
+            lead.customerId?.mobile ||
+            lead.mobileNumber ||
+            lead.mobile ||
+            "-",
+
+            lead.eventType || "-",
+
+            lead.eventDate
+                ? new Date(lead.eventDate).toLocaleDateString()
+                : "-",
+
+            lead.location || "-",
+
+            `INR ${(lead.budget ?? 0).toLocaleString("en-IN")}`,
+
+            lead.guestCount || 0,
+
+            lead.status || "-"
+        ]),
+
+        theme: "grid",
+
+        headStyles: {
+            fillColor: [58, 95, 190],
+            textColor: 255,
+            fontStyle: "bold"
+        },
+
+        styles: {
+            fontSize: 8,
+            cellPadding: 2
+        }
+    });
+
+    doc.save(`Enquiry_Report_${new Date().toISOString().split("T")[0]}.pdf`);
+};
     const handleAddSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -154,10 +230,9 @@ const LeadManagement = () => {
         fetchLeads();
     }, []);
 
-    // Reset to page 1 if leads filters change
     useEffect(() => {
         setCurrentPage(1);
-    }, [activeTab, searchQuery, eventTypeFilter, locationFilter, sortOrder]);
+    }, [activeTab, searchQuery, eventTypeFilter, priorityFilter, statusFilter, sortOrder]);
 
     const fetchLeads = async () => {
         setLoading(true);
@@ -172,14 +247,12 @@ const LeadManagement = () => {
         }
     };
 
-    // VIEW FUNCTION
     const handleView = (lead) => {
         setSelectedLead(lead);
         setShowViewModal(true);
     };
 
     const handleEdit = (lead) => {
-        // Clone lead and format date for input (YYYY-MM-DD)
         const leadCopy = { ...lead };
         if (leadCopy.eventDate) {
             leadCopy.eventDate = new Date(leadCopy.eventDate).toISOString().split('T')[0];
@@ -209,12 +282,12 @@ const LeadManagement = () => {
         }
     };
 
-   const handleCreateQuote = (lead) => {
+    const handleCreateQuote = (lead) => {
         setSelectedQuotationLead(lead);
         setShowQuotationModal(true);
-        };
+    };
 
-    // ---------- Assign Lead Functions ----------
+    // Assign Lead Functions
     const openAssignModal = async (lead) => {
         setCurrentLead(lead);
         setAssignByLocation(false);
@@ -239,7 +312,7 @@ const LeadManagement = () => {
                 assignByLocation: assignByLocation,
             });
             setShowAssignModal(false);
-            fetchLeads(); // refresh table
+            fetchLeads();
             triggerToast("Lead assigned successfully!");
         } catch (error) {
             setAssignError(error.response?.data?.message || "Assignment failed");
@@ -247,10 +320,9 @@ const LeadManagement = () => {
             setAssignLoading(false);
         }
     };
-    // Stats calculations
+
+    // Stats
     const totalLeads = leads.length;
-    
-    // Total Enquiries trend: count leads created in the current calendar month
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
     const thisMonthLeads = leads.filter(lead => {
@@ -259,22 +331,17 @@ const LeadManagement = () => {
         return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
     }).length;
 
-    // Assigned leads (where assignedTo contains a value)
     const assignedLeadsCount = leads.filter(lead => lead.assignedTo).length;
     const assignedPercentage = totalLeads > 0 ? Math.round((assignedLeadsCount / totalLeads) * 100) : 0;
 
-    // Converted leads (Confirmed or Converted status)
     const convertedLeadsCount = leads.filter(lead => lead.status === "Confirmed" || lead.status === "Converted").length;
     const conversionRate = totalLeads > 0 ? Math.round((convertedLeadsCount / totalLeads) * 100) : 0;
 
-    // Pending leads (Pending or New status)
     const pendingLeadsCount = leads.filter(lead => lead.status === "Pending" || lead.status === "New").length;
-
-    // Lost / Closed leads (Cancelled or Closed status)
     const lostLeadsCount = leads.filter(lead => lead.status === "Cancelled" || lead.status === "Closed").length;
     const lossRate = totalLeads > 0 ? Math.round((lostLeadsCount / totalLeads) * 100) : 0;
 
-    // Filter logic based on tabs and filter inputs
+    // Filtering
     const filteredLeads = leads
         .filter((item) => {
             if (activeTab === "new") {
@@ -286,7 +353,7 @@ const LeadManagement = () => {
             } else if (activeTab === "quoted") {
                 return item.status === "Confirmed" || item.status === "Converted";
             }
-            return true; // "all"
+            return true;
         })
         .filter((item) => {
             if (!searchQuery) return true;
@@ -302,29 +369,85 @@ const LeadManagement = () => {
             return item.eventType === eventTypeFilter;
         })
         .filter((item) => {
-            if (!locationFilter) return true;
-            const loc = item.location || "";
-            return loc.toLowerCase().includes(locationFilter.toLowerCase());
+            if (!priorityFilter) return true;
+            const priority = item.budget >= 100000 ? "High" : item.budget >= 50000 ? "Med" : "Low";
+            return priority === priorityFilter;
+        })
+        .filter((item) => {
+            if (!statusFilter) return true;
+            let group = "";
+            if (item.status === "New" || item.status === "Pending") group = "New";
+            else if (item.status === "Contacted" || item.status === "Reviewed") group = "Follow-up";
+            else if (item.status === "Quoted" || item.status === "Quotation Sent") group = "In Discussion";
+            else if (item.status === "Confirmed" || item.status === "Converted") group = "Converted";
+            else if (item.status === "Cancelled" || item.status === "Closed") group = "Closed";
+            return group === statusFilter;
         });
 
-    // Sort logic
     const sortedLeads = [...filteredLeads].sort((a, b) => {
         const dateA = new Date(a.createdAt || 0);
         const dateB = new Date(b.createdAt || 0);
         return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
     });
 
-    // Pagination logic
     const indexOfLastLead = currentPage * itemsPerPage;
     const indexOfFirstLead = indexOfLastLead - itemsPerPage;
     const currentLeads = sortedLeads.slice(indexOfFirstLead, indexOfLastLead);
     const totalPages = Math.ceil(sortedLeads.length / itemsPerPage);
 
- return (
+    const getPageNumbers = () => {
+        const pages = [];
+        if (totalPages <= 5) {
+            for (let i = 1; i <= totalPages; i++) pages.push(i);
+        } else {
+            if (currentPage <= 3) {
+                pages.push(1, 2, 3, 4, "...", totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+            } else {
+                pages.push(1, "...", currentPage - 1, currentPage, currentPage + 1, "...", totalPages);
+            }
+        }
+        return pages;
+    };
+
+    const clearAllFilters = () => {
+        setSearchQuery("");
+        setEventTypeFilter("");
+        setPriorityFilter("");
+        setStatusFilter("");
+    };
+
+    return (
         <div className="container-fluid py-3 lead-mgmt-container">
+            {/* Toast Alert */}
+            {toastAlert.show && (
+                <div
+                    className={`alert alert-${toastAlert.type} alert-dismissible fade show shadow`}
+                    style={{
+                        position: "fixed",
+                        top: "24px",
+                        right: "24px",
+                        zIndex: 9999,
+                        borderRadius: "12px",
+                        minWidth: "320px",
+                        paddingRight: "45px",
+                        fontSize: "13px",
+                        fontWeight: "600",
+                        fontFamily: "'Manrope', sans-serif"
+                    }}
+                >
+                    {toastAlert.message}
+                    <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setToastAlert({ ...toastAlert, show: false })}
+                    />
+                </div>
+            )}
+
             {/* Stats Cards */}
-            <Row className="mb-4 g-3 g-md-4">
-                {/* Total Enquiries */}
+            <Row className="mb-4 g-2 g-md-3">
                 <Col xl lg md={6} sm={6} xs={6}>
                     <Card className="metric-card">
                         <Card.Body className="metric-body">
@@ -337,9 +460,7 @@ const LeadManagement = () => {
                                 </div>
                                 <h2 className="metric-number">{totalLeads}</h2>
                             </div>
-
                             <div className="metric-title">TOTAL ENQUIRIES</div>
-
                             <div className="metric-growth">
                                 <TbTrendingUp size={14} />
                                 <span>+{thisMonthLeads} this month</span>
@@ -347,8 +468,6 @@ const LeadManagement = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-
-                {/* Assigned */}
                 <Col xl lg md={6} sm={6} xs={6}>
                     <Card className="metric-card">
                         <Card.Body className="metric-body">
@@ -361,9 +480,7 @@ const LeadManagement = () => {
                                 </div>
                                 <h2 className="metric-number">{assignedLeadsCount}</h2>
                             </div>
-
                             <div className="metric-title">ASSIGNED</div>
-
                             <div className="metric-growth">
                                 <TbTrendingUp size={14} />
                                 <span>{assignedPercentage}% of total</span>
@@ -371,8 +488,6 @@ const LeadManagement = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-
-                {/* Converted */}
                 <Col xl lg md={6} sm={6} xs={6}>
                     <Card className="metric-card">
                         <Card.Body className="metric-body">
@@ -385,9 +500,7 @@ const LeadManagement = () => {
                                 </div>
                                 <h2 className="metric-number">{convertedLeadsCount}</h2>
                             </div>
-
                             <div className="metric-title">CONVERTED</div>
-
                             <div className="metric-growth">
                                 <TbTrendingUp size={14} />
                                 <span>{conversionRate}% conv. rate</span>
@@ -395,8 +508,6 @@ const LeadManagement = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-
-                {/* Pending */}
                 <Col xl lg md={6} sm={6} xs={6}>
                     <Card className="metric-card">
                         <Card.Body className="metric-body">
@@ -409,9 +520,7 @@ const LeadManagement = () => {
                                 </div>
                                 <h2 className="metric-number">{pendingLeadsCount}</h2>
                             </div>
-
                             <div className="metric-title">PENDING</div>
-
                             <div className="metric-alert">
                                 <TbTrendingDown size={14} />
                                 <span>Needs action</span>
@@ -419,8 +528,6 @@ const LeadManagement = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-
-                {/* Lost / Closed */}
                 <Col xl lg md={6} sm={6} xs={6}>
                     <Card className="metric-card">
                         <Card.Body className="metric-body">
@@ -433,9 +540,7 @@ const LeadManagement = () => {
                                 </div>
                                 <h2 className="metric-number">{lostLeadsCount}</h2>
                             </div>
-
                             <div className="metric-title">LOST / CLOSED</div>
-
                             <div className="metric-alert">
                                 <TbTrendingDown size={14} />
                                 <span>{lossRate}% loss rate</span>
@@ -445,6 +550,7 @@ const LeadManagement = () => {
                 </Col>
             </Row>
 
+            {/* Header with Filter, Export, Add */}
             <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 mt-4">
                 <div className="d-flex align-items-center gap-3">
                     <h2 className="page-header-title">Enquiry List</h2>
@@ -454,52 +560,101 @@ const LeadManagement = () => {
                     <button className="btn btn-filter d-flex align-items-center justify-content-center gap-2" onClick={() => setShowFilters(!showFilters)}>
                         <TbFilter size={16} /> <span className="d-none d-sm-inline">Filter</span>
                     </button>
-                    <button className="btn btn-export d-flex align-items-center justify-content-center gap-2" onClick={() => handleExportCSV(sortedLeads)}>
-                        <TbDownload size={16} /> <span className="d-none d-sm-inline">Export</span>
-                    </button>
+                   <button
+    className="btn btn-export d-flex align-items-center justify-content-center gap-2"
+    onClick={handleExportPDF}
+>
+    <TbDownload size={16} />
+    <span className="d-none d-sm-inline">Export</span>
+</button>
                     <button className="btn btn-add-enquiry d-flex align-items-center justify-content-center gap-2" onClick={() => setShowAddModal(true)}>
                         <TbPlus size={16} /> <span className="d-none d-sm-inline">Add Enquiry</span><span className="d-inline d-sm-none">Add</span>
                     </button>
                 </div>
             </div>
 
-            {/* Filter Panel */}
-            {showFilters && (
-                <Card className="border-0 shadow-sm mb-4 p-3" style={{ borderRadius: "12px" }}>
-                    <Row className="g-3">
-                        <Col md={4}>
-                            <Form.Control
-                                type="text"
-                                placeholder="Search by customer name or email..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </Col>
-                        <Col md={4}>
-                            <Form.Select
-                                value={eventTypeFilter}
-                                onChange={(e) => setEventTypeFilter(e.target.value)}
-                            >
-                                <option value="">All Event Types</option>
-                                <option value="Wedding">Wedding</option>
-                                <option value="Birthday">Birthday</option>
-                                <option value="Corporate">Corporate</option>
-                                <option value="Conference">Conference</option>
-                                <option value="Exhibition">Exhibition</option>
-                                <option value="Other">Other</option>
-                            </Form.Select>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Control
-                                type="text"
-                                placeholder="Filter by location/city..."
-                                value={locationFilter}
-                                onChange={(e) => setLocationFilter(e.target.value)}
-                            />
-                        </Col>
-                    </Row>
-                </Card>
-            )}
+            {/* ===== UPDATED CAPSULE-STYLE FILTER BAR WITH LABELS ===== */}
+           {/* ===== CAPSULE FILTER BAR WITH BACKGROUND (like Invoice) ===== */}
+{showFilters && (
+    <div className="mb-3 p-3" style={{ border: "1px solid #E5E7EB", borderRadius: "12px", background: "#fff" }}>
+        <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3 justify-content-start justify-content-lg-end">
+            {/* Search */}
+            <div className="filter-capsule-container" style={{ padding: "4px 12px 4px 8px" }}>
+                <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Search</span>
+                <Form.Control
+                    type="text"
+                    placeholder="customer..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="filter-select-inner"
+                    style={{ border: "none", background: "#ffffff", height: "32px", width: "140px", fontSize: "12px", fontWeight: "400", padding: "4px 8px" }}
+                />
+                <span className="filter-clear-btn" onClick={() => setSearchQuery("")}>Clear</span>
+            </div>
+
+            {/* Event Type */}
+            <div className="filter-capsule-container">
+                <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Event</span>
+                <Form.Select
+                    className="filter-select-inner filter-select-roles"
+                    value={eventTypeFilter}
+                    onChange={(e) => setEventTypeFilter(e.target.value)}
+                    style={{ width: "110px" }}
+                >
+                    <option value="">All</option>
+                    <option value="Wedding">Wedding</option>
+                    <option value="Birthday">Birthday</option>
+                    <option value="Corporate">Corporate</option>
+                    <option value="Conference">Conference</option>
+                    <option value="Exhibition">Exhibition</option>
+                    <option value="Other">Other</option>
+                </Form.Select>
+                <span className="filter-clear-btn" onClick={() => setEventTypeFilter("")}>Clear All</span>
+            </div>
+
+            {/* Priority */}
+            <div className="filter-capsule-container">
+                <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Priority</span>
+                <Form.Select
+                    className="filter-select-inner filter-select-status"
+                    value={priorityFilter}
+                    onChange={(e) => setPriorityFilter(e.target.value)}
+                    style={{ width: "100px" }}
+                >
+                    <option value="">All</option>
+                    <option value="High">High</option>
+                    <option value="Med">Medium</option>
+                    <option value="Low">Low</option>
+                </Form.Select>
+                <span className="filter-clear-btn" onClick={() => setPriorityFilter("")}>Clear All</span>
+            </div>
+
+            {/* Status */}
+            <div className="filter-capsule-container">
+                <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Status</span>
+                <Form.Select
+                    className="filter-select-inner filter-select-status"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    style={{ width: "110px" }}
+                >
+                    <option value="">All</option>
+                    <option value="New">New</option>
+                    <option value="Follow-up">Follow‑up</option>
+                    <option value="In Discussion">In Discussion</option>
+                    <option value="Converted">Converted</option>
+                    <option value="Closed">Closed</option>
+                </Form.Select>
+                <span className="filter-clear-btn" onClick={() => setStatusFilter("")}>Clear All</span>
+            </div>
+
+            {/* Reset / Clear All */}
+            <button className="btn btn-sm btn-outline-secondary" onClick={clearAllFilters} style={{ fontSize: "12px", fontWeight: "600", borderRadius: "8px" }}>
+                Reset
+            </button>
+        </div>
+    </div>
+)}
 
             {loading ? (
                 <div className="text-center py-5">
@@ -509,34 +664,34 @@ const LeadManagement = () => {
                 <>
                     <Card className="border-0 shadow-sm" style={{ borderRadius: "16px", overflow: "hidden" }}>
                         <Card.Header className="bg-white border-0 pt-4 pb-2 px-3 px-md-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                            <div className="custom-pill-tabs">
+                            <div className="enquiry-pill-tabs">
                                 <button
                                     onClick={() => setActiveTab("all")}
-                                    className={`tab-pill-btn ${activeTab === "all" ? "active" : ""}`}
+                                    className={`enquiry-pill-btn ${activeTab === "all" ? "active" : ""}`}
                                 >
-                                    All ({totalLeads})
+                                    All({totalLeads})
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("new")}
-                                    className={`tab-pill-btn ${activeTab === "new" ? "active" : ""}`}
+                                    className={`enquiry-pill-btn ${activeTab === "new" ? "active" : ""}`}
                                 >
                                     New
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("follow-up")}
-                                    className={`tab-pill-btn ${activeTab === "follow-up" ? "active" : ""}`}
+                                    className={`enquiry-pill-btn ${activeTab === "follow-up" ? "active" : ""}`}
                                 >
                                     Follow-up
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("discussion")}
-                                    className={`tab-pill-btn ${activeTab === "discussion" ? "active" : ""}`}
+                                    className={`enquiry-pill-btn ${activeTab === "discussion" ? "active" : ""}`}
                                 >
                                     In Discussion
                                 </button>
                                 <button
                                     onClick={() => setActiveTab("quoted")}
-                                    className={`tab-pill-btn ${activeTab === "quoted" ? "active" : ""}`}
+                                    className={`enquiry-pill-btn ${activeTab === "quoted" ? "active" : ""}`}
                                 >
                                     Quoted
                                 </button>
@@ -589,7 +744,7 @@ const LeadManagement = () => {
                                             currentLeads.map((item) => {
                                                 const avatarMetrics = getAvatarMetrics(item.customerId?.name || item.fullName || "Customer", item._id);
                                                 const priority = item.budget >= 100000 ? "High" : item.budget >= 50000 ? "Med" : "Low";
-                                                
+
                                                 let statusClass = "new";
                                                 let statusLabel = item.status;
                                                 if (item.status === "New" || item.status === "Pending") {
@@ -641,7 +796,7 @@ const LeadManagement = () => {
                                                                 >
                                                                     {avatarMetrics.initials}
                                                                 </div>
-                                                                 <div>
+                                                                <div>
                                                                     <div className="lead-user-name" style={{ lineHeight: "1.2" }}>
                                                                         {item.customerId?.name || item.fullName || "N/A"}
                                                                     </div>
@@ -697,7 +852,7 @@ const LeadManagement = () => {
                             </div>
                         </Card.Body>
 
-                        {/* Pagination footer matching UserManagement styling */}
+                        {/* Pagination footer */}
                         <div className="d-flex flex-column flex-sm-row gap-3 justify-content-between align-items-center py-3 py-md-4 px-3 px-md-4 bg-white border-top">
                             <span className="text-muted small">
                                 Showing {indexOfFirstLead + 1}-{Math.min(indexOfLastLead, sortedLeads.length)} of {sortedLeads.length} enquiries
@@ -713,15 +868,19 @@ const LeadManagement = () => {
                                         {"<"}
                                     </button>
 
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                                        <button
-                                            key={`page-${p}`}
-                                            className={`custom-pagination-btn ${currentPage === p ? "active" : ""}`}
-                                            onClick={() => setCurrentPage(p)}
-                                        >
-                                            {p}
-                                        </button>
-                                    ))}
+                                    {getPageNumbers().map((p, index) =>
+                                        p === "..." ? (
+                                            <span key={`dots-${index}`} className="mx-1 text-muted small">...</span>
+                                        ) : (
+                                            <button
+                                                key={`page-${p}`}
+                                                className={`custom-pagination-btn ${currentPage === p ? "active" : ""}`}
+                                                onClick={() => setCurrentPage(p)}
+                                            >
+                                                {p}
+                                            </button>
+                                        )
+                                    )}
 
                                     <button
                                         className="custom-pagination-btn"
@@ -737,6 +896,7 @@ const LeadManagement = () => {
                 </>
             )}
 
+            {/* ===== ALL MODALS (unchanged) ===== */}
             {/* View Modal */}
             <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
                 <Modal.Header closeButton>
@@ -759,9 +919,9 @@ const LeadManagement = () => {
                                 <p><strong>Status:</strong>
                                     <span className={`badge ms-2 ${selectedLead.status === "Pending" ? "bg-warning" :
                                         selectedLead.status === "Reviewed" ? "bg-success" :
-                                            selectedLead.status === "Quoted" ? "bg-info" :
-                                                selectedLead.status === "Confirmed" ? "bg-primary" : "bg-secondary"
-                                        }`}>
+                                        selectedLead.status === "Quoted" ? "bg-info" :
+                                        selectedLead.status === "Confirmed" ? "bg-primary" : "bg-secondary"
+                                    }`}>
                                         {selectedLead.status}
                                     </span>
                                 </p>
@@ -916,7 +1076,6 @@ const LeadManagement = () => {
                                         })}
                                     </div>
                                 </div>
-
                                 <div className="col-12 mb-3">
                                     <label className="form-label">Description</label>
                                     <textarea
@@ -943,7 +1102,7 @@ const LeadManagement = () => {
                 </Modal.Header>
                 <Modal.Body>
                     {assignError && <Alert variant="danger">{assignError}</Alert>}
-                    
+
                     <Form.Check
                         type="checkbox"
                         id="assignByLocation"
@@ -952,7 +1111,7 @@ const LeadManagement = () => {
                         onChange={(e) => setAssignByLocation(e.target.checked)}
                         className="mb-3"
                     />
-                    
+
                     {!assignByLocation && (
                         <Form.Group className="mb-3">
                             <Form.Label>Select Staff Member</Form.Label>
@@ -970,7 +1129,7 @@ const LeadManagement = () => {
                             </Form.Select>
                         </Form.Group>
                     )}
-                    
+
                     {assignByLocation && (
                         <p className="text-muted small">
                             System will assign this lead to a staff member whose assigned city matches <strong>
@@ -981,15 +1140,17 @@ const LeadManagement = () => {
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowAssignModal(false)}>Cancel</Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={handleAssign} 
+                    <Button
+                        variant="primary"
+                        onClick={handleAssign}
                         disabled={(!assignByLocation && !selectedStaffId) || assignLoading}
                     >
                         {assignLoading ? <Spinner as="span" animation="border" size="sm" /> : "Assign"}
                     </Button>
                 </Modal.Footer>
             </Modal>
+
+            {/* Quotation Modal */}
             <CreateQuotationModal
                 show={showQuotationModal}
                 handleClose={() => {
@@ -997,7 +1158,7 @@ const LeadManagement = () => {
                     setSelectedQuotationLead(null);
                 }}
                 lead={selectedQuotationLead}
-                />
+            />
 
             {/* Add Enquiry Modal */}
             <Modal show={showAddModal} onHide={() => setShowAddModal(false)} size="lg" centered className="premium-modal">

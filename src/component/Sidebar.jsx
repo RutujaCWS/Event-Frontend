@@ -1,9 +1,10 @@
+import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   FaThLarge, FaUsers, FaBriefcase, FaEnvelope, FaFileAlt,
   FaCalendarAlt, FaCreditCard, FaFileInvoiceDollar, FaEdit,
   FaChartBar, FaCog, FaSignOutAlt, FaUser, FaTasks,
-  FaSyncAlt, FaHeadset, FaTimes
+  FaSyncAlt, FaTimes
 } from "react-icons/fa";
 import {
   TbLayoutDashboard,
@@ -14,16 +15,21 @@ import {
   TbFileInvoice,
   TbUser,
 } from "react-icons/tb";
+import { useAuth } from "../Context/Auth/AuthContext";
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const navigate = useNavigate();
-  const userStr = localStorage.getItem("user");
-  const user = userStr ? JSON.parse(userStr) : null;
-  const role = user?.role || "admin";
-  const userName = user?.name || "Rahul Kapoor";
-  const userRole = user?.role === "admin" ? "Administrator" : "User";
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // ---------- ONE getInitials (removed duplicate) ----------
+  // ---- Debug: log user object to see available fields ----
+  console.log("User from AuthContext:", user);
+
+  // ---- Try multiple possible name fields ----
+  const name = user?.name || user?.fullName || user?.username || "Rahul Kapoor";
+  const role = user?.role || "admin";
+  const permissions = user?.permissions || {};
+
+  // ---------- Helper: Initials ----------
   const getInitials = (name) => {
     if (!name) return "U";
     const parts = name.trim().split(" ");
@@ -31,18 +37,20 @@ const Sidebar = ({ isOpen, onClose }) => {
     return name.substring(0, 2).toUpperCase();
   };
 
+  // ---------- Logout ----------
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    navigate("/login");
+    if (!window.confirm("Are you sure you want to logout?")) return;
+    setIsLoggingOut(true);
+    logout(); // clears context & localStorage, navigates to /login
     if (onClose) onClose();
+    setIsLoggingOut(false);
   };
 
   const handleLinkClick = () => {
     if (onClose) onClose();
   };
 
-  // ---------- ADMIN MENU ----------
+  // ---------- MENUS ----------
   const adminMenu = [
     { path: "/admin/dashboard", label: "Dashboard", icon: <FaThLarge /> },
     { path: "/admin/users", label: "User Management", icon: <FaUsers /> },
@@ -57,72 +65,41 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: "/admin/settings", label: "System Settings", icon: <FaCog /> },
   ];
 
-  // ---------- STAFF MENU ----------
   const staffMenu = [
     { path: "/staff/dashboard", label: "Dashboard", icon: <FaThLarge /> },
-    { path: "/staff/enquiries", label: "Assigned Enquiries", icon: <FaEnvelope /> },
-    { path: "/staff/events", label: "Assigned Events", icon: <FaCalendarAlt /> },
-    { path: "/staff/tasks", label: "Tasks", icon: <FaTasks /> },
-    { path: "/staff/schedule", label: "Event Schedule", icon: <FaCalendarAlt /> },
-    { path: "/staff/status", label: "Status Updates", icon: <FaSyncAlt /> },
+    permissions?.enquiries !== false && { path: "/staff/enquiries", label: "Assigned Enquiries", icon: <FaEnvelope /> },
+    permissions?.events !== false && { path: "/staff/events", label: "Assigned Events", icon: <FaCalendarAlt /> },
+    permissions?.tasks !== false && { path: "/staff/tasks", label: "Tasks", icon: <FaTasks /> },
+    permissions?.schedule !== false && { path: "/staff/schedule", label: "Event Schedule", icon: <FaCalendarAlt /> },
+    permissions?.statusUpdates !== false && { path: "/staff/status", label: "Status Updates", icon: <FaSyncAlt /> },
     { path: "/staff/profile", label: "Profile", icon: <FaUser /> },
-  ];
+  ].filter(Boolean);
 
-  // ---------- CUSTOMER MENU (grouped, one declaration) ----------
   const customerMenu = [
     {
       title: "Overview",
       items: [
-        {
-          path: "/customer/dashboard",
-          label: "Dashboard",
-          icon: <TbLayoutDashboard size={22} />,
-        },
+        { path: "/customer/dashboard", label: "Dashboard", icon: <TbLayoutDashboard size={22} /> },
       ],
     },
     {
       title: "Business Operations",
       items: [
-        {
-          path: "/customer/enquiries",
-          label: "My Enquiries",
-          icon: <TbMessageCircle size={22} />,
-        },
-        {
-          path: "/customer/quotations",
-          label: "Quotations",
-          icon: <TbReceiptDollar size={22} />,
-        },
-        {
-          path: "/customer/bookings",
-          label: "Bookings",
-          icon: <TbCalendarEvent size={22} />,
-        },
+        { path: "/customer/enquiries", label: "My Enquiries", icon: <TbMessageCircle size={22} /> },
+        { path: "/customer/quotations", label: "Quotations", icon: <TbReceiptDollar size={22} /> },
+        { path: "/customer/bookings", label: "Bookings", icon: <TbCalendarEvent size={22} /> },
       ],
     },
     {
       title: "Administration",
       items: [
-        {
-          path: "/customer/payments",
-          label: "Payments",
-          icon: <TbCreditCard size={22} />,
-        },
-        {
-          path: "/customer/invoices",
-          label: "Invoices",
-          icon: <TbFileInvoice size={22} />,
-        },
-        {
-          path: "/customer/profile",
-          label: "Profile Management",
-          icon: <TbUser size={22} />,
-        },
+        { path: "/customer/payments", label: "Payments", icon: <TbCreditCard size={22} /> },
+        { path: "/customer/invoices", label: "Invoices", icon: <TbFileInvoice size={22} /> },
+        { path: "/customer/profile", label: "Profile Management", icon: <TbUser size={22} /> },
       ],
     },
   ];
 
-  // Select menu based on role
   let menuItems;
   if (role === "admin") menuItems = adminMenu;
   else if (role === "staff") menuItems = staffMenu;
@@ -154,7 +131,6 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Navigation */}
       <nav className="sidebar-menu">
         {role === "admin" ? (
-          // Admin: flat menu
           menuItems.map((item) => (
             <NavLink
               key={item.path}
@@ -167,7 +143,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             </NavLink>
           ))
         ) : role === "customer" ? (
-          // Customer: grouped menu with section titles
           menuItems.map((section) => (
             <div key={section.title} className="sidebar-section">
               <p className="sidebar-section-title">{section.title}</p>
@@ -187,7 +162,6 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
           ))
         ) : (
-          // Staff: flat menu
           menuItems.map((item) => (
             <NavLink
               key={item.path}
@@ -202,17 +176,38 @@ const Sidebar = ({ isOpen, onClose }) => {
         )}
       </nav>
 
-      {/* Footer – User Profile + Logout */}
+      {/* ===== DYNAMIC FOOTER – exact user info ===== */}
       <div className="sidebar-footer">
         <div className="sidebar-user-row">
           <div className="sidebar-user-profile">
-            <div className="sidebar-user-avatar">{getInitials(userName)}</div>
+            <div className="sidebar-user-avatar">{user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt={name}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                getInitials(name)
+              )}
+            </div>
             <div className="sidebar-user-info">
-              <p className="sidebar-user-name">{userName}</p>
-              <p className="sidebar-user-role">{userRole}</p>
+              <p className="sidebar-user-name">{name}</p>
+              <p className="sidebar-user-role">
+                {role === "admin" ? "Administrator" : role === "staff" ? "Staff" : "Customer"}
+              </p>
             </div>
           </div>
-          <button onClick={handleLogout} className="sidebar-logout-icon" aria-label="Logout">
+          <button
+            onClick={handleLogout}
+            className="sidebar-logout-icon"
+            aria-label="Logout"
+            disabled={isLoggingOut}
+          >
             <FaSignOutAlt />
           </button>
         </div>

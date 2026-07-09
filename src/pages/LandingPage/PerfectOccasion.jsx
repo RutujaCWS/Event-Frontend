@@ -1,7 +1,53 @@
-import React from "react";
+
 import { useNavigate } from "react-router-dom";
 import "./EventLandingPage.css";
+import React, { useEffect, useState } from "react";
+import { getCmsSection } from "../../services/cmsService";
+import {
+  TbHeart,
+  TbCake,
+  TbBriefcase,
+  TbCrown,
+  TbSparkles,
+} from "react-icons/tb";
 
+const categoryIcons = {
+  heart: (
+    <TbHeart
+      size={20}
+      color="#fff"
+    />
+  ),
+
+  cake: (
+    <TbCake
+      size={20}
+      color="#fff"
+    />
+  ),
+
+  briefcase: (
+    <TbBriefcase
+      size={20}
+      color="#fff"
+    />
+  ),
+
+  crown: (
+    <TbCrown
+      size={20}
+      color="#fff"
+    />
+  ),
+
+  sparkles: (
+    <TbSparkles
+      size={20}
+      color="#fff"
+    />
+  ),
+};
+{/* 
 const specializeEvents = [
   {
     icon: (
@@ -57,9 +103,27 @@ const specializeEvents = [
     slug: "cultural-events",
   },
 ];
-
+*/}
 const PerfectOccasion = () => {
   const navigate = useNavigate();
+  const [specializeEvents, setSpecializeEvents] = useState([]);
+  useEffect(() => {
+  fetchCategories();
+}, []);
+
+const fetchCategories = async () => {
+  try {
+    const response = await getCmsSection("services");
+
+    if (response.data.success) {
+      const cms = response.data.data.content;
+
+      setSpecializeEvents(cms.categories || []);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   return (
     <section 
@@ -103,7 +167,7 @@ const PerfectOccasion = () => {
             Events We Specialize In
           </h1>
           <p 
-            className="text-muted mx-auto" 
+            className=" mx-auto" 
             style={{
                 fontSize: "16px",
                   fontWeight: "400",
@@ -130,7 +194,10 @@ const PerfectOccasion = () => {
                   width: "100%",
                   maxWidth: "280px",
                   borderRadius: "24px",
-                  backgroundImage: `url(${item.bgImage})`,
+                  backgroundImage: `url(${
+                      item.image ||
+                      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80"
+                  })`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                   position: "relative",
@@ -191,7 +258,7 @@ const PerfectOccasion = () => {
                       boxShadow: "0 4px 10px rgba(10, 132, 132, 0.3)",
                     }}
                   >
-                    {item.icon}
+                    {categoryIcons[item.icon]}
                   </div>
 
                   {/* Heading */}
@@ -202,7 +269,7 @@ const PerfectOccasion = () => {
                       fontSize: "18px",
                     }}
                   >
-                    {item.title}
+                    {item.name}
                   </h4>
 
                   {/* Description */}

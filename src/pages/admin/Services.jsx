@@ -6,7 +6,18 @@ import {
     TbPlus, TbFilter, TbChevronLeft, TbChevronRight, TbDotsVertical,
     TbTrash, TbEdit, TbEye, TbTrendingUp, TbAlertTriangle, TbDownload
 } from "react-icons/tb";
+import { MdFormatListBulleted, MdOutlineCategory, MdCheckCircleOutline, MdTempleHindu } from "react-icons/md";
+import { HiSparkles } from "react-icons/hi2";
+import { AiOutlineStop } from "react-icons/ai";
+import { PiMoneyFill } from "react-icons/pi";
+import { IoMdHeart } from "react-icons/io";
 import "./Services.css";
+import {
+    getCmsSection,
+    updateCmsSection
+} from "../../services/cmsService";
+import { bookingData } from "../../services/bookingData";
+
 
 const initialServices = [
     { id: "srv_1", name: "Grand Wedding Package", desc: "Venue + Decor + Catering", category: "Wedding", duration: "2 days", bookings: 18, basePrice: 120000, rating: 4.9, isActive: true },
@@ -36,37 +47,99 @@ const initialServices = [
 ];
 
 const categoriesData = [
-    { id: "wedding", name: "Wedding", desc: "Marriage ceremonies & parties", bookings: "1,240", services: "42", status: "HEALTHY", statusType: "healthy", icon: <TbHeart size={22} />, bgColor: "#FFEAEF", iconColor: "#EF4444" },
+    { id: "wedding", name: "Wedding", desc: "Marriage ceremonies & parties", bookings: "1,240", services: "42", status: "HEALTHY", statusType: "healthy", icon: <IoMdHeart size={22} />, bgColor: "#FFEAEF", iconColor: "#EF4444" },
     { id: "birthday", name: "Birthday", desc: "Kids & adult celebrations", bookings: "890", services: "18", status: "HEALTHY", statusType: "healthy", icon: <TbCake size={22} />, bgColor: "#FFF7DF", iconColor: "#F59E0B" },
     { id: "corporate", name: "Corporate", desc: "Meetings & conferences", bookings: "450", services: "15", status: "REVIEW", statusType: "review", icon: <TbBriefcase size={22} />, bgColor: "#E5F0FF", iconColor: "#2563EB" },
-    { id: "religious", name: "Religious", desc: "Traditional rituals", bookings: "320", services: "12", status: "HEALTHY", statusType: "healthy", icon: <TbCrown size={22} />, bgColor: "#E8FDF0", iconColor: "#10B981" },
-    { id: "custom", name: "Custom", desc: "Special tailored events", bookings: "150", services: "8", status: "NEW", statusType: "new", icon: <TbSparkles size={22} />, bgColor: "#F3E8FF", iconColor: "#8B5CF6" }
+    { id: "religious", name: "Religious", desc: "Traditional rituals", bookings: "320", services: "12", status: "HEALTHY", statusType: "healthy", icon: <MdTempleHindu size={22} />, bgColor: "#E8FDF0", iconColor: "#10B981" },
+    { id: "custom", name: "Custom", desc: "Special tailored events", bookings: "150", services: "8", status: "NEW", statusType: "new", icon: <HiSparkles size={22} />, bgColor: "#F3E8FF", iconColor: "#8B5CF6" }
 ];
 
+const categoryIcons = {
+    heart: {
+        icon: <TbHeart size={22} />,
+        bgColor: "#FFEAEF",
+        iconColor: "#EF4444",
+    },
+    cake: {
+        icon: <TbCake size={22} />,
+        bgColor: "#FFF7DF",
+        iconColor: "#F59E0B",
+    },
+    briefcase: {
+        icon: <TbBriefcase size={22} />,
+        bgColor: "#E5F0FF",
+        iconColor: "#2563EB",
+    },
+    crown: {
+        icon: <TbCrown size={22} />,
+        bgColor: "#E8FDF0",
+        iconColor: "#10B981",
+    },
+    sparkles: {
+        icon: <TbSparkles size={22} />,
+        bgColor: "#F3E8FF",
+        iconColor: "#8B5CF6",
+    },
+};
+
 const Services = () => {
-    const [services, setServices] = useState(initialServices);
-    const [activeCategoryTab, setActiveCategoryTab] = useState("All"); // All, Wedding, Birthday, Corporate, Religious, Custom
+    const [services, setServices] = useState([]);
+    const [categoriesData, setCategoriesData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [activeCategoryTab, setActiveCategoryTab] = useState("All");
     const [search, setSearch] = useState("");
     const [sortOrder, setSortOrder] = useState("");
     const [statusFilter, setStatusFilter] = useState("");
+    const [roleFilter, setRoleFilter] = useState("");
     const [selectedServiceIds, setSelectedServiceIds] = useState([]);
+    const [showCategoryModal, setShowCategoryModal] = useState(false);
+    const [isEditingCategory, setIsEditingCategory] = useState(false);
+    const [editingCategoryId, setEditingCategoryId] = useState(null);
+    const [bookings, setBookings] = useState([]);
+    const [showFilter, setShowFilter] = useState(false);
 
-    // Pagination
+    const [categoryForm, setCategoryForm] = useState({
+        name: "",
+        desc: "",
+        icon: "heart",
+        status: "HEALTHY",
+        statusType: "healthy"
+    });
+
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 6;
+    const itemsPerPage = 5;
 
-    // Modal States
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [showViewModal, setShowViewModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
-    // Form States
-    const [addForm, setAddForm] = useState({ name: "", desc: "", category: "Wedding", duration: "", basePrice: "", rating: 4.8, isActive: true });
-    const [editForm, setEditForm] = useState({ name: "", desc: "", category: "Wedding", duration: "", basePrice: "", rating: 4.8, isActive: true });
+    const [addForm, setAddForm] = useState({
+        name: "",
+        desc: "",
+        category: "Wedding",
+        duration: "",
+        basePrice: "",
+        rating: 4.8,
+        isActive: true,
+        discountpercent: 0,
+        cgstPercent: 9,
+        sgstPercent: 9
+    });
+    const [editForm, setEditForm] = useState({
+        name: "",
+        desc: "",
+        category: "Wedding",
+        duration: "",
+        basePrice: "",
+        rating: 4.8,
+        isActive: true,
+        discountpercent: 0,
+        cgstPercent: 9,
+        sgstPercent: 9
+    });
 
-    // Alert Notification
     const [toastAlert, setToastAlert] = useState({ show: false, message: "", type: "success" });
 
     const triggerToast = (message, type = "success") => {
@@ -76,45 +149,130 @@ const Services = () => {
         }, 4000);
     };
 
-    // KPIs
-    const kpis = [
-        { label: "Event Categories", value: categoriesData.length, desc: "All configured", isAlert: false, icon: <TbCategory size={20} />, bgColor: "#DDF5F0", iconColor: "#0F766E" },
-        { label: "Total Services", value: services.length, desc: "+3 this month", isAlert: false, icon: <TbListDetails size={20} />, bgColor: "#E8F0FE", iconColor: "#2563EB" },
-        { label: "Active Services", value: services.filter(s => s.isActive).length, desc: `${Math.round((services.filter(s => s.isActive).length / services.length) * 100)}% enabled`, isAlert: false, icon: <TbCircleCheck size={20} />, bgColor: "#E7F4EE", iconColor: "#14B8A6" },
-        { label: "Avg. Package Price", value: `₹${Math.round(services.reduce((acc, s) => acc + s.basePrice, 0) / services.length / 1000)}K`, desc: "+5 onboard", isAlert: false, icon: <TbReportMoney size={20} />, bgColor: "#FEF3D7", iconColor: "#D97706" },
-        { label: "Disabled Services", value: services.filter(s => !s.isActive).length, desc: "Needs review", isAlert: true, icon: <TbCircleOff size={20} />, bgColor: "#FDE8E8", iconColor: "#EF4444" }
-    ];
+    useEffect(() => {
+        fetchServices();
+        fetchBookings();
+    }, []);
 
-    // Reset pagination when filter changes
+    const fetchBookings = async () => {
+        try {
+            const response = await bookingData.getAllBookings();
+            setBookings(response.data || []);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const fetchServices = async () => {
+        try {
+            setLoading(true);
+            const response = await getCmsSection("services");
+            if (response.data.success) {
+                const cms = response.data.data?.content;
+                setServices(cms?.services || []);
+                setCategoriesData(cms?.categories || []);
+            }
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const servicesWithBookings = services.map((service) => {
+        const count = bookings.filter(
+            (booking) =>
+                booking.eventType?.toLowerCase() ===
+                service.category?.toLowerCase()
+        ).length;
+        return {
+            ...service,
+            bookings: count,
+        };
+    });
+
+    const categoriesWithStats = categoriesData.map((category) => {
+        const categoryServices = services.filter(
+            (service) => service.category === category.name
+        );
+        const totalBookings = bookings.filter(
+            (booking) =>
+                booking.eventType?.toLowerCase() ===
+                category.name.toLowerCase()
+        ).length;
+        return {
+            ...category,
+            services: categoryServices.length,
+            bookings: totalBookings,
+        };
+    });
+
+    const handleAddCategory = async (e) => {
+        e.preventDefault();
+        const newCategory = {
+            id: categoryForm.name.toLowerCase().replace(/\s+/g, "-"),
+            ...categoryForm,
+            bookings: 0,
+            services: 0
+        };
+        const updatedCategories = [...categoriesData, newCategory];
+        await updateCmsSection("services", { services, categories: updatedCategories });
+        setCategoriesData(updatedCategories);
+        setShowCategoryModal(false);
+        setCategoryForm({ name: "", desc: "", status: "HEALTHY", statusType: "healthy" });
+        triggerToast("Category added successfully");
+    };
+
+    const handleDeleteCategory = async (id) => {
+        const updatedCategories = categoriesData.filter(cat => cat.id !== id);
+        await updateCmsSection("services", { services, categories: updatedCategories });
+        setCategoriesData(updatedCategories);
+        triggerToast("Category deleted");
+    };
+
+    const handleEditCategory = async (e) => {
+        e.preventDefault();
+        const updatedCategories = categoriesData.map((cat) =>
+            cat.id === editingCategoryId
+                ? { ...cat, ...categoryForm, id: editingCategoryId }
+                : cat
+        );
+        await updateCmsSection("services", { services, categories: updatedCategories });
+        setCategoriesData(updatedCategories);
+        setShowCategoryModal(false);
+        setIsEditingCategory(false);
+        setEditingCategoryId(null);
+        setCategoryForm({ name: "", desc: "", icon: "heart", status: "HEALTHY", statusType: "healthy" });
+        triggerToast("Category updated successfully");
+    };
+
     useEffect(() => {
         setCurrentPage(1);
         setSelectedServiceIds([]);
-    }, [activeCategoryTab, search, sortOrder, statusFilter]);
+    }, [activeCategoryTab, search, sortOrder, statusFilter, roleFilter]);
 
-    // Filtering
-    const filteredServices = services.filter(srv => {
+    const filteredServices = servicesWithBookings.filter(srv => {
         const matchesCategory = activeCategoryTab === "All" || srv.category === activeCategoryTab;
-        const matchesSearch = srv.name.toLowerCase().includes(search.toLowerCase()) || srv.desc.toLowerCase().includes(search.toLowerCase());
+        const matchesSearch = srv.name.toLowerCase().includes(search.toLowerCase()) ||
+                              srv.desc.toLowerCase().includes(search.toLowerCase());
         const matchesStatus = statusFilter === "" || (statusFilter === "active" ? srv.isActive : !srv.isActive);
-        return matchesCategory && matchesSearch && matchesStatus;
+        const matchesRole = roleFilter === "" || srv.category === roleFilter;
+        return matchesCategory && matchesSearch && matchesStatus && matchesRole;
     });
 
-    // Sorting
     const sortedServices = [...filteredServices].sort((a, b) => {
         if (sortOrder === "price-asc") return a.basePrice - b.basePrice;
         if (sortOrder === "price-desc") return b.basePrice - a.basePrice;
         if (sortOrder === "rating-desc") return b.rating - a.rating;
         if (sortOrder === "bookings-desc") return b.bookings - a.bookings;
-        return 0; // Default
+        return 0;
     });
 
-    // Pagination bounds
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = sortedServices.slice(indexOfFirstItem, indexOfLastItem);
     const totalPages = Math.ceil(sortedServices.length / itemsPerPage) || 1;
 
-    // Page selection
     const handleSelectAll = () => {
         const visibleIds = currentItems.map(item => item.id);
         const allSelected = visibleIds.length > 0 && visibleIds.every(id => selectedServiceIds.includes(id));
@@ -134,8 +292,7 @@ const Services = () => {
         );
     };
 
-    // Add Service Submit
-    const handleAddSubmit = (e) => {
+    const handleAddSubmit = async (e) => {
         e.preventDefault();
         if (!addForm.name || !addForm.duration || !addForm.basePrice) {
             triggerToast("Please fill all required fields", "danger");
@@ -150,43 +307,62 @@ const Services = () => {
             bookings: 0,
             basePrice: parseFloat(addForm.basePrice),
             rating: parseFloat(addForm.rating) || 4.8,
-            isActive: addForm.isActive
+            isActive: addForm.isActive,
+            discountpercent: parseFloat(addForm.discountpercent) || 0,
+            cgstPercent: parseFloat(addForm.cgstPercent) || 0,
+            sgstPercent: parseFloat(addForm.sgstPercent) || 0
         };
-        setServices([newService, ...services]);
+        const updatedServices = [newService, ...services];
+        await updateCmsSection("services", { services: updatedServices, categories: categoriesData });
+        setServices(updatedServices);
         setShowAddModal(false);
-        setAddForm({ name: "", desc: "", category: "Wedding", duration: "", basePrice: "", rating: 4.8, isActive: true });
+        setAddForm({
+            name: "",
+            desc: "",
+            category: "Wedding",
+            duration: "",
+            basePrice: "",
+            rating: 4.8,
+            isActive: true,
+            discountpercent: 0,
+            cgstPercent: 9,
+            sgstPercent: 9
+        });
         triggerToast("Service created successfully!");
     };
 
-    // Edit Service Submit
-    const handleEditSubmit = (e) => {
+    const handleEditSubmit = async (e) => {
         e.preventDefault();
         if (!editForm.name || !editForm.duration || !editForm.basePrice) {
             triggerToast("Please fill all required fields", "danger");
             return;
         }
-        setServices(prev => prev.map(s => s.id === selectedService.id ? {
-            ...s,
-            name: editForm.name,
-            desc: editForm.desc,
-            category: editForm.category,
-            duration: editForm.duration,
-            basePrice: parseFloat(editForm.basePrice),
-            isActive: editForm.isActive
-        } : s));
+        const updatedServices = services.map(service =>
+            service.id === selectedService.id
+                ? { ...service, ...editForm }
+                : service
+        );
+        await updateCmsSection("services", { services: updatedServices, categories: categoriesData });
+        setServices(updatedServices);
         setShowEditModal(false);
         triggerToast("Service updated successfully!");
     };
 
-    // Toggle Active/Disable Status
-    const toggleServiceStatus = (service) => {
-        setServices(prev => prev.map(s => s.id === service.id ? { ...s, isActive: !s.isActive } : s));
+    const toggleServiceStatus = async (service) => {
+        const updatedServices = services.map(item =>
+            item.id === service.id
+                ? { ...item, isActive: !item.isActive }
+                : item
+        );
+        await updateCmsSection("services", { services: updatedServices, categories: categoriesData });
+        setServices(updatedServices);
         triggerToast(`Service is now ${!service.isActive ? 'Active' : 'Disabled'}`);
     };
 
-    // Delete/Remove Service
-    const handleDeleteSubmit = () => {
-        setServices(prev => prev.filter(s => s.id !== selectedService.id));
+    const handleDeleteSubmit = async () => {
+        const updatedServices = services.filter(item => item.id !== selectedService.id);
+        await updateCmsSection("services", { services: updatedServices, categories: categoriesData });
+        setServices(updatedServices);
         setShowDeleteModal(false);
         triggerToast("Service deleted successfully!");
     };
@@ -197,8 +373,24 @@ const Services = () => {
         return pages;
     };
 
+    const kpis = [
+        { label: "Event Categories", value: categoriesData.length, desc: "All configured", isAlert: false, icon: <MdOutlineCategory size={20} />, bgColor: "#DDF5F0", iconColor: "#0F766E" },
+        { label: "Total Services", value: services.length, desc: "+3 this month", isAlert: false, icon: <MdFormatListBulleted size={20} />, bgColor: "#E8F0FE", iconColor: "#2563EB" },
+        { label: "Active Services", value: services.filter(s => s.isActive).length, desc: `${Math.round((services.filter(s => s.isActive).length / services.length) * 100)}% enabled`, isAlert: false, icon: <MdCheckCircleOutline size={20} />, bgColor: "#E7F4EE", iconColor: "#14B8A6" },
+        { label: "Avg. Package Price", value: `₹${Math.round(services.reduce((acc, s) => acc + s.basePrice, 0) / services.length / 1000)}K`, desc: "+5 onboard", isAlert: false, icon: <PiMoneyFill size={20} />, bgColor: "#FEF3D7", iconColor: "#D97706" },
+        { label: "Disabled Services", value: services.filter(s => !s.isActive).length, desc: "Needs review", isAlert: true, icon: <AiOutlineStop size={20} />, bgColor: "#FDE8E8", iconColor: "#EF4444" }
+    ];
+
+    if (loading) {
+        return (
+            <div className="text-center py-5">
+                <Spinner animation="border" />
+            </div>
+        );
+    }
+
     return (
-        <div className="services-page-container p-3 p-md-4">
+        <div className="services-page-container p-3 p-md-2">
             {/* Toast Alert */}
             {toastAlert.show && (
                 <div
@@ -226,9 +418,14 @@ const Services = () => {
             )}
 
             {/* 5 KPI Metric Cards */}
-            <Row className="mb-4 g-3 g-md-4">
+            <Row className="mb-4 g-2 g-md-3">
                 {kpis.map((kpi, idx) => (
-                    <Col key={idx} xl lg={4} md={6} sm={6} xs={6}>
+                    <Col key={idx}
+                    xs={6}      
+                    sm={6}       
+                    md={2}       
+                    lg={true}      
+                    xl={true} >
                         <Card className="metric-card">
                             <Card.Body className="metric-body">
                                 <div className="metric-top">
@@ -264,19 +461,47 @@ const Services = () => {
                     <h2 className="h2-section m-0">Event Categories</h2>
                     <span className="title-badge">{categoriesData.length} categories</span>
                 </div>
-                <button className="btn btn-manage-categories">
-                    Manage Categories
-                </button>
+               <button 
+  className="btn btn-manage-categories" 
+  onClick={() => {
+    // Reset any edit state
+    setIsEditingCategory(false);
+    setEditingCategoryId(null);
+    setCategoryForm({
+      name: "",
+      desc: "",
+      icon: "heart",
+      status: "HEALTHY",
+      statusType: "healthy"
+    });
+    // Then open modal
+    setShowCategoryModal(true);
+  }}
+>
+  Manage Categories
+</button>
             </div>
 
             {/* 5 Category Cards */}
-            <Row className="g-3 mb-5 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5">
-                {categoriesData.map((item, idx) => (
-                    <Col key={idx}>
+            <Row className="mb-4 g-2 g-md-3">
+                {categoriesWithStats.map((item, idx) => (
+                    <Col key={idx}
+                    xs={12}      
+                    sm={6}       
+                    md={2}       
+                    lg={true}      
+                    xl={true} 
+                    >
                         <div className="category-card">
                             <div className="category-card-header">
-                                <div className="category-icon-box" style={{ backgroundColor: item.bgColor, color: item.iconColor }}>
-                                    {item.icon}
+                                <div
+                                    className="category-icon-box"
+                                    style={{
+                                        backgroundColor: categoryIcons[item.icon]?.bgColor,
+                                        color: categoryIcons[item.icon]?.iconColor,
+                                    }}
+                                >
+                                    {categoryIcons[item.icon]?.icon}
                                 </div>
                                 <span className={`category-badge category-badge-${item.statusType}`}>
                                     {item.status}
@@ -294,6 +519,33 @@ const Services = () => {
                                     <span className="category-stat-value">{item.services}</span>
                                 </div>
                             </div>
+                            <div className="mt-2 d-flex justify-content-end gap-2">
+                                <Button
+                                    variant="warning"
+                                    size="sm"
+                                    onClick={() => {
+                                        setIsEditingCategory(true);
+                                        setEditingCategoryId(item.id);
+                                        setCategoryForm({
+                                            name: item.name,
+                                            desc: item.desc,
+                                            icon: item.icon || "heart",
+                                            status: item.status,
+                                            statusType: item.statusType
+                                        });
+                                        setShowCategoryModal(true);
+                                    }}
+                                >
+                                    <TbEdit size={16} />
+                                </Button>
+                                <Button
+                                    variant="danger"
+                                    size="sm"
+                                    onClick={() => handleDeleteCategory(item.id)}
+                                >
+                                    <TbTrash size={16} />
+                                </Button>
+                            </div>
                         </div>
                     </Col>
                 ))}
@@ -306,7 +558,10 @@ const Services = () => {
                     <span className="title-badge">{services.length} services</span>
                 </div>
                 <div className="d-flex gap-2">
-                    <button className="btn btn-filter-trigger">
+                    <button
+                        className="btn btn-filter-trigger"
+                        onClick={() => setShowFilter(prev => !prev)}
+                    >
                         <TbFilter size={16} /> Filter
                     </button>
                     <button className="btn btn-add-service" onClick={() => setShowAddModal(true)}>
@@ -315,7 +570,7 @@ const Services = () => {
                 </div>
             </div>
 
-            {/* Tabs and Filtering Bar */}
+            {/* Tabs (Category Pills) */}
             <div className="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4">
                 <div className="filter-pills-row m-0">
                     <button
@@ -335,6 +590,69 @@ const Services = () => {
                     ))}
                 </div>
             </div>
+
+            {/* ===== UPDATED FILTER BAR WITH BACKGROUND (like Invoice) ===== */}
+            {showFilter && (
+                <div className="mb-3 p-3" style={{ border: "1px solid #E5E7EB", borderRadius: "12px", background: "#fff" }}>
+                    <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3 justify-content-start justify-content-lg-end">
+                        {/* Search */}
+                        <div className="filter-capsule-container" style={{ padding: "4px 12px 4px 8px" }}>
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Search</span>
+                            <Form.Control
+                                type="text"
+                                placeholder="service..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="filter-select-inner"
+                                style={{ border: "none", background: "#ffffff", height: "32px", width: "140px", fontSize: "12px", fontWeight: "400", padding: "4px 8px" }}
+                            />
+                            <span className="filter-clear-btn" onClick={() => setSearch("")}>Clear</span>
+                        </div>
+
+                        {/* Category */}
+                        <div className="filter-capsule-container">
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Category</span>
+                            <Form.Select
+                                className="filter-select-inner filter-select-roles"
+                                value={roleFilter}
+                                onChange={(e) => setRoleFilter(e.target.value)}
+                                style={{ width: "110px" }}
+                            >
+                                <option value="">All</option>
+                                {categoriesData.map(cat => (
+                                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                                ))}
+                            </Form.Select>
+                            <span className="filter-clear-btn" onClick={() => { setRoleFilter(''); }}>Clear All</span>
+                        </div>
+
+                        {/* Status */}
+                        <div className="filter-capsule-container">
+                            <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Status</span>
+                            <Form.Select
+                                className="filter-select-inner filter-select-status"
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                style={{ width: "110px" }}
+                            >
+                                <option value="">Any Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </Form.Select>
+                            <span className="filter-clear-btn" onClick={() => { setStatusFilter(''); }}>Clear All</span>
+                        </div>
+
+                        {/* Reset */}
+                        <button
+                            className="btn btn-sm btn-outline-secondary"
+                            onClick={() => { setSearch(''); setRoleFilter(''); setStatusFilter(''); }}
+                            style={{ fontSize: "12px", fontWeight: "600", borderRadius: "8px" }}
+                        >
+                            Reset
+                        </button>
+                    </div>
+                </div>
+            )}
 
             {/* Services Table Card */}
             <Card className="border-0 shadow-sm" style={{ borderRadius: "16px", overflow: "hidden" }}>
@@ -414,7 +732,18 @@ const Services = () => {
                                                     className="btn btn-action-edit"
                                                     onClick={() => {
                                                         setSelectedService(srv);
-                                                        setEditForm({ name: srv.name, desc: srv.desc, category: srv.category, duration: srv.duration, basePrice: srv.basePrice, rating: srv.rating, isActive: srv.isActive });
+                                                        setEditForm({
+                                                            name: srv.name,
+                                                            desc: srv.desc,
+                                                            category: srv.category,
+                                                            duration: srv.duration,
+                                                            basePrice: srv.basePrice,
+                                                            rating: srv.rating,
+                                                            isActive: srv.isActive,
+                                                            discountpercent: srv.discountpercent || 0,
+                                                            cgstPercent: srv.cgstPercent !== undefined ? srv.cgstPercent : 9,
+                                                            sgstPercent: srv.sgstPercent !== undefined ? srv.sgstPercent : 9,
+                                                        });
                                                         setShowEditModal(true);
                                                     }}
                                                 >
@@ -439,7 +768,6 @@ const Services = () => {
                         <span className="text-muted body-small">
                             Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, sortedServices.length)} of {sortedServices.length} services
                         </span>
-
                         <div className="d-flex gap-1 align-items-center flex-wrap justify-content-center">
                             <button
                                 className="custom-pagination-btn"
@@ -448,7 +776,6 @@ const Services = () => {
                             >
                                 {"<"}
                             </button>
-
                             {getPageNumbers().map(p => (
                                 <button
                                     key={p}
@@ -458,7 +785,6 @@ const Services = () => {
                                     {p}
                                 </button>
                             ))}
-
                             <button
                                 className="custom-pagination-btn"
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
@@ -513,11 +839,11 @@ const Services = () => {
                                         value={addForm.category}
                                         onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
                                     >
-                                        <option value="Wedding">Wedding</option>
-                                        <option value="Birthday">Birthday</option>
-                                        <option value="Corporate">Corporate</option>
-                                        <option value="Religious">Religious</option>
-                                        <option value="Custom">Custom</option>
+                                        {categoriesData.map(category => (
+                                            <option key={category.id} value={category.name}>
+                                                {category.name}
+                                            </option>
+                                        ))}
                                     </Form.Select>
                                 </Form.Group>
                             </Col>
@@ -558,6 +884,42 @@ const Services = () => {
                                         max="5"
                                         value={addForm.rating}
                                         onChange={(e) => setAddForm({ ...addForm, rating: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <Row>
+                            <Col md={4}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Discount (%)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        placeholder="e.g. 10"
+                                        value={addForm.discountpercent}
+                                        onChange={(e) => setAddForm({ ...addForm, discountpercent: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>CGST (%)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        placeholder="e.g. 9"
+                                        value={addForm.cgstPercent}
+                                        onChange={(e) => setAddForm({ ...addForm, cgstPercent: e.target.value })}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>SGST (%)</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        placeholder="e.g. 9"
+                                        value={addForm.sgstPercent}
+                                        onChange={(e) => setAddForm({ ...addForm, sgstPercent: e.target.value })}
                                     />
                                 </Form.Group>
                             </Col>
@@ -625,11 +987,11 @@ const Services = () => {
                                                 value={editForm.category}
                                                 onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
                                             >
-                                                <option value="Wedding">Wedding</option>
-                                                <option value="Birthday">Birthday</option>
-                                                <option value="Corporate">Corporate</option>
-                                                <option value="Religious">Religious</option>
-                                                <option value="Custom">Custom</option>
+                                                {categoriesData.map(category => (
+                                                    <option key={category.id} value={category.name}>
+                                                        {category.name}
+                                                    </option>
+                                                ))}
                                             </Form.Select>
                                         </Form.Group>
                                     </Col>
@@ -655,6 +1017,39 @@ const Services = () => {
                                                 value={editForm.basePrice}
                                                 onChange={(e) => setEditForm({ ...editForm, basePrice: e.target.value })}
                                                 required
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                </Row>
+
+                                <Row>
+                                    <Col md={4}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>Discount (%)</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                value={editForm.discountpercent}
+                                                onChange={(e) => setEditForm({ ...editForm, discountpercent: e.target.value })}
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>CGST (%)</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                value={editForm.cgstPercent}
+                                                onChange={(e) => setEditForm({ ...editForm, cgstPercent: e.target.value })}
+                                            />
+                                        </Form.Group>
+                                    </Col>
+                                    <Col md={4}>
+                                        <Form.Group className="mb-3">
+                                            <Form.Label>SGST (%)</Form.Label>
+                                            <Form.Control
+                                                type="number"
+                                                value={editForm.sgstPercent}
+                                                onChange={(e) => setEditForm({ ...editForm, sgstPercent: e.target.value })}
                                             />
                                         </Form.Group>
                                     </Col>
@@ -726,6 +1121,24 @@ const Services = () => {
                                         <span className="fw-bold text-warning body-base">★ {selectedService.rating} / 5</span>
                                     </div>
                                 </Col>
+                                <Col xs={4} className="mt-3">
+                                    <div className="d-flex flex-column">
+                                        <span className="text-muted caption">DISCOUNT</span>
+                                        <span className="fw-bold text-dark body-base">{selectedService.discountpercent || 0}%</span>
+                                    </div>
+                                </Col>
+                                <Col xs={4} className="mt-3">
+                                    <div className="d-flex flex-column">
+                                        <span className="text-muted caption">CGST</span>
+                                        <span className="fw-bold text-dark body-base">{selectedService.cgstPercent || 0}%</span>
+                                    </div>
+                                </Col>
+                                <Col xs={4} className="mt-3">
+                                    <div className="d-flex flex-column">
+                                        <span className="text-muted caption">SGST</span>
+                                        <span className="fw-bold text-dark body-base">{selectedService.sgstPercent || 0}%</span>
+                                    </div>
+                                </Col>
                             </Row>
 
                             <div className="d-flex align-items-center gap-2">
@@ -750,6 +1163,78 @@ const Services = () => {
                         Close Specifications
                     </Button>
                 </Modal.Footer>
+            </Modal>
+
+            {/* --- CATEGORY MANAGEMENT MODAL --- */}
+            <Modal
+                show={showCategoryModal}
+                onHide={() => setShowCategoryModal(false)}
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>
+                        {isEditingCategory ? "Edit Category" : "Manage Categories"}
+                    </Modal.Title>
+                </Modal.Header>
+                <Form onSubmit={isEditingCategory ? handleEditCategory : handleAddCategory}>
+                    <Modal.Body>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Name</Form.Label>
+                            <Form.Control
+                                value={categoryForm.name}
+                                onChange={(e) =>
+                                    setCategoryForm({ ...categoryForm, name: e.target.value })
+                                }
+                            />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Icon</Form.Label>
+                            <Form.Select
+                                value={categoryForm.icon}
+                                onChange={(e) =>
+                                    setCategoryForm({ ...categoryForm, icon: e.target.value })
+                                }
+                            >
+                                <option value="heart">Heart</option>
+                                <option value="cake">Cake</option>
+                                <option value="briefcase">Briefcase</option>
+                                <option value="crown">Crown</option>
+                                <option value="sparkles">Sparkles</option>
+                            </Form.Select>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                value={categoryForm.desc}
+                                onChange={(e) =>
+                                    setCategoryForm({ ...categoryForm, desc: e.target.value })
+                                }
+                            />
+                        </Form.Group>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button
+                            variant="secondary"
+                            onClick={() => {
+                                setShowCategoryModal(false);
+                                setIsEditingCategory(false);
+                                setEditingCategoryId(null);
+                                setCategoryForm({
+                                    name: "",
+                                    desc: "",
+                                    icon: "heart",
+                                    status: "HEALTHY",
+                                    statusType: "healthy"
+                                });
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button type="submit">
+                            {isEditingCategory ? "Update Category" : "Save Category"}
+                        </Button>
+                    </Modal.Footer>
+                </Form>
             </Modal>
         </div>
     );
