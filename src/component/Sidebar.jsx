@@ -22,7 +22,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // ---- Debug: log user object to see available fields ----
-  console.log("User from AuthContext:", user);
+ 
 
   // ---- Try multiple possible name fields ----
   const name = user?.name || user?.fullName || user?.username || "Rahul Kapoor";
@@ -61,6 +61,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: "/admin/payments", label: "Payments", icon: <FaCreditCard /> },
     { path: "/admin/invoices", label: "Invoice & GST", icon: <FaFileInvoiceDollar /> },
     { path: "/admin/CmsPage", label: "CMS", icon: <FaEdit /> },
+{ path: "/admin/event-cms", label: "Event CMS", icon: <FaEdit /> },
     { path: "/admin/reports", label: "Reports", icon: <FaChartBar /> },
     { path: "/admin/settings", label: "System Settings", icon: <FaCog /> },
   ];

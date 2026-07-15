@@ -56,6 +56,32 @@ const LeadManagement = () => {
         serviceRequired: []
     });
 
+    // ===== FOCUS TRAP =====
+  const handleFocusTrap = (e) => {
+    if (e.key !== "Tab") return;
+    const form = e.currentTarget;
+    const focusableElements = form.querySelectorAll(
+      'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    if (
+      !e.shiftKey &&
+      document.activeElement === lastElement
+    ) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+    if (
+      e.shiftKey &&
+      document.activeElement === firstElement
+    ) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  };
+
     const triggerToast = (message, type = "success") => {
         setToastAlert({ show: true, message, type });
         setTimeout(() => {
@@ -898,7 +924,7 @@ const handleExportPDF = () => {
 
             {/* ===== ALL MODALS (unchanged) ===== */}
             {/* View Modal */}
-            <Modal show={showViewModal} onHide={() => setShowViewModal(false)}>
+            <Modal show={showViewModal} onHide={() => setShowViewModal(false)} onKeyDown={handleFocusTrap}>
                 <Modal.Header closeButton>
                     <Modal.Title>Lead Details</Modal.Title>
                 </Modal.Header>
@@ -940,13 +966,20 @@ const handleExportPDF = () => {
             </Modal>
 
             {/* Edit Modal */}
-            <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+            <Modal
+                show={showEditModal}
+                onHide={() => setShowEditModal(false)}
+                onKeyDown={handleFocusTrap}
+                scrollable
+                centered
+                className="premium-modal"
+            >                
                 <Modal.Header closeButton>
                     <Modal.Title>Edit Lead</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {editLead && (
-                        <form>
+                        <form className="Form">
                             <div className="row">
                                 <div className="col-md-6 mb-3">
                                     <label className="form-label">Event Type</label>
@@ -1096,7 +1129,7 @@ const handleExportPDF = () => {
             </Modal>
 
             {/* Assign Lead Modal */}
-            <Modal show={showAssignModal} onHide={() => setShowAssignModal(false)} size="md" centered>
+            <Modal show={showAssignModal} onHide={() => setShowAssignModal(false)} size="md" centered onKeyDown={handleFocusTrap}>
                 <Modal.Header closeButton>
                     <Modal.Title>Assign Lead: {currentLead?.customerId?.name || ""}</Modal.Title>
                 </Modal.Header>
@@ -1161,12 +1194,12 @@ const handleExportPDF = () => {
             />
 
             {/* Add Enquiry Modal */}
-            <Modal show={showAddModal} onHide={() => setShowAddModal(false)} size="lg" centered className="premium-modal">
+            <Modal show={showAddModal} onHide={() => setShowAddModal(false)} size="lg" centered className="premium-modal" onKeyDown={handleFocusTrap} scrollable>
                 <Modal.Header closeButton>
                     <Modal.Title className="fw-bold">Add New Enquiry</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form onSubmit={handleAddSubmit}>
+                    <Form onSubmit={handleAddSubmit} className="Form">
                         <Row>
                             <Col md={6} className="mb-3">
                                 <Form.Group>

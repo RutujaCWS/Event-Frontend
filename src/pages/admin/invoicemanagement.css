@@ -29,6 +29,8 @@
     background-color: var(--bg-page);
     min-height: 100vh;
     color: var(--text-body);
+    padding: 12px !important;
+    margin: 0px !important;
 }
 
 /* ============================================

@@ -536,9 +536,9 @@ const CustomerPayment = () => {
             {/* Header */}
 
             <div
-  className="d-flex justify-content-between align-items-center mb-4 flex-wrap"
-  style={{ gap: "12px" }}
->
+                className="d-flex justify-content-between align-items-center mb-4 flex-wrap"
+                style={{ gap: "12px" }}
+              >
             <div className="d-flex align-items-center">
                 <TbHistory
                 size={24}
@@ -559,15 +559,15 @@ const CustomerPayment = () => {
 
             <div
                  style={{
-    display: "inline-flex",
-    alignItems: "center",
-    padding: "4px",
-    background: "#fff",
-    border: "1px solid #E5E7EB",
-    borderRadius: "12px",
-    gap: "4px",
-    flexShrink: 0,
-  }}
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "4px",
+                  background: "#fff",
+                  border: "1px solid #E5E7EB",
+                  borderRadius: "12px",
+                  gap: "4px",
+                  flexShrink: 0,
+                }}
               >
                 {["All", "Paid", "Pending"].map((item) => (
                   <button

@@ -1286,9 +1286,13 @@ const CustomerQuotation = () => {
                 as="textarea"
                 rows={3}
                 value={rejectionReason}
+                maxLength={150}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 placeholder="Please provide a reason for rejecting this quotation..."
               />
+              <div className="text-muted small text-end mt-1">
+                {rejectionReason.length}/150
+              </div>
             </Form.Group>
           </Form>
         </Modal.Body>

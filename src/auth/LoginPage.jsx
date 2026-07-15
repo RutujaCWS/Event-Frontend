@@ -48,7 +48,15 @@ const LoginPage = () => {
 
   const getPasswordError = (val) => {
     if (!val) return "";
-    if (val.length < 6) return "Password must be at least 6 characters";
+    if (val.length < 8) return "Minimum 8 characters.";
+    if (val.length > 20) return "Maximum 20 characters.";
+    if (/\s/.test(val)) return "Spaces are not allowed.";
+    const hasUpper = /[A-Z]/.test(val);
+    const hasLower = /[a-z]/.test(val);
+    const hasNumber = /[0-9]/.test(val);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(val);
+    if (!hasUpper || !hasLower || !hasNumber || !hasSpecial)
+      return "Must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character.";
     return "";
   };
 
@@ -120,7 +128,7 @@ const LoginPage = () => {
   return (
     <div className="login-split-container">
       {/* Left Panel */}
-      <div 
+      <div
         className="login-left-panel"
         style={{ backgroundImage: `url(${loginMethod === "email" ? mailImg : mobileImg})` }}
       >
@@ -146,7 +154,7 @@ const LoginPage = () => {
               )}
             </h1>
             <p className="login-description">
-              {loginMethod === "email" 
+              {loginMethod === "email"
                 ? "Everything you need to run seamless events bookings, payments, tax compliance, and real-time insights, all in one professional workspace."
                 : "Login securely with a one-time password sent to your registered mobile number. No password needed."}
             </p>
@@ -199,7 +207,7 @@ const LoginPage = () => {
             {loginMethod === "email" ? "Welcome back" : "Mobile OTP Login"}
           </h2>
           <p className="login-form-subtitle">
-            {loginMethod === "email" 
+            {loginMethod === "email"
               ? "Sign in to your Vevora professional account"
               : "Enter your registered mobile number to receive a verification code."}
           </p>
@@ -307,11 +315,11 @@ const LoginPage = () => {
                 <Link
                   to="/"
                   className="d-inline-flex align-items-center gap-1"
-                  style={{ 
-                    textDecoration: "none", 
-                    color: "#00685f", 
-                    fontSize: "14px", 
-                    fontWeight: "500" 
+                  style={{
+                    textDecoration: "none",
+                    color: "#00685f",
+                    fontSize: "14px",
+                    fontWeight: "500"
                   }}
                 >
                   <i className="bi bi-arrow-left"></i> Back to Home
@@ -334,6 +342,7 @@ const LoginPage = () => {
                       className="login-input-field"
                       placeholder="9876543210"
                       value={mobile}
+                      maxLength={10}
                       onChange={(e) => setMobile(e.target.value.replace(/[^0-9]/g, ''))}
                       required
                     />
@@ -428,11 +437,11 @@ const LoginPage = () => {
                   <Link
                     to="/"
                     className="d-inline-flex align-items-center gap-1"
-                    style={{ 
-                      textDecoration: "none", 
-                      color: "#00685f", 
-                      fontSize: "14px", 
-                      fontWeight: "500" 
+                    style={{
+                      textDecoration: "none",
+                      color: "#00685f",
+                      fontSize: "14px",
+                      fontWeight: "500"
                     }}
                   >
                     <i className="bi bi-arrow-left"></i> Back to Home

@@ -66,6 +66,32 @@ const UserManagement = () => {
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
 
+// ===== FOCUS TRAP =====
+  const handleFocusTrap = (e) => {
+    if (e.key !== "Tab") return;
+    const form = e.currentTarget;
+    const focusableElements = form.querySelectorAll(
+      'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    if (
+      !e.shiftKey &&
+      document.activeElement === lastElement
+    ) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+    if (
+      e.shiftKey &&
+      document.activeElement === firstElement
+    ) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  };
+
   // Helper to trigger the floating toast alert
   const triggerToast = (message, type = "success") => {
     setToastAlert({ show: true, message, type });
@@ -196,6 +222,10 @@ const UserManagement = () => {
     e.preventDefault();
     if (!addForm.name || !addForm.email || !addForm.mobile || !addForm.password) {
       setModalError("Name, Email, Mobile and Password are required.");
+      return;
+    }
+    if (addForm.password.length < 10) {
+      setModalError("Password must be at least 10 characters.");
       return;
     }
     try {
@@ -886,6 +916,7 @@ const handleExportPDF = () => {
         show={showAddModal}
         onHide={() => setShowAddModal(false)}
         centered
+        scrollable
         className="premium-modal"
       >
         <Modal.Header closeButton>
@@ -893,7 +924,7 @@ const handleExportPDF = () => {
             {activeTab === "customer" ? "Add New Customer" : "Add New Staff Member"}
           </Modal.Title>
         </Modal.Header>
-        <Form onSubmit={handleAddSubmit}>
+        <Form onSubmit={handleAddSubmit} onKeyDown={handleFocusTrap} className="Form">
           <Modal.Body>
             {modalError && (
               <div className="alert alert-danger body-small py-2 px-3 mb-3" style={{ borderRadius: "8px" }}>
@@ -914,7 +945,7 @@ const handleExportPDF = () => {
                 type="text"
                 placeholder="e.g. Rahul Sharma"
                 value={addForm.name}
-                onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                onChange={(e) => setAddForm({ ...addForm, name: e.target.value.replace(/[^A-Za-z\s]/g, '') })}
                 required
               />
             </Form.Group>
@@ -936,7 +967,8 @@ const handleExportPDF = () => {
                 type="tel"
                 placeholder="e.g. 9876543210"
                 value={addForm.mobile}
-                onChange={(e) => setAddForm({ ...addForm, mobile: e.target.value })}
+                maxLength={10}
+                onChange={(e) => setAddForm({ ...addForm, mobile: e.target.value.replace(/\D/g, '') })}
                 required
               />
             </Form.Group>
@@ -945,7 +977,7 @@ const handleExportPDF = () => {
               <Form.Label>Temporary Password</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Password (min 6 characters)"
+                placeholder="Password (min 10 characters)"
                 value={addForm.password}
                 onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
                 required
@@ -1062,25 +1094,25 @@ const handleExportPDF = () => {
         show={showEditModal}
         onHide={() => setShowEditModal(false)}
         centered
+        scrollable
         className="premium-modal"
       >
         <Modal.Header closeButton>
           <Modal.Title className="h2-section m-0">Edit User Profile</Modal.Title>
         </Modal.Header>
-        <Form onSubmit={handleEditSubmit}>
+        <Form onSubmit={handleEditSubmit} onKeyDown={handleFocusTrap} className="Form">
           <Modal.Body>
             {modalError && (
               <div className="alert alert-danger body-small py-2 px-3 mb-3" style={{ borderRadius: "8px" }}>
                 {modalError}
               </div>
             )}
-
-            <Form.Group className="mb-3">
+             <Form.Group className="mb-3">
               <Form.Label>Full Name</Form.Label>
               <Form.Control
                 type="text"
                 value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value.replace(/[^A-Za-z\s]/g, '') })}
                 required
               />
             </Form.Group>
@@ -1100,7 +1132,8 @@ const handleExportPDF = () => {
               <Form.Control
                 type="tel"
                 value={editForm.mobile}
-                onChange={(e) => setEditForm({ ...editForm, mobile: e.target.value })}
+                maxLength={10}
+                onChange={(e) => setEditForm({ ...editForm, mobile: e.target.value.replace(/\D/g, '') })}
                 required
               />
             </Form.Group>
@@ -1215,6 +1248,7 @@ const handleExportPDF = () => {
         onHide={() => setShowToggleModal(false)}
         centered
         className="premium-modal"
+        onKeyDown={handleFocusTrap}
       >
         <Modal.Header closeButton>
           <Modal.Title className="h2-section m-0">Confirm Status Change</Modal.Title>
@@ -1251,6 +1285,7 @@ const handleExportPDF = () => {
         onHide={() => setShowDeleteModal(false)}
         centered
         className="premium-modal"
+        onKeyDown={handleFocusTrap}
       >
         <Modal.Header closeButton>
           <Modal.Title className="h2-section text-danger m-0">Delete Profile</Modal.Title>

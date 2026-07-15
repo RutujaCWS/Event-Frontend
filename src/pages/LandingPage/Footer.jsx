@@ -81,7 +81,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="col-lg-2 col-md-6">
+          <div className="col-lg-2 col-md-6 col-6">
             <h5
               style={{
                 color: "#14B8A6",
@@ -115,7 +115,7 @@ const Footer = () => {
           </div>
 
           {/* Support */}
-          <div className="col-lg-2 col-md-6">
+          <div className="col-lg-2 col-md-6 col-6">
             <h5
               style={{
                 color: "#14B8A6",
@@ -151,7 +151,7 @@ const Footer = () => {
           </div>
 
           {/* Legal */}
-          <div className="col-lg-2 col-md-6">
+          <div className="col-lg-2 col-md-6 col-6">
             <h5
               style={{
                 color: "#14B8A6",
@@ -186,7 +186,7 @@ const Footer = () => {
           </div>
 
           {/* Contact Us */}
-          <div className="col-lg-2 col-md-6">
+          <div className="col-lg-2 col-md-6 col-6">
             <h5
               style={{
                 color: "#14B8A6",
@@ -233,7 +233,7 @@ const Footer = () => {
                 }}
               />
 
-              <span style={{ color: "#94A3B8" }}>
+              <span style={{ color: "#94A3B8", fontSize: "12px" }}>
                 vevora@gmail.com
               </span>
             </div>

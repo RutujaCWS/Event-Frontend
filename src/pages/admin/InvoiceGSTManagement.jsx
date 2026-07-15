@@ -260,6 +260,32 @@ function InvoiceGSTManagement() {
         },
     ];
 
+    // ===== FOCUS TRAP =====
+  const handleFocusTrap = (e) => {
+    if (e.key !== "Tab") return;
+    const form = e.currentTarget;
+    const focusableElements = form.querySelectorAll(
+      'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    if (
+      !e.shiftKey &&
+      document.activeElement === lastElement
+    ) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+    if (
+      e.shiftKey &&
+      document.activeElement === firstElement
+    ) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  };
+
     // ========== EFFECTS ==========
     useEffect(() => {
         fetchInvoices();
@@ -806,7 +832,7 @@ function InvoiceGSTManagement() {
             </Card>
 
             {/* ===== MODALS ===== */}
-            <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered className="premium-modal">
+            <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered className="premium-modal" onKeyDown={handleFocusTrap}>
                 <Modal.Header closeButton>
                     <Modal.Title className="h2-section m-0">Create New Invoice</Modal.Title>
                 </Modal.Header>
@@ -854,7 +880,7 @@ function InvoiceGSTManagement() {
                 </Modal.Footer>
             </Modal>
 
-            <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} centered className="premium-modal">
+            <Modal show={showDetailModal} onHide={() => setShowDetailModal(false)} centered className="premium-modal" onKeyDown={handleFocusTrap}>
                 <Modal.Header closeButton>
                     <Modal.Title className="h2-section m-0">
                         {selectedInvoice?.invoiceNumber || "Invoice Details"}

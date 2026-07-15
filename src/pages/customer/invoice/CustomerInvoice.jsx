@@ -403,81 +403,49 @@ function CustomerInvoice() {
             </div>
 
               {showFilter && (
-                <div
-                  className="mb-3 p-3"
-                  style={{
-                    border: "1px solid #E5E7EB",
-                    borderRadius: "12px",
-                    background: "#fff",
-                  }}
-                >
-                  <div className="d-flex flex-wrap align-items-center gap-3">
-
-                    {/* Booking ID */}
-
-                    <div className="filter-capsule-container">
-                      <span
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "#64748B",
-                          marginRight: "8px",
-                        }}
-                      >
-                        Booking ID
-                      </span>
-
-                      <Form.Control
-                        type="text"
-                        placeholder="BK-2026-433"
-                        value={bookingIdFilter}
-                        onChange={(e) =>
-                          setBookingIdFilter(e.target.value)
-                        }
-                        style={{
-                          width: "180px",
-                          height: "36px",
-                        }}
-                      />
-                    </div>
-
-                    {/* Issue Date */}
-
-                    <div className="filter-capsule-container">
-                      <span
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "#64748B",
-                          marginRight: "8px",
-                        }}
-                      >
-                        Issue Date
-                      </span>
-
-                      <Form.Control
-                        type="text"
-                        placeholder="May 14, 2026"
-                        value={issueDateFilter}
-                        onChange={(e) => setIssueDateFilter(e.target.value)}
-                      />
-                    </div>
-
-                    {/* Reset */}
-
-                    <Button
-                      size="sm"
-                      variant="outline-secondary"
-                      onClick={() => {
-                        setBookingIdFilter("");
-                        setIssueDateFilter("");
-                      }}
-                    >
-                      Reset
-                    </Button>
-
-                  </div>
-                </div>
+                              <div className="mb-3 p-3" style={{ border: "1px solid #E5E7EB", borderRadius: "12px", background: "#fff", width: "100%", height: "85px" }}>
+                                  <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3 justify-content-start justify-content-lg-end">
+                                      {/* Booking ID */}
+                                      <div className="filter-capsule-container" style={{ padding: "4px 12px 4px 8px" }}>
+                                          <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Booking ID</span>
+                                          <Form.Control
+                                              type="text"
+                                              placeholder="BK-2026-433"
+                                              value={bookingIdFilter}
+                                              onChange={(e) => setBookingIdFilter(e.target.value)}
+                                              className="filter-select-inner"
+                                              style={{ border: "none", background: "#ffffff", height: "32px", width: "160px", fontSize: "12px", fontWeight: "400", padding: "4px 8px" }}
+                                          />
+                                          <span className="filter-clear-btn" onClick={() => setBookingIdFilter("")}>Clear</span>
+                                      </div>
+              
+                                      {/* Issue Date */}
+                                      <div className="filter-capsule-container">
+                                          <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>Issue Date</span>
+                                          <Form.Control
+                                              className="filter-select-inner filter-select-status"
+                                              type="text"
+                                              placeholder="May 14, 2026"
+                                              value={issueDateFilter}
+                                              onChange={(e) => setIssueDateFilter(e.target.value)}
+                                              style={{ width: "120px" }}
+                                          />
+                                          <span className="filter-clear-btn" onClick={() => setIssueDateFilter("all")}>Clear All</span>
+                                      </div>
+              
+                                      {/* Reset */}
+                                      <button
+                                          className="btn btn-sm btn-outline-secondary"
+                                          onClick={() => {
+                                            setIssueDateFilter("");
+                                            setBookingIdFilter("");
+                                           }}
+                                          style={{ fontSize: "12px", fontWeight: "600", borderRadius: "8px" }}
+                                      >
+                                          Reset
+                                      </button>
+                                  </div>
+                              </div>
               )}
               </div>
 

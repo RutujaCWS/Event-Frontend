@@ -347,116 +347,92 @@ const totalPages = Math.ceil(
 
 </div>
 {showFilter && (
-  <div
-    className="mb-3 p-3"
-    style={{
-      border: "1px solid #E5E7EB",
-      borderRadius: "12px",
-      background: "#fff",
-    }}
-  >
-    <div className="row g-3 ">
-
-      {/* Event Type */}
-      <div className="col-8 col-md-auto">
-        <div className="filter-capsule-container">
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "#64748B",
-              marginRight: "2px",
-            }}
-          >
-            Event Type
-          </span>
-
-          <Form.Select
-            value={eventTypeFilter}
-            onChange={(e) => setEventTypeFilter(e.target.value)}
-            className="filter-select-inner"
-            style={{ width: "130px" }}
-          >
-            <option value="">All</option>
-            <option>Wedding</option>
-            <option>Birthday</option>
-            <option>Exhibition</option>
-            <option>Corporate</option>
-          </Form.Select>
-        </div>
-      </div>
-
-      {/* Event Date */}
-      <div className="col-8 col-md-auto ">
-        <div className="filter-capsule-container">
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "#64748B",
-              marginRight: "2px",
-            }}
-          >
-            Event Date
-          </span>
-
-          <Form.Control
-            type="date"
-            value={eventDateFilter}
-            onChange={(e) => setEventDateFilter(e.target.value)}
-            className="filter-select-inner"
-            style={{ width: "130px" }}
-          />
-        </div>
-      </div>
-
-      {/* Status */}
-      <div className="col-8 col-md-auto ">
-        <div className="filter-capsule-container">
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              color: "#64748B",
-              marginRight: "2px",
-            }}
-          >
-            Status
-          </span>
-
-          <Form.Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="filter-select-inner"
-            style={{ width: "155px" }}
-          >
-            <option value="">All</option>
-            <option>Confirmed</option>
-            <option>Pending</option>
-            <option>In Progress</option>
-            <option>Completed</option>
-          </Form.Select>
-        </div>
-      </div>
-
-      {/* Reset */}
-      <div className="col-4 col-md-auto d-flex align-items-end">
-        <Button
-          variant="outline-secondary"
-          className="w-100"
-          onClick={() => {
-            setEventTypeFilter("");
-            setEventDateFilter("");
-            setStatusFilter("");
+        <div
+          className="mb-3 p-3"
+          style={{
+            border: "1px solid #E5E7EB",
+            borderRadius: "12px",
+            background: "#fff",
           }}
         >
-          Reset
-        </Button>
-      </div>
+          <div className="d-flex flex-wrap align-items-center gap-2 gap-md-3 justify-content-start justify-content-lg-end">
+            {/* Event Type */}
+            <div className="filter-capsule-container" style={{ padding: "4px 12px 4px 8px" }}>
+              <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>
+                Event Type
+              </span>
+              <Form.Select
+                value={eventTypeFilter}
+                onChange={(e) => setEventTypeFilter(e.target.value)}
+                className="filter-select-inner"
+                style={{ width: "130px" }}
+              >
+                <option value="">All</option>
+                <option>Wedding</option>
+                <option>Birthday</option>
+                <option>Exhibition</option>
+                <option>Corporate</option>
+              </Form.Select>
 
-    </div>
-  </div>
-)}
+              <span className="filter-clear-btn" onClick={() => setEventTypeFilter("")}>
+                Clear
+              </span>
+            </div>
+
+            {/* Event Date */}
+            <div className="filter-capsule-container">
+              <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>
+                Event Date
+              </span>
+              <Form.Control
+                type="date"
+                value={eventDateFilter}
+                onChange={(e) => setEventDateFilter(e.target.value)}
+                className="filter-select-inner"
+                style={{ width: "130px" }}
+              />
+              <span className="filter-clear-btn" onClick={() => setEventDateFilter("")}>
+                Clear All
+              </span>
+            </div>
+
+            {/* Status */}
+            <div className="filter-capsule-container">
+              <span style={{ fontSize: "12px", fontWeight: 600, color: "#64748B", marginRight: "2px" }}>
+                Status
+              </span>
+              <Form.Select
+                className="filter-select-inner filter-select-status"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                style={{ width: "110px" }}
+              >
+                <option value="">All</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Pending">Pending</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </Form.Select>
+              <span className="filter-clear-btn" onClick={() => setStatusFilter("")}>
+                Clear All
+              </span>
+            </div>
+
+            {/* Reset button */}
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => {
+                setEventTypeFilter("");
+                setEventDateFilter("");
+                setStatusFilter("");
+              }}
+              style={{ fontSize: "12px", fontWeight: "600", borderRadius: "8px" }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
 <Card className="border-0 shadow-sm rounded-4">
   <Card.Body className="p-4">
 

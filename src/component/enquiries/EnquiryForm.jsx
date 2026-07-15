@@ -136,6 +136,12 @@ const EnquiryForm = ({
         if (!formData.location.trim()) {
             newErrors.location =
                 "Location is required";
+        } else if (!/^[A-Za-z\s]+$/.test(formData.location)) {
+            newErrors.location =
+                "Location should contain only letters";
+        } else if (formData.location.length > 50) {
+            newErrors.location =
+                "Location must be 50 characters or less";
         }
         if (isPublicForm) {
             if (!formData.fullName.trim()) {
@@ -159,6 +165,10 @@ const EnquiryForm = ({
 
         if (formData.serviceRequired.length === 0) {
             newErrors.serviceRequired = "Please select at least one service type";
+        }
+
+        if (formData.description && formData.description.length > 250) {
+            newErrors.description = "Description must be 250 characters or less";
         }
 
         setErrors(newErrors);
@@ -521,8 +531,13 @@ const EnquiryForm = ({
                         type="text"
                         name="location"
                         placeholder="Enter event location"
+                        maxLength={50}
                         value={formData.location}
-                        onChange={handleChange}
+                        onChange={(e) => {
+                            const filtered = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                            setFormData({ ...formData, location: filtered });
+                            setErrors({ ...errors, location: "" });
+                        }}
                         isInvalid={
                             !!errors.location
                         }
@@ -543,13 +558,21 @@ const EnquiryForm = ({
                         rows={4}
                         name="description"
                         placeholder="Enter event requirements..."
+                        maxLength={250}
                         value={
                             formData.description
                         }
                         onChange={
                             handleChange
                         }
+                        isInvalid={!!errors.description}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {errors.description}
+                    </Form.Control.Feedback>
+                    <div className="text-muted small text-end mt-1">
+                        {formData.description ? formData.description.length : 0}/250
+                    </div>
                 </Form.Group>
 
                 <div className="d-flex justify-content-end gap-2">

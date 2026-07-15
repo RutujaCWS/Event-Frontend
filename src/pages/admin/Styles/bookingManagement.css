@@ -2,10 +2,12 @@
 
 /* Page Layout */
 .booking-page {
-   background-color: #f8fafc;
-   min-height: 100vh;
-   font-family: 'Manrope', sans-serif;
-   padding: 20px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  font-family: 'Manrope', sans-serif;
+  padding: 20px;
+  padding: 0px !important;
+  margin: 0px !important;
 }
 
 /* ==========================================
@@ -203,69 +205,69 @@
 }
 
 .page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #1E293B;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1E293B;
 }
 
 /* Total badge */
 
 .booking-count-pill {
-    background: #D7F7F0;
-    color: #0F9B8E;
-    padding: 4px 18px;
-    border-radius: 999px;
-    font-size: 0.8rem;
-    font-weight: 600;
+  background: #D7F7F0;
+  color: #0F9B8E;
+  padding: 4px 18px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 
 /* Filter button */
 
 .booking-filter-btn {
-    background: #fff;
-    border: 1px solid #E2E8F0 !important;
-    border-radius: 8px !important;
-    padding: 4px 24px;
-    color: #64748B;
-    font-weight: 600;
-  
+  background: #fff;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 8px !important;
+  padding: 4px 24px;
+  color: #64748B;
+  font-weight: 600;
+
 }
 
 .booking-filter-btn:hover {
-    background: #F8FAFC;
+  background: #F8FAFC;
 }
 
 
 /* Export button */
 
 .booking-export-btn {
-     background-color: #fff;
-    border: 2px solid #0F9B8E !important;
-    color: #0F9B8E !important;
-    font-size: 13px !important;
-    font-weight: 600 !important;
-    border-radius: 8px !important;
-    padding: 4px 24px !important;
+  background-color: #fff;
+  border: 2px solid #0F9B8E !important;
+  color: #0F9B8E !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  padding: 4px 24px !important;
 }
 
 .booking-export-btn:hover {
-    background: #F0FDFA;
+  background: #F0FDFA;
 }
 
 
 /* Mobile responsiveness */
 
-@media (max-width:768px){
+@media (max-width:768px) {
 
-    .booking-filter-btn,
-    .booking-export-btn{
-        flex:1;
-    }
+  .booking-filter-btn,
+  .booking-export-btn {
+    flex: 1;
+  }
 
-    .page-title{
-        font-size:1.6rem;
-    }
+  .page-title {
+    font-size: 1.6rem;
+  }
 }
 
 
@@ -294,7 +296,7 @@
   vertical-align: middle;
   border-color: #f2f4f7;
 }
-  
+
 .customer-name {
   font-size: 14px;
   font-weight: 600;
@@ -305,6 +307,7 @@
   font-size: 13px;
   color: #667085;
 }
+
 /* ==========================================
    TABLE CARD
 ========================================== */
@@ -313,7 +316,7 @@
   border-radius: 16px;
 }
 
-.card > .table-responsive {
+.card>.table-responsive {
   border-radius: 16px;
 }
 
@@ -357,36 +360,36 @@
 ========================================== */
 /* Pagination container */
 .custom-pagination-btn {
-    width: 32px;
-    height: 32px;
-    border: 1px solid #e2e8f0;
-    background-color: #ffffff;
-    color: #64748b;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    /* Typography Scale: Body Small */
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.4;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #64748b;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  /* Typography Scale: Body Small */
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .custom-pagination-btn.active {
-    background-color: #0D9488;
-    color: #ffffff;
-    border-color: #0D9488;
+  background-color: #0D9488;
+  color: #ffffff;
+  border-color: #0D9488;
 }
 
 .custom-pagination-btn:hover:not(.active):not(:disabled) {
-    background-color: #f1f5f9;
+  background-color: #f1f5f9;
 }
 
 .custom-pagination-btn:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 
@@ -428,8 +431,9 @@
   background: #fff3db;
   color: #f59e0b;
 }
-.danger-pill{
-   background: #fde5e5;
+
+.danger-pill {
+  background: #fde5e5;
   color: #ef4444;
 }
 

@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./Context/Auth/AuthContext";
 import ProtectedRoute from "./route/ProtectedRoute";
@@ -12,6 +11,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import UserManagement from "./pages/admin/UserManagement";
 import ForgotPasswordPage from "./auth/ForgotPasswordPage";
 import ChangeNewPassword from "./auth/CreateNewPassword";
+import OtpDemo from "./auth/OtpDemo";
+import ResetPasswordDemo from "./auth/ResetPasswordDemo";
 import AboutPage from "./pages/LandingPage/AboutPage";
 import GalleryPage from "./pages/LandingPage/GalleryPage";
 import ContactPage from "./pages/LandingPage/ContactPage";
@@ -32,7 +33,7 @@ import PaymentManagement from "./pages/admin/Payment/PaymentManagement";
 import AdminSettings from "./pages/admin/AdminSettings/AdminSettings";
 import InvoiceGSTManagement from "./pages/admin/InvoiceGSTManagement";
 import Notifications from "./pages/shared/Notifications/Notifications";
-
+import EventCmsPage from "./pages/admin/EventCMS/EventCmsPage";
 import CustomerInvoice from "./pages/customer/invoice/CustomerInvoice";
 
 import CustomerPayment from "./pages/customer/CustomerPayment";
@@ -40,6 +41,11 @@ const DashboardIndex = () => {
   const userStr = localStorage.getItem("user");
   const user = userStr ? JSON.parse(userStr) : null;
 
+useEffect(() => {
+    const darkMode = localStorage.getItem("darkMode") === "true";
+
+    document.body.classList.toggle("dark-mode", darkMode);
+  }, []);
 
   //const { user } = useAuth();
 
@@ -65,6 +71,8 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/otp-demo" element={<OtpDemo />} />
+          <Route path="/reset-password-demo" element={<ResetPasswordDemo />} />
           <Route path="/reset-password/:token" element={<ChangeNewPassword />} />
           <Route path="/services/:slug" element={<ServiceDetails />} />
 
@@ -135,6 +143,8 @@ function App() {
 
             {/* Shared */}
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/admin/event-cms" element={<EventCmsPage />}
+/>
           </Route>
         </Routes>
       </AuthProvider>

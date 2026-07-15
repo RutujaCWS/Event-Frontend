@@ -1,0 +1,455 @@
+/* ============================================
+   Cards
+   ============================================ */
+.main{
+  max-width: 1024px;
+  margin: 0 auto;
+  font-family: 'Manrope', sans-serif;
+  color: #111827;
+}
+.card.global-card {
+  border-radius: 10px !important;
+  margin: 20px 10px !important;
+}
+
+.card.global-card .card-body {
+  padding: 12px !important;
+}
+
+.card.global-card h5,
+.card.global-card h6 {
+  margin-bottom: 4px;
+}
+
+.card.global-card p {
+  margin-bottom: 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.global-top {
+  margin-bottom: 8px;
+}
+
+.global-icon-box {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+}
+
+.global-icon-box svg {
+  width: 14px;
+  height: 14px;
+}
+
+.global-number {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 2px;
+  line-height: 1.2;
+}
+
+.global-title {
+  font-size: 9px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+/* ============================================
+   Payment Gateway 
+============================================ */
+.Payment-Gateway-flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.PaymentGateway_buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn.ResetDefault {
+  font-size: 12px !important;
+  padding: 1px 12px !important;
+  height: 32px;
+  background-color: white !important;
+  border-color: #9a9ea4 !important;
+  color: #878a8e !important;
+}
+.btn.ResetDefault:hover {
+  background-color: #f8fafc !important;
+  transform: translateY(-2px);
+}
+
+.btn.SaveChanges {
+  font-size: 12px !important;
+  padding: 1px 12px !important;
+  height: 32px;
+  background-color: #0c9387 !important;
+  border-color: #0c9387 !important;
+  color: white !important;
+}
+
+.btn.SaveChanges:hover {
+  background-color: #0a7e74 !important;
+  border-color: #0a7e74 !important;
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   Global Notification Settings 
+============================================ */
+.Global-Notification-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.Global-Notification-icon{
+  width: 18px;
+  height: 18px;
+  color: #0C9387;
+}
+
+.Global-Notification-row2{
+  align-items: center;
+  padding-bottom: 20px;
+  margin-bottom: 1px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.card.setting-option-card {
+  border-radius: 8px !important;
+  padding: 0px !important;
+  background-color: #F8F9FB;
+}
+
+.Email-Notification-card{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.SMS-Notification-card{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.WhatsApp-Notification-card{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.setting-option-icon{
+  width: 18px;
+  height: 18px;
+  color: #0C9387;
+}
+
+.form-check-input {
+  width: 2.5rem !important;
+  height: 1.3rem !important;
+  cursor: pointer;
+  border-color: #d1d5db !important;
+  box-shadow: none !important;
+}
+
+.form-check-input:checked {
+  background-color: #0C9387 !important;
+  border-color: #0C9387 !important;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 3px rgba(12, 147, 135, 0.15) !important;
+  border-color: #0C9387 !important;
+}
+
+.form-check-input:hover {
+  border-color: #0C9387 !important;
+}
+
+.form-switch .form-check-input {
+  width: 40px !important;
+  height: 22px !important;
+}
+
+.Global-Notification-3rd-row {
+  margin-top: 5px;
+  padding-top: 5px;
+}
+
+.email-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.Global-Notification-3rd-row .form-control {
+  width: 100%;
+  height: 44px;
+  border: 1px solid #d1d5db;
+  border-radius: 0;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+.Global-Notification-3rd-row .form-control:focus {
+  border-color: #0C9387;
+  box-shadow: none;
+}
+
+.Global-Notification-3rd-row .row {
+  align-items: end;
+}
+
+/* ============================================
+   Booking Confirmation, Payment Reminder, Quotation Sent and Insert variables
+============================================ */
+.channel-badge-whatsapp,
+.channel-badge-email,
+.channel-badge-sms {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.channel-badge-whatsapp {
+  background:#0C9387;
+  color:#F8F9FB;
+}
+
+.channel-badge-email {
+  background: #0FB880;
+  color:#F8F9FB;
+}
+
+.channel-badge-sms {
+  background: #AF5D3D;
+  color:#F8F9FB;
+}
+
+.form-control{
+  width: 100%;
+  height: 40px;
+  padding-top: 1px;
+  margin-top: 10px;
+  color:#878a8e;
+  border: none;
+  background-color:#F8F9FB;
+  border-radius: 0;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+/* ============================================
+   Booking Confirmation, Payment Reminder, Quotation Sent and Insert variables
+============================================ */
+.Send-Via-Flex {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn.Send-Via-Buttons {
+  background: #0FB880;
+  color:#F8F9FB;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.btn.Send {
+  background: white !important;
+  color: #878a8e !important;
+  border: 1px solid #9a9ea4 !important;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.btn.save-temp {
+  background:#0C9387;
+  color:#F8F9FB;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.btn.save-temp:hover,
+.btn.Send:hover,
+.btn.Send-Via-Buttons:hover {
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+
+/* Tablets */
+@media (max-width: 992px) {
+
+  .Payment-Gateway-flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .PaymentGateway_buttons {
+    width: 100%;
+  }
+
+  .Global-Notification-row2 .col-md-4 {
+    margin-bottom: 12px;
+  }
+
+  .Send-Via-Flex {
+    flex-wrap: wrap;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  .card.global-card {
+    margin: 12px 0 !important;
+  }
+
+  .Payment-Gateway-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .PaymentGateway_buttons {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn.ResetDefault,
+  .btn.SaveChanges {
+    width: 100%;
+  }
+
+  .Global-Notification-header h6 {
+    font-size: 14px;
+  }
+
+  .Email-Notification-card,
+  .SMS-Notification-card,
+  .WhatsApp-Notification-card {
+    gap: 10px;
+  }
+
+  .Global-Notification-3rd-row {
+    row-gap: 15px;
+  }
+
+  .Global-Notification-3rd-row .form-control {
+    height: 40px;
+    font-size: 13px;
+  }
+
+  .Send-Via-Flex {
+    gap: 8px;
+  }
+
+  .btn.Send-Via-Buttons,
+  .btn.Send,
+  .btn.save-temp {
+    font-size: 9px;
+    padding: 6px 10px;
+  }
+
+  .channel-badge-whatsapp,
+  .channel-badge-email,
+  .channel-badge-sms {
+    font-size: 7px;
+    padding: 3px 8px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 576px) {
+
+  .card.global-card .card-body {
+    padding: 10px !important;
+  }
+
+  .Payment-Gateway-flex h5 {
+    font-size: 16px;
+  }
+
+  .Payment-Gateway-flex p {
+    font-size: 11px;
+  }
+
+  .Global-Notification-header h6 {
+    font-size: 13px;
+  }
+
+  .setting-option-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .Email-Notification-card,
+  .SMS-Notification-card,
+  .WhatsApp-Notification-card {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .form-switch .form-check-input {
+    width: 34px !important;
+    height: 18px !important;
+  }
+
+  .email-label {
+    font-size: 10px;
+  }
+
+  .Global-Notification-3rd-row .form-control {
+    font-size: 12px;
+    height: 38px;
+  }
+
+  .channel-badge-whatsapp,
+  .channel-badge-email,
+  .channel-badge-sms {
+    margin-bottom: 4px;
+  }
+
+  .btn.Send-Via-Buttons,
+  .btn.Send,
+  .btn.save-temp {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .Send-Via-Flex {
+    flex-direction: column;
+  }
+}

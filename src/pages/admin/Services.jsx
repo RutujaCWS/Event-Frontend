@@ -115,6 +115,32 @@ const Services = () => {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
+    // ===== FOCUS TRAP =====
+  const handleFocusTrap = (e) => {
+    if (e.key !== "Tab") return;
+    const form = e.currentTarget;
+    const focusableElements = form.querySelectorAll(
+      'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    if (
+      !e.shiftKey &&
+      document.activeElement === lastElement
+    ) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+    if (
+      e.shiftKey &&
+      document.activeElement === firstElement
+    ) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  };
+
     const [addForm, setAddForm] = useState({
         name: "",
         desc: "",
@@ -802,12 +828,14 @@ const Services = () => {
                 show={showAddModal}
                 onHide={() => setShowAddModal(false)}
                 centered
+                scrollable
                 className="premium-modal"
+                onKeyDown={handleFocusTrap}
             >
                 <Modal.Header closeButton>
                     <Modal.Title className="h2-section m-0">Add New Service</Modal.Title>
                 </Modal.Header>
-                <Form onSubmit={handleAddSubmit}>
+                <Form onSubmit={handleAddSubmit} onKeyDown={handleFocusTrap} className="Form">
                     <Modal.Body>
                         <Form.Group className="mb-3">
                             <Form.Label>Service Name *</Form.Label>
@@ -888,43 +916,6 @@ const Services = () => {
                                 </Form.Group>
                             </Col>
                         </Row>
-
-                        <Row>
-                            <Col md={4}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Discount (%)</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        placeholder="e.g. 10"
-                                        value={addForm.discountpercent}
-                                        onChange={(e) => setAddForm({ ...addForm, discountpercent: e.target.value })}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={4}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>CGST (%)</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        placeholder="e.g. 9"
-                                        value={addForm.cgstPercent}
-                                        onChange={(e) => setAddForm({ ...addForm, cgstPercent: e.target.value })}
-                                    />
-                                </Form.Group>
-                            </Col>
-                            <Col md={4}>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>SGST (%)</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        placeholder="e.g. 9"
-                                        value={addForm.sgstPercent}
-                                        onChange={(e) => setAddForm({ ...addForm, sgstPercent: e.target.value })}
-                                    />
-                                </Form.Group>
-                            </Col>
-                        </Row>
-
                         <Form.Group className="mb-1 mt-2">
                             <Form.Check
                                 type="checkbox"
@@ -950,12 +941,14 @@ const Services = () => {
                 show={showEditModal}
                 onHide={() => setShowEditModal(false)}
                 centered
+                scrollable
                 className="premium-modal"
+                onKeyDown={handleFocusTrap}
             >
                 <Modal.Header closeButton>
                     <Modal.Title className="h2-section m-0">Edit Service Details</Modal.Title>
                 </Modal.Header>
-                <Form onSubmit={handleEditSubmit}>
+                <Form onSubmit={handleEditSubmit} onKeyDown={handleFocusTrap} className="Form">
                     <Modal.Body>
                         {selectedService && (
                             <>
@@ -1083,6 +1076,7 @@ const Services = () => {
                 onHide={() => setShowViewModal(false)}
                 centered
                 className="premium-modal"
+                onKeyDown={handleFocusTrap}
             >
                 <Modal.Header closeButton>
                     <Modal.Title className="h2-section m-0">Service Specifications</Modal.Title>
@@ -1170,13 +1164,14 @@ const Services = () => {
                 show={showCategoryModal}
                 onHide={() => setShowCategoryModal(false)}
                 centered
+                onKeyDown={handleFocusTrap}
             >
                 <Modal.Header closeButton>
                     <Modal.Title>
                         {isEditingCategory ? "Edit Category" : "Manage Categories"}
                     </Modal.Title>
                 </Modal.Header>
-                <Form onSubmit={isEditingCategory ? handleEditCategory : handleAddCategory}>
+                <Form onSubmit={isEditingCategory ? handleEditCategory : handleAddCategory} onKeyDown={handleFocusTrap}>
                     <Modal.Body>
                         <Form.Group className="mb-3">
                             <Form.Label>Name</Form.Label>

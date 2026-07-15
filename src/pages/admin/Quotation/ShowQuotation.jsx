@@ -55,6 +55,32 @@ const ShowQuotation = () => {
     }
   };
 
+  // ===== FOCUS TRAP =====
+  const handleFocusTrap = (e) => {
+    if (e.key !== "Tab") return;
+    const form = e.currentTarget;
+    const focusableElements = form.querySelectorAll(
+      'input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]'
+    );
+    if (!focusableElements.length) return;
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+    if (
+      !e.shiftKey &&
+      document.activeElement === lastElement
+    ) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+    if (
+      e.shiftKey &&
+      document.activeElement === firstElement
+    ) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+  };
+  
   useEffect(() => {
     fetchQuotations();
   }, []);
@@ -588,7 +614,7 @@ const ShowQuotation = () => {
               <thead>
                 <tr>
                   <th>
-                    <Form.Check />
+                    <input type="checkbox" style={{ cursor: "pointer" }} />
                   </th>
                   <th>ENQ. ID</th>
                   <th>CUSTOMER</th>
@@ -604,7 +630,7 @@ const ShowQuotation = () => {
                 {currentQuotations.map((quotation) => (
                   <tr key={quotation._id}>
                     <td>
-                      <Form.Check />
+                      <input type="checkbox" style={{ cursor: "pointer" }} />
                     </td>
                     <td>
                       <div style={{ fontWeight: 700, color: "#0F172A" }}>
@@ -818,7 +844,7 @@ const ShowQuotation = () => {
       </Col>
 
       {/* Edit Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+      <Modal show={showModal} onHide={() => setShowModal(false)}  onKeyDown={handleFocusTrap} scrollable>
         <Modal.Header closeButton>
           <Modal.Title>Edit Quotation</Modal.Title>
         </Modal.Header>
@@ -864,6 +890,8 @@ const ShowQuotation = () => {
         onHide={() => setShowViewModal(false)}
         size="lg"
         centered
+        scrollable
+        onKeyDown={handleFocusTrap}
       >
         <Modal.Header closeButton style={{ borderBottom: '1px solid #E5E7EB', padding: '16px 24px' }}>
           <Modal.Title style={{ fontWeight: 600, fontSize: '18px', color: '#111827' }}>
@@ -891,7 +919,7 @@ const ShowQuotation = () => {
             </span>
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ padding: '24px' }}>
+        <Modal.Body style={{ padding: '24px', maxHeight: '70vh', overflowY: 'auto', scrollbarWidth: 'thin', scrollbarColor: '#0D9488 #F3F4F6' }}>
           {viewQuotation && (
             <>
               <Row className="mb-4">

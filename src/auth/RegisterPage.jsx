@@ -29,7 +29,7 @@ const RegisterPage = () => {
   const [emailOtp, setEmailOtp] = useState("");
   const [mobileVerified, setMobileVerified] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
-  
+
   // Cooldown timer states
   const [mobileCooldown, setMobileCooldown] = useState(0);
   const [emailCooldown, setEmailCooldown] = useState(0);
@@ -74,10 +74,10 @@ const RegisterPage = () => {
   };
 
   const errors = {
-    name: formData.name.trim() === "" ? "Full name is required" : "",
+    name: formData.name.trim() === "" ? "Full name is required" : !/^[A-Za-z\s]+$/.test(formData.name) ? "Name should contain only letters" : "",
     mobile: formData.mobile && !/^\d{10}$/.test(formData.mobile) ? "Valid 10-digit mobile number required" : "",
     email: formData.email && !/\S+@\S+\.\S+/.test(formData.email) ? "Valid email required" : "",
-    password: formData.password && formData.password.length < 6 ? "Password must be at least 6 characters" : "",
+    password: formData.password && formData.password.length < 10 ? "Password must be at least 10 characters" : "",
     confirmPassword: formData.confirmPassword && formData.confirmPassword !== formData.password ? "Passwords do not match" : "",
     mobileOtp: mobileOtp && !/^\d{6}$/.test(mobileOtp) ? "Enter 6-digit OTP" : "",
     emailOtp: emailOtp && !/^\d{6}$/.test(emailOtp) ? "Enter 6-digit OTP" : "",
@@ -85,12 +85,13 @@ const RegisterPage = () => {
 
   const validateForm = () => {
     if (!formData.name.trim()) return "Full name is required";
+    if (!/^[A-Za-z\s]+$/.test(formData.name)) return "Name should contain only letters";
     if (!formData.mobile || !/^\d{10}$/.test(formData.mobile))
       return "Valid 10-digit mobile number required";
     if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email))
       return "Valid email required";
-    if (formData.password.length < 6)
-      return "Password must be at least 6 characters";
+    if (formData.password.length < 10)
+      return "Password must be at least 10 characters";
     if (formData.password !== formData.confirmPassword)
       return "Passwords do not match";
     if (!formData.termsAccepted)
@@ -222,7 +223,7 @@ const RegisterPage = () => {
   return (
     <div className="login-split-container">
       {/* Left Panel: registration.png background and branding */}
-      <div 
+      <div
         className="login-left-panel"
         style={{ backgroundImage: `url(${registrationImg})` }}
       >
@@ -287,7 +288,10 @@ const RegisterPage = () => {
                   name="name"
                   className="login-input-field"
                   value={formData.name}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const filtered = e.target.value.replace(/[^A-Za-z\s]/g, '');
+                    setFormData(prev => ({ ...prev, name: filtered }));
+                  }}
                   placeholder="Enter your full name"
                   required
                 />
@@ -321,10 +325,10 @@ const RegisterPage = () => {
                     onClick={handleSendEmailOtp}
                     disabled={loading.sendEmail || !formData.email || errors.email || emailCooldown > 0}
                   >
-                    {emailCooldown > 0 
-                      ? `Resend (${emailCooldown}s)` 
-                      : loading.sendEmail 
-                        ? <Spinner size="sm" animation="border" /> 
+                    {emailCooldown > 0
+                      ? `Resend (${emailCooldown}s)`
+                      : loading.sendEmail
+                        ? <Spinner size="sm" animation="border" />
                         : getEmailButtonText()}
                   </Button>
                 ) : (
@@ -443,10 +447,10 @@ const RegisterPage = () => {
                     onClick={handleSendMobileOtp}
                     disabled={loading.sendMobile || !formData.mobile || errors.mobile || mobileCooldown > 0}
                   >
-                    {mobileCooldown > 0 
-                      ? `Resend (${mobileCooldown}s)` 
-                      : loading.sendMobile 
-                        ? <Spinner size="sm" animation="border" /> 
+                    {mobileCooldown > 0
+                      ? `Resend (${mobileCooldown}s)`
+                      : loading.sendMobile
+                        ? <Spinner size="sm" animation="border" />
                         : getMobileButtonText()}
                   </Button>
                 ) : (
@@ -544,11 +548,11 @@ const RegisterPage = () => {
               <Link
                 to="/"
                 className="d-inline-flex align-items-center gap-1"
-                style={{ 
-                  textDecoration: "none", 
-                  color: "#00685f", 
-                  fontSize: "14px", 
-                  fontWeight: "500" 
+                style={{
+                  textDecoration: "none",
+                  color: "#00685f",
+                  fontSize: "14px",
+                  fontWeight: "500"
                 }}
               >
                 <i className="bi bi-arrow-left"></i> Back to Home
